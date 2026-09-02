@@ -4750,3 +4750,273 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ============================================================
+   ATLAS THEME — интернет-магазин металлопроката
+   Токены задаются инлайн через AtlasTokensProvider (data-atlas-root)
+   ============================================================ */
+
+[data-atlas-root] {
+  --atlas-bg: #F5F7FA;
+  --atlas-surface: #FFFFFF;
+  --atlas-surface-2: #EEF2F6;
+  --atlas-text: #0B1220;
+  --atlas-text-muted: #5B6B7F;
+  --atlas-border: #DDE3EA;
+  --atlas-primary: #FF6A00;
+  --atlas-primary-fg: #FFFFFF;
+  --atlas-secondary: #0F172A;
+  --atlas-secondary-fg: #FFFFFF;
+  --atlas-accent: #0369A1;
+  --atlas-success: #16A34A;
+  --atlas-warning: #D97706;
+  --atlas-danger: #DC2626;
+  --atlas-radius-sm: 8px;
+  --atlas-radius-md: 10px;
+  --atlas-radius-lg: 12px;
+  --atlas-radius-xl: 16px;
+  --atlas-shadow-sm: 0 1px 2px rgba(15,23,42,.06);
+  --atlas-shadow-md: 0 8px 24px rgba(15,23,42,.08);
+  --atlas-shadow-lg: 0 20px 48px rgba(15,23,42,.12);
+  --atlas-font-heading: "Manrope", system-ui, sans-serif;
+  --atlas-font-body: "Inter", system-ui, sans-serif;
+  --atlas-header-h: 152px;
+  background: var(--atlas-bg);
+  color: var(--atlas-text);
+  font-family: var(--atlas-font-body);
+}
+
+[data-atlas-root] * {
+  box-sizing: border-box;
+}
+
+[data-atlas-root] h1,
+[data-atlas-root] h2,
+[data-atlas-root] h3,
+[data-atlas-root] h4,
+[data-atlas-root] h5,
+[data-atlas-root] h6 {
+  font-family: var(--atlas-font-heading);
+  color: var(--atlas-text);
+}
+
+/* Atlas buttons */
+.atlas-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: var(--atlas-radius-md);
+  font-family: var(--atlas-font-body);
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.15s ease;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+.atlas-btn-primary {
+  background: var(--atlas-primary);
+  color: var(--atlas-primary-fg);
+}
+.atlas-btn-primary:hover {
+  filter: brightness(1.08);
+  box-shadow: 0 4px 16px rgba(255,106,0,.25);
+}
+.atlas-btn-primary:active {
+  transform: translateY(1px);
+}
+.atlas-btn-secondary {
+  background: var(--atlas-surface);
+  color: var(--atlas-text);
+  border: 1px solid var(--atlas-border);
+}
+.atlas-btn-secondary:hover {
+  border-color: var(--atlas-primary);
+  color: var(--atlas-primary);
+}
+.atlas-btn-outline {
+  background: transparent;
+  color: var(--atlas-primary);
+  border: 1px solid var(--atlas-primary);
+}
+.atlas-btn-success {
+  background: var(--atlas-success);
+  color: #fff;
+}
+.atlas-btn-sm {
+  height: 36px;
+  padding: 0 14px;
+  font-size: 14px;
+}
+.atlas-btn-lg {
+  height: 52px;
+  padding: 0 28px;
+  font-size: 16px;
+}
+
+/* Atlas card */
+.atlas-card {
+  background: var(--atlas-surface);
+  border: 1px solid var(--atlas-border);
+  border-radius: var(--atlas-radius-lg);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+.atlas-card-elevated {
+  box-shadow: var(--atlas-shadow-sm);
+}
+.atlas-card-elevated:hover {
+  box-shadow: var(--atlas-shadow-md);
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--atlas-primary) 40%, var(--atlas-border));
+}
+
+/* Atlas input */
+.atlas-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 14px;
+  border: 1px solid var(--atlas-border);
+  border-radius: var(--atlas-radius-md);
+  background: var(--atlas-surface);
+  color: var(--atlas-text);
+  font-family: var(--atlas-font-body);
+  font-size: 15px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.atlas-input:focus {
+  outline: none;
+  border-color: var(--atlas-primary);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--atlas-primary) 15%, transparent);
+}
+.atlas-input::placeholder {
+  color: var(--atlas-text-muted);
+}
+
+/* Atlas badge */
+.atlas-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+}
+.atlas-badge-success {
+  background: color-mix(in srgb, var(--atlas-success) 12%, transparent);
+  color: var(--atlas-success);
+}
+.atlas-badge-warning {
+  background: color-mix(in srgb, var(--atlas-warning) 12%, transparent);
+  color: var(--atlas-warning);
+}
+.atlas-badge-neutral {
+  background: var(--atlas-surface-2);
+  color: var(--atlas-text-muted);
+}
+.atlas-badge-primary {
+  background: color-mix(in srgb, var(--atlas-primary) 12%, transparent);
+  color: var(--atlas-primary);
+}
+
+/* Atlas section shell */
+.atlas-section {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.atlas-section-pt-none { padding-top: 0; }
+.atlas-section-pt-sm { padding-top: 24px; }
+.atlas-section-pt-md { padding-top: 40px; }
+.atlas-section-pt-lg { padding-top: 64px; }
+.atlas-section-pb-none { padding-bottom: 0; }
+.atlas-section-pb-sm { padding-bottom: 24px; }
+.atlas-section-pb-md { padding-bottom: 40px; }
+.atlas-section-pb-lg { padding-bottom: 64px; }
+.atlas-section-bg-surface { background: var(--atlas-surface); }
+.atlas-section-bg-muted { background: var(--atlas-surface-2); }
+.atlas-section-bg-brand { background: var(--atlas-secondary); color: #fff; }
+.atlas-section-bg-dark { background: #0B1220; color: #F1F5F9; }
+.atlas-section-bg-brand h1,
+.atlas-section-bg-brand h2,
+.atlas-section-bg-brand h3,
+.atlas-section-bg-dark h1,
+.atlas-section-bg-dark h2,
+.atlas-section-bg-dark h3 {
+  color: inherit;
+}
+.atlas-container {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.atlas-container-wide {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+.atlas-container-full {
+  width: 100%;
+}
+
+/* Atlas focus ring */
+[data-atlas-root] a:focus-visible,
+[data-atlas-root] button:focus-visible,
+[data-atlas-root] input:focus-visible,
+[data-atlas-root] select:focus-visible,
+[data-atlas-root] textarea:focus-visible {
+  outline: 2px solid var(--atlas-primary);
+  outline-offset: 2px;
+}
+
+/* Atlas scrollbar (thin) */
+.atlas-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.atlas-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.atlas-scroll::-webkit-scrollbar-thumb {
+  background: var(--atlas-border);
+  border-radius: 3px;
+}
+.atlas-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--atlas-text-muted);
+}
+
+/* Atlas skeleton */
+@keyframes atlas-skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+.atlas-skeleton {
+  background: var(--atlas-surface-2);
+  border-radius: var(--atlas-radius-md);
+  animation: atlas-skeleton-pulse 1.5s ease-in-out infinite;
+}
+
+/* Atlas hide on device */
+.atlas-hide-desktop { display: block; }
+.atlas-hide-tablet { display: block; }
+.atlas-hide-mobile { display: block; }
+@media (max-width: 1023px) {
+  .atlas-hide-desktop { display: none; }
+}
+@media (min-width: 768px) and (max-width: 1023px) {
+  .atlas-hide-tablet { display: none; }
+}
+@media (max-width: 767px) {
+  .atlas-hide-mobile { display: none; }
+}
+
+/* Atlas photo canvas — always white background for product photos */
+.atlas-photo-canvas {
+  background: #FFFFFF;
+  border: 1px solid rgba(0,0,0,0.06);
+  border-radius: var(--atlas-radius-md);
+  overflow: hidden;
+}

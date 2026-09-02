@@ -73,7 +73,12 @@ async function resolveOne(section: Section, ctx: ResolverContext): Promise<unkno
           orderBy: { name: "asc" },
           select: { id: true, slug: true, name: true, isRegion: true, deliveryTariffMultiplier: true },
         });
-        return { zones };
+        return {
+          zones: zones.map((z) => ({
+            ...z,
+            deliveryTariffMultiplier: Number(z.deliveryTariffMultiplier),
+          })),
+        };
       }
       case "BlogTeasers": {
         const props = section.props as any;
@@ -118,7 +123,15 @@ async function resolveOne(section: Section, ctx: ResolverContext): Promise<unkno
           where: { isActive: true },
           orderBy: { baseFare: "asc" },
         });
-        return { fleet };
+        return {
+          fleet: fleet.map((v) => ({
+            ...v,
+            maxWeightKg: Number(v.maxWeightKg),
+            maxLengthMeters: v.maxLengthMeters ? Number(v.maxLengthMeters) : null,
+            baseFare: Number(v.baseFare),
+            perKmCharge: Number(v.perKmCharge),
+          })),
+        };
       }
       case "Contacts": {
         // Данные из конфига, но зоны — из БД

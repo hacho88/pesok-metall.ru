@@ -3,7 +3,7 @@ import animate from "tailwindcss-animate";
 
 const config: Config = {
   darkMode: ["class"],
-  content: ["./src/**/*.{ts,tsx}"],
+  content: ["./src/**/*.{ts,tsx}", "./admin-app/src/**/*.{ts,tsx}"],
   theme: {
     extend: {
       colors: {
@@ -40,15 +40,39 @@ const config: Config = {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
+        // Atlas tokens (CSS variables set inline by AtlasTokensProvider)
+        atlas: {
+          bg: "var(--atlas-bg)",
+          surface: "var(--atlas-surface)",
+          "surface-2": "var(--atlas-surface-2)",
+          text: "var(--atlas-text)",
+          "text-muted": "var(--atlas-text-muted)",
+          border: "var(--atlas-border)",
+          primary: "var(--atlas-primary)",
+          "primary-fg": "var(--atlas-primary-fg)",
+          secondary: "var(--atlas-secondary)",
+          "secondary-fg": "var(--atlas-secondary-fg)",
+          accent: "var(--atlas-accent)",
+          success: "var(--atlas-success)",
+          warning: "var(--atlas-warning)",
+          danger: "var(--atlas-danger)",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+        // Atlas radii
+        "atlas-sm": "var(--atlas-radius-sm)",
+        "atlas-md": "var(--atlas-radius-md)",
+        "atlas-lg": "var(--atlas-radius-lg)",
+        "atlas-xl": "var(--atlas-radius-xl)",
       },
       fontFamily: {
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
         jakarta: ["var(--font-jakarta)", "system-ui", "sans-serif"],
+        "atlas-heading": ["var(--atlas-font-heading)", "system-ui", "sans-serif"],
+        "atlas-body": ["var(--atlas-font-body)", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
