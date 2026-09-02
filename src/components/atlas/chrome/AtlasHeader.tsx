@@ -122,18 +122,37 @@ export function AtlasHeader({
           {/* Cart */}
           {h.showCart && (
             <button
-              className="flex items-center gap-2 px-3 h-10 rounded-lg shrink-0 transition-colors"
+              className="flex items-center gap-2 px-3 h-10 rounded-lg shrink-0 transition-all hover:shadow-md relative"
               style={{ border: "1px solid var(--atlas-border)", background: "var(--atlas-surface)" }}
               onClick={() => cartStore.open()}
             >
-              <ShoppingCart size={20} style={{ color: "var(--atlas-primary)" }} />
+              <div className="relative">
+                <ShoppingCart size={20} style={{ color: "var(--atlas-primary)" }} />
+                {cartTotals.itemsCount > 0 && (
+                  <span
+                    key={cartTotals.itemsCount}
+                    className="atlas-bounce absolute -top-2 -right-2 min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold px-1"
+                    style={{ background: "var(--atlas-primary)", color: "var(--atlas-primary-fg)" }}
+                  >
+                    {cartTotals.itemsCount}
+                  </span>
+                )}
+              </div>
               <span className="hidden sm:flex flex-col items-start leading-tight">
-                <span className="text-xs" style={{ color: "var(--atlas-text-muted)" }}>
-                  {cartTotals.itemsCount} тов.
-                </span>
-                <span className="font-bold text-sm">
-                  {formatRub(cartTotals.subtotal)} ₽
-                </span>
+                {cartTotals.itemsCount > 0 ? (
+                  <>
+                    <span className="text-xs" style={{ color: "var(--atlas-text-muted)" }}>
+                      {cartTotals.itemsCount} тов.
+                    </span>
+                    <span className="font-bold text-sm atlas-price-main">
+                      {formatRub(cartTotals.subtotal)} ₽
+                    </span>
+                  </>
+                ) : (
+                  <span className="text-sm font-medium" style={{ color: "var(--atlas-text-muted)" }}>
+                    Корзина
+                  </span>
+                )}
               </span>
             </button>
           )}

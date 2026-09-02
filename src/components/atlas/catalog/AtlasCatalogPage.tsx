@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { SlidersHorizontal, LayoutGrid, Table2, X, ChevronLeft, ChevronRight, FolderTree } from "lucide-react";
+import { SlidersHorizontal, LayoutGrid, Table2, X, ChevronLeft, ChevronRight, FolderTree, Package, Frown } from "lucide-react";
 import type { AtlasCategoryNode, AtlasProduct, AtlasFacet } from "@/lib/atlas/catalog";
 import type { AtlasPageCategory } from "@/lib/atlas/config-schema";
 import type { AtlasPrice } from "@/lib/atlas/pricing";
@@ -67,7 +67,6 @@ export function AtlasCatalogPage({
       if (value === null || value === "") params.delete(key);
       else params.set(key, value);
     }
-    // Reset page on filter change
     if (!updates.page) params.delete("page");
     const qs = params.toString();
     router.push(qs ? `${window.location.pathname}?${qs}` : window.location.pathname);
@@ -84,17 +83,36 @@ export function AtlasCatalogPage({
   };
 
   const hasActiveFilters = stock !== "all" || priceMin || priceMax || Object.keys(selectedAttrs).length > 0;
+  const activeFilterCount = (stock !== "all" ? 1 : 0) + (priceMin ? 1 : 0) + (priceMax ? 1 : 0) + Object.values(selectedAttrs).flat().length;
 
-  // Subcategory tiles
+  // Active filter chips
+  const activeChips: { label: string; onRemove: () => void }[] = [];
+  if (stock === "in_stock") activeChips.push({ label: "В наличии", onRemove: () => updateUrl({ stock: null }) });
+  if (stock === "on_order") activeChips.push({ label: "Под заказ", onRemove: () => updateUrl({ stock: null }) });
+  if (priceMin) activeChips.push({ label: `от ${priceMin} ₽`, onRemove: () => updateUrl({ priceMin: null }) });
+  if (priceMax) activeChips.push({ label: `до ${priceMax} ₽`, onRemove: () => updateUrl({ priceMax: null }) });
+  for (const [key, values] of Object.entries(selectedAttrs)) {
+    for (const v of values) {
+      activeChips.push({ label: `${key}: ${v}`, onRemove: () => toggleAttr(key, v) });
+    }
+  }
+
   const subcategories = category?.children ?? tree.filter((n) => !n.parentId);
 
+  const sortOptions = [
+    { value: "popular", label: "По популярности" },
+    { value: "price_asc", label: "Сначала дешёвые" },
+    { value: "price_desc", label: "Сначала дорогие" },
+    { value: "name_asc", label: "По названию" },
+  ];
+
   return (
-    <div>
+    <div className="atlas-fade-in">
       {/* Breadcrumbs */}
       <AtlasBreadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Каталог", href: "/shop" }, ...(category ? [{ label: category.name }] : [])]} />
 
       {/* Title */}
-      <h1 className="text-3xl font-bold mt-4 mb-2" style={{ fontFamily: "var(--atlas-font-heading)" }}>
+      <h1 className="text-3xl font-bold mt-4 mb-2 atlas-heading-accent" style={{ fontFamily: "var(--atlas-font-heading)" }}>
         {category ? category.name : "Каталог"}
       </h1>
       <p className="text-sm mb-4" style={{ color: "var(--atlas-text-muted)" }}>
@@ -108,12 +126,12 @@ export function AtlasCatalogPage({
             <a
               key={sub.id}
               href={`/shop/${encodeURIComponent(sub.slug)}`}
-              className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors hover:bg-[var(--atlas-surface-2)]"
-              style={{ border: "1px solid var(--atlas-border)" }}
+              className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm font-medium transition-all hover:shadow-md atlas-card"
+              style={{ background: "var(--atlas-surface)" }}
             >
               <FolderTree size={16} style={{ color: "var(--atlas-primary)" }} />
-              <span className="truncate">{sub.name}</span>
-              <span className="text-xs ml-auto shrink-0" style={{ color: "var(--atlas-text-muted)" }}>{sub.totalProductCount}</span>
+              <span className="truncate flex-1">{sub.name}</span>
+              <span className="text-xs shrink-0 px-1.5 py-0.5 rounded-full" style={{ background: "var(--atlas-surface-2)", color: "var(--atlas-text-muted)" }}>{sub.totalProductCount}</span>
             </a>
           ))}
         </div>
@@ -128,38 +146,39 @@ export function AtlasCatalogPage({
       <div className="flex items-center gap-3 mb-4 flex-wrap">
         <button
           className="atlas-btn atlas-btn-secondary atlas-btn-sm lg:hidden"
-          onClick={() => setShowFilters(!showFilters)}
+          onClick={() => setShowFilters(true)}
         >
           <SlidersHorizontal size={16} />
           Фильтры
+          {activeFilterCount > 0 && (
+            <span className="ml-1 px-1.5 py-0.5 rounded-full text-xs font-bold" style={{ background: "var(--atlas-primary)", color: "var(--atlas-primary-fg)" }}>{activeFilterCount}</span>
+          )}
         </button>
 
         <div className="flex items-center gap-2 ml-auto">
-          <span className="text-sm" style={{ color: "var(--atlas-text-muted)" }}>Сортировка:</span>
+          <span className="text-sm hidden sm:inline" style={{ color: "var(--atlas-text-muted)" }}>Сортировка:</span>
           <select
             value={sort}
             onChange={(e) => updateUrl({ sort: e.target.value })}
-            className="atlas-input atlas-btn-sm"
-            style={{ width: "auto", height: 36 }}
+            className="atlas-sort-select"
           >
-            <option value="popular">По популярности</option>
-            <option value="price_asc">Сначала дешёвые</option>
-            <option value="price_desc">Сначала дорогие</option>
-            <option value="name_asc">По названию</option>
+            {sortOptions.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
           </select>
 
           <div className="flex rounded-lg overflow-hidden" style={{ border: "1px solid var(--atlas-border)" }}>
             <button
-              className={`w-9 h-9 flex items-center justify-center ${view === "grid" ? "" : "opacity-50"}`}
+              className={`w-9 h-9 flex items-center justify-center transition-colors ${view === "grid" ? "" : "opacity-50"}`}
               style={{ background: view === "grid" ? "var(--atlas-surface-2)" : "transparent" }}
               onClick={() => setView("grid")}
+              title="Сетка"
             >
               <LayoutGrid size={18} />
             </button>
             <button
-              className={`w-9 h-9 flex items-center justify-center ${view === "table" ? "" : "opacity-50"}`}
+              className={`w-9 h-9 flex items-center justify-center transition-colors ${view === "table" ? "" : "opacity-50"}`}
               style={{ background: view === "table" ? "var(--atlas-surface-2)" : "transparent" }}
               onClick={() => setView("table")}
+              title="Таблица"
             >
               <Table2 size={18} />
             </button>
@@ -167,83 +186,83 @@ export function AtlasCatalogPage({
         </div>
       </div>
 
+      {/* Active filter chips */}
+      {activeChips.length > 0 && (
+        <div className="flex flex-wrap gap-2 mb-4">
+          {activeChips.map((chip, i) => (
+            <button key={i} className="atlas-filter-chip" onClick={chip.onRemove}>
+              {chip.label}
+              <X size={14} />
+            </button>
+          ))}
+          <button onClick={clearFilters} className="text-sm font-medium hover:underline" style={{ color: "var(--atlas-text-muted)" }}>
+            Сбросить всё
+          </button>
+        </div>
+      )}
+
       <div className="flex gap-6">
-        {/* Filters sidebar */}
-        <aside className={`w-[240px] shrink-0 ${showFilters ? "fixed inset-0 z-50 bg-black/40 lg:bg-transparent lg:static lg:z-auto" : "hidden lg:block"}`}>
-          <div className={`atlas-card p-4 ${showFilters ? "fixed left-0 top-0 bottom-0 w-[300px] max-w-[85vw] overflow-y-auto atlas-scroll rounded-none lg:static lg:rounded-lg lg:w-full lg:max-w-none" : ""}`}>
-            <div className="flex items-center justify-between mb-3 lg:hidden">
-              <h3 className="font-bold">Фильтры</h3>
-              <button onClick={() => setShowFilters(false)}><X size={20} /></button>
-            </div>
-
-            {/* Availability */}
-            {config.filters.availability && (
-              <FilterGroup title="Наличие">
-                <FilterRadio name="stock" value="all" current={stock} onChange={(v) => updateUrl({ stock: v })} label="Все товары" />
-                <FilterRadio name="stock" value="in_stock" current={stock} onChange={(v) => updateUrl({ stock: v })} label="В наличии" />
-                <FilterRadio name="stock" value="on_order" current={stock} onChange={(v) => updateUrl({ stock: v })} label="Под заказ" />
-              </FilterGroup>
-            )}
-
-            {/* Price */}
-            {config.filters.price && (
-              <FilterGroup title="Цена, ₽">
-                <div className="flex gap-2">
-                  <input
-                    type="number"
-                    placeholder="от"
-                    value={priceMin || ""}
-                    onChange={(e) => updateUrl({ priceMin: e.target.value || null })}
-                    className="atlas-input atlas-btn-sm"
-                    style={{ height: 36 }}
-                  />
-                  <input
-                    type="number"
-                    placeholder="до"
-                    value={priceMax || ""}
-                    onChange={(e) => updateUrl({ priceMax: e.target.value || null })}
-                    className="atlas-input atlas-btn-sm"
-                    style={{ height: 36 }}
-                  />
-                </div>
-              </FilterGroup>
-            )}
-
-            {/* Attribute facets */}
-            {config.filters.attributes && facets.slice(0, config.filters.maxAttributeFacets).map((facet) => (
-              <FilterGroup key={facet.key} title={facet.key}>
-                {facet.values.slice(0, 8).map((v) => (
-                  <label key={v.value} className="flex items-center gap-2 text-sm py-1 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={(selectedAttrs[facet.key] || []).includes(v.value)}
-                      onChange={() => toggleAttr(facet.key, v.value)}
-                      style={{ accentColor: "var(--atlas-primary)" }}
-                    />
-                    <span className="flex-1">{v.value}</span>
-                    <span className="text-xs" style={{ color: "var(--atlas-text-muted)" }}>{v.count}</span>
-                  </label>
-                ))}
-              </FilterGroup>
-            ))}
-
-            {hasActiveFilters && (
-              <button onClick={clearFilters} className="atlas-btn atlas-btn-secondary atlas-btn-sm w-full mt-4">
-                <X size={14} />
-                Сбросить фильтры
-              </button>
-            )}
+        {/* Filters sidebar (desktop) */}
+        <aside className="w-[240px] shrink-0 hidden lg:block">
+          <div className="atlas-card p-4 atlas-filter-sidebar atlas-scroll">
+            <FilterContent
+              config={config}
+              stock={stock}
+              priceMin={priceMin}
+              priceMax={priceMax}
+              facets={facets}
+              selectedAttrs={selectedAttrs}
+              updateUrl={updateUrl}
+              toggleAttr={toggleAttr}
+              hasActiveFilters={hasActiveFilters}
+              clearFilters={clearFilters}
+            />
           </div>
         </aside>
+
+        {/* Mobile filter drawer */}
+        {showFilters && (
+          <>
+            <div className="atlas-mobile-filter-overlay lg:hidden" onClick={() => setShowFilters(false)} />
+            <div className="atlas-mobile-filter-panel lg:hidden">
+              <div className="sticky top-0 flex items-center justify-between p-4 border-b" style={{ background: "var(--atlas-surface)", borderColor: "var(--atlas-border)" }}>
+                <h3 className="font-bold text-lg">Фильтры</h3>
+                <button onClick={() => setShowFilters(false)} className="p-2 rounded-lg hover:bg-[var(--atlas-surface-2)]"><X size={20} /></button>
+              </div>
+              <div className="p-4">
+                <FilterContent
+                  config={config}
+                  stock={stock}
+                  priceMin={priceMin}
+                  priceMax={priceMax}
+                  facets={facets}
+                  selectedAttrs={selectedAttrs}
+                  updateUrl={updateUrl}
+                  toggleAttr={toggleAttr}
+                  hasActiveFilters={hasActiveFilters}
+                  clearFilters={clearFilters}
+                />
+              </div>
+              <div className="sticky bottom-0 p-4 border-t" style={{ background: "var(--atlas-surface)", borderColor: "var(--atlas-border)" }}>
+                <button className="atlas-btn atlas-btn-primary w-full atlas-btn-lg" onClick={() => setShowFilters(false)}>
+                  Показать {total} {pluralize(total, "товар", "товара", "товаров")}
+                </button>
+              </div>
+            </div>
+          </>
+        )}
 
         {/* Products */}
         <div className="flex-1 min-w-0">
           {products.length === 0 ? (
-            <div className="text-center py-20 atlas-card">
-              <p className="text-lg font-medium mb-2">Товары не найдены</p>
-              <p className="text-sm" style={{ color: "var(--atlas-text-muted)" }}>Попробуйте изменить фильтры или поисковый запрос</p>
+            <div className="atlas-empty-state atlas-card">
+              <div className="atlas-empty-state-icon">
+                <Frown size={36} style={{ color: "var(--atlas-text-muted)" }} />
+              </div>
+              <p className="text-lg font-bold mb-2">Товары не найдены</p>
+              <p className="text-sm mb-4" style={{ color: "var(--atlas-text-muted)" }}>Попробуйте изменить фильтры или поисковый запрос</p>
               {hasActiveFilters && (
-                <button onClick={clearFilters} className="atlas-btn atlas-btn-primary mt-4">Сбросить фильтры</button>
+                <button onClick={clearFilters} className="atlas-btn atlas-btn-primary">Сбросить фильтры</button>
               )}
             </div>
           ) : view === "grid" ? (
@@ -276,7 +295,7 @@ export function AtlasCatalogPage({
           {totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-8">
               {page > 1 && (
-                <a href={`?${buildPageUrl(searchParams, page - 1)}`} className="w-10 h-10 flex items-center justify-center rounded-lg atlas-card">
+                <a href={`?${buildPageUrl(searchParams, page - 1)}`} className="w-10 h-10 flex items-center justify-center rounded-lg atlas-card hover:shadow-md transition-shadow">
                   <ChevronLeft size={18} />
                 </a>
               )}
@@ -287,7 +306,7 @@ export function AtlasCatalogPage({
                   <a
                     key={p}
                     href={`?${buildPageUrl(searchParams, p)}`}
-                    className="w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-colors"
+                    className="w-10 h-10 flex items-center justify-center rounded-lg font-medium transition-all hover:shadow-md"
                     style={{
                       background: p === page ? "var(--atlas-primary)" : "var(--atlas-surface)",
                       color: p === page ? "var(--atlas-primary-fg)" : "var(--atlas-text)",
@@ -299,7 +318,7 @@ export function AtlasCatalogPage({
                 )
               )}
               {page < totalPages && (
-                <a href={`?${buildPageUrl(searchParams, page + 1)}`} className="w-10 h-10 flex items-center justify-center rounded-lg atlas-card">
+                <a href={`?${buildPageUrl(searchParams, page + 1)}`} className="w-10 h-10 flex items-center justify-center rounded-lg atlas-card hover:shadow-md transition-shadow">
                   <ChevronRight size={18} />
                 </a>
               )}
@@ -316,6 +335,72 @@ export function AtlasCatalogPage({
   );
 }
 
+function FilterContent({
+  config, stock, priceMin, priceMax, facets, selectedAttrs, updateUrl, toggleAttr, hasActiveFilters, clearFilters,
+}: any) {
+  return (
+    <>
+      {/* Availability */}
+      {config.filters.availability && (
+        <FilterGroup title="Наличие">
+          <FilterRadio name="stock" value="all" current={stock} onChange={(v: string) => updateUrl({ stock: v })} label="Все товары" />
+          <FilterRadio name="stock" value="in_stock" current={stock} onChange={(v: string) => updateUrl({ stock: v })} label="В наличии" />
+          <FilterRadio name="stock" value="on_order" current={stock} onChange={(v: string) => updateUrl({ stock: v })} label="Под заказ" />
+        </FilterGroup>
+      )}
+
+      {/* Price */}
+      {config.filters.price && (
+        <FilterGroup title="Цена, ₽">
+          <div className="flex gap-2">
+            <input
+              type="number"
+              placeholder="от"
+              value={priceMin || ""}
+              onChange={(e: any) => updateUrl({ priceMin: e.target.value || null })}
+              className="atlas-input"
+              style={{ height: 36, fontSize: 13 }}
+            />
+            <input
+              type="number"
+              placeholder="до"
+              value={priceMax || ""}
+              onChange={(e: any) => updateUrl({ priceMax: e.target.value || null })}
+              className="atlas-input"
+              style={{ height: 36, fontSize: 13 }}
+            />
+          </div>
+        </FilterGroup>
+      )}
+
+      {/* Attribute facets */}
+      {config.filters.attributes && facets.slice(0, config.filters.maxAttributeFacets).map((facet: AtlasFacet) => (
+        <FilterGroup key={facet.key} title={facet.key}>
+          {facet.values.slice(0, 8).map((v) => (
+            <label key={v.value} className="flex items-center gap-2 text-sm py-1 cursor-pointer hover:text-[var(--atlas-primary)] transition-colors">
+              <input
+                type="checkbox"
+                checked={(selectedAttrs[facet.key] || []).includes(v.value)}
+                onChange={() => toggleAttr(facet.key, v.value)}
+                style={{ accentColor: "var(--atlas-primary)" }}
+              />
+              <span className="flex-1">{v.value}</span>
+              <span className="text-xs" style={{ color: "var(--atlas-text-muted)" }}>{v.count}</span>
+            </label>
+          ))}
+        </FilterGroup>
+      ))}
+
+      {hasActiveFilters && (
+        <button onClick={clearFilters} className="atlas-btn atlas-btn-secondary atlas-btn-sm w-full mt-4">
+          <X size={14} />
+          Сбросить фильтры
+        </button>
+      )}
+    </>
+  );
+}
+
 function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="mb-4 pb-4" style={{ borderBottom: "1px solid var(--atlas-border)" }}>
@@ -327,7 +412,7 @@ function FilterGroup({ title, children }: { title: string; children: React.React
 
 function FilterRadio({ name, value, current, onChange, label }: { name: string; value: string; current: string; onChange: (v: string) => void; label: string }) {
   return (
-    <label className="flex items-center gap-2 text-sm py-1 cursor-pointer">
+    <label className="flex items-center gap-2 text-sm py-1 cursor-pointer hover:text-[var(--atlas-primary)] transition-colors">
       <input type="radio" name={name} checked={current === value} onChange={() => onChange(value)} style={{ accentColor: "var(--atlas-primary)" }} />
       {label}
     </label>

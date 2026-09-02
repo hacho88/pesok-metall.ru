@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Minus, Plus, ShoppingCart, Check } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Check, Eye } from "lucide-react";
 import { useState } from "react";
 import type { AtlasProduct } from "@/lib/atlas/catalog";
 import { formatRub, type AtlasPrice } from "@/lib/atlas/pricing";
@@ -18,34 +18,53 @@ export function ProductCard({ product, price }: { product: AtlasProduct; price: 
     setTimeout(() => setAdded(false), 1500);
   };
 
+  const quickAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addToCart(product, 1);
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
   const href = `/product/${encodeURIComponent(product.slug)}`;
+  const hasPrice = price.perUnit != null;
 
   return (
-    <div className="atlas-card atlas-card-elevated p-3 flex flex-col">
+    <div className="atlas-card atlas-card-elevated p-3 flex flex-col group atlas-fade-in">
       {/* Photo */}
-      <Link href={href} className="block atlas-photo-canvas aspect-square mb-3 relative">
+      <Link href={href} className="block atlas-photo-canvas aspect-square mb-3 relative overflow-hidden">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={product.imageLocal || product.imageUrl || "/products/placeholders/default.svg"}
           alt={product.name}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-contain atlas-product-img"
           loading="lazy"
         />
         {/* Badges */}
-        <div className="absolute top-2 left-2 flex flex-col gap-1">
+        <div className="absolute top-2 left-2 flex flex-col gap-1 z-10">
           {product.inStock ? (
             <span className="atlas-badge atlas-badge-success">В наличии</span>
           ) : (
-            <span className="atlas-badge atlas-badge-warning">Под заказ 1–3 дня</span>
+            <span className="atlas-badge atlas-badge-warning">Под заказ</span>
           )}
           {product.imagePlaceholder && (
-            <span className="atlas-badge atlas-badge-neutral">Фото типовое</span>
+            <span className="atlas-badge atlas-badge-neutral" style={{ fontSize: 10 }}>Фото типовое</span>
           )}
         </div>
+        {/* Quick add button (reveal on hover) */}
+        {hasPrice && (
+          <button
+            className="atlas-quick-add absolute bottom-2 right-2 w-10 h-10 rounded-full atlas-btn-primary flex items-center justify-center shadow-lg z-10"
+            onClick={quickAdd}
+            title="Быстро в корзину"
+          >
+            {added ? <Check size={18} /> : <ShoppingCart size={18} />}
+          </button>
+        )}
       </Link>
 
       {/* Name */}
-      <Link href={href} className="text-sm font-semibold line-clamp-2 mb-1 hover:text-[var(--atlas-primary)]">
+      <Link href={href} className="text-sm font-semibold line-clamp-2 mb-1 hover:text-[var(--atlas-primary)] transition-colors leading-snug">
         {product.name}
       </Link>
 
@@ -56,11 +75,11 @@ export function ProductCard({ product, price }: { product: AtlasProduct; price: 
 
       {/* Price */}
       <div className="mt-auto">
-        {price.perUnit != null ? (
+        {hasPrice ? (
           <>
             <div className="flex items-baseline gap-1">
-              <span className="text-xl font-bold" style={{ fontVariantNumeric: "tabular-nums" }}>
-                {formatRub(price.perUnit)}
+              <span className="text-xl font-bold atlas-price-main" style={{ color: "var(--atlas-text)" }}>
+                {formatRub(price.perUnit!)}
               </span>
               <span className="text-xs" style={{ color: "var(--atlas-text-muted)" }}>₽{price.unitLabel.replace("₽/", "/")}</span>
             </div>
@@ -71,20 +90,20 @@ export function ProductCard({ product, price }: { product: AtlasProduct; price: 
         ) : (
           <>
             <div className="text-sm font-medium" style={{ color: "var(--atlas-text-muted)" }}>Цена по запросу</div>
-            <Link href={href} className="text-xs font-medium" style={{ color: "var(--atlas-primary)" }}>Узнать цену →</Link>
+            <Link href={href} className="text-xs font-medium atlas-link-hover" style={{ color: "var(--atlas-primary)" }}>Узнать цену →</Link>
           </>
         )}
       </div>
 
-      {/* Add to cart */}
-      {price.perUnit != null && (
+      {/* Add to cart row */}
+      {hasPrice && (
         <div className="flex gap-2 mt-3">
-          <div className="flex items-center shrink-0" style={{ border: "1px solid var(--atlas-border)", borderRadius: "var(--atlas-radius-sm)" }}>
-            <button className="w-9 h-9 flex items-center justify-center hover:bg-[var(--atlas-surface-2)]" onClick={() => setQty((q) => Math.max(1, q - 1))}>
+          <div className="atlas-qty shrink-0">
+            <button className="atlas-qty-btn" onClick={() => setQty((q) => Math.max(1, q - 1))}>
               <Minus size={14} />
             </button>
-            <span className="w-10 text-center text-sm font-medium">{qty}</span>
-            <button className="w-9 h-9 flex items-center justify-center hover:bg-[var(--atlas-surface-2)]" onClick={() => setQty((q) => q + 1)}>
+            <span className="atlas-qty-val">{qty}</span>
+            <button className="atlas-qty-btn" onClick={() => setQty((q) => q + 1)}>
               <Plus size={14} />
             </button>
           </div>

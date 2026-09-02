@@ -56,12 +56,12 @@ export function ProductTableRow({ product, price }: { product: AtlasProduct; pri
       <td className="px-4 py-3">
         {price.perUnit != null && (
           <div className="flex items-center gap-2 justify-end">
-            <div className="flex items-center shrink-0" style={{ border: "1px solid var(--atlas-border)", borderRadius: "var(--atlas-radius-sm)" }}>
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-[var(--atlas-surface-2)]" onClick={() => setQty((q) => Math.max(1, q - 1))}>
+            <div className="atlas-qty shrink-0">
+              <button className="atlas-qty-btn" onClick={() => setQty((q) => Math.max(1, q - 1))}>
                 <Minus size={14} />
               </button>
-              <span className="w-10 text-center text-sm font-medium">{qty}</span>
-              <button className="w-8 h-8 flex items-center justify-center hover:bg-[var(--atlas-surface-2)]" onClick={() => setQty((q) => q + 1)}>
+              <span className="atlas-qty-val">{qty}</span>
+              <button className="atlas-qty-btn" onClick={() => setQty((q) => q + 1)}>
                 <Plus size={14} />
               </button>
             </div>
