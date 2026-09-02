@@ -19,7 +19,9 @@ import {
   MapPin,
   Megaphone,
   Gavel,
-  Sparkles
+  Sparkles,
+  ShoppingCart,
+  Palette,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -28,6 +30,8 @@ const NAV_ITEMS = [
   { href: "/catalog", label: "Каталог Tree", icon: FolderSearch },
   { href: "/categories", label: "Категории", icon: FolderTree },
   { href: "/", label: "Конструктор", icon: LayoutTemplate },
+  { href: "/orders", label: "Заказы Atlas", icon: ShoppingCart },
+  { href: "/atlas", label: "Atlas Editor", icon: Palette, external: true },
   { href: "/marketing", label: "Маркетинг", icon: BarChart3 },
   { href: "/blog", label: "AI Блог", icon: PenTool },
   { href: "/leads", label: "Клиенты", icon: Users },
@@ -48,17 +52,34 @@ function NavLinks({ pathname, onNavigate }: { pathname: string; onNavigate?: () 
       {NAV_ITEMS.map((item) => {
         const Icon = item.icon;
         const active = isActive(pathname, item.href);
+        const linkClass = cn(
+          "flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all duration-200 font-bold",
+          active
+            ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
+            : "text-muted-foreground hover:bg-accent hover:text-foreground hover:pl-5"
+        );
+        if ((item as any).external) {
+          return (
+            <a
+              key={item.href}
+              href={item.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onNavigate}
+              className={linkClass}
+            >
+              <Icon className="h-4 w-4" />
+              {item.label}
+              <ExternalLink className="h-3 w-3 ml-auto opacity-50" />
+            </a>
+          );
+        }
         return (
           <Link
             key={item.href}
             href={item.href}
             onClick={onNavigate}
-            className={cn(
-              "flex items-center gap-3 rounded-xl px-4 py-3 text-sm transition-all duration-200 font-bold",
-              active
-                ? "bg-primary text-white shadow-lg shadow-primary/20 scale-105"
-                : "text-muted-foreground hover:bg-accent hover:text-foreground hover:pl-5"
-            )}
+            className={linkClass}
           >
             <Icon className="h-4 w-4" />
             {item.label}

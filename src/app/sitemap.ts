@@ -1,41 +1,45 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma";
 
-const BASE_URL = "https://pesok-metall.ru";
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pesok-metall.ru";
+
+export const dynamic = "force-dynamic";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const entries: MetadataRoute.Sitemap = [
-    { url: BASE_URL, changeFrequency: "daily", priority: 1 },
-    { url: `${BASE_URL}/metall`, changeFrequency: "daily", priority: 0.9 },
+  const [categories, products] = await Promise.all([
+    prisma.category.findMany({
+      select: { slug: true, descriptionGeneratedAt: true },
+    }),
+    prisma.product.findMany({
+      select: { slug: true },
+    }),
+  ]);
+
+  const now = new Date();
+
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
+    { url: `${SITE_URL}/shop`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/checkout`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
+    { url: `${SITE_URL}/contacts`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${SITE_URL}/delivery`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
   ];
 
-  // Категории каталога
-  const categories = await prisma.category.findMany({
-    where: {
-      OR: [
-        { products: { some: {} } },
-        { children: { some: { products: { some: {} } } } },
-      ],
-    },
-    select: { slug: true },
-  });
-  for (const c of categories) {
-    entries.push({
-      url: `${BASE_URL}/metall/${encodeURIComponent(c.slug)}`,
-      changeFrequency: "daily",
-      priority: 0.8,
-    });
-  }
+  const categoryPages: MetadataRoute.Sitemap = categories.map((c) => ({
+    url: `${SITE_URL}/shop/${encodeURIComponent(c.slug)}`,
+    lastModified: c.descriptionGeneratedAt ?? now,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
 
-  // Гео-страницы районов
-  const zones = await prisma.geoZone.findMany({ select: { slug: true } });
-  for (const z of zones) {
-    entries.push({
-      url: `${BASE_URL}/geo/${z.slug}`,
-      changeFrequency: "weekly",
-      priority: 0.7,
-    });
-  }
+  const productPages: MetadataRoute.Sitemap = products.map((p) => ({
+    url: `${SITE_URL}/product/${encodeURIComponent(p.slug)}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
 
-  return entries;
+  return [...staticPages, ...categoryPages, ...productPages];
 }
