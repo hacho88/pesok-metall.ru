@@ -6,13 +6,13 @@ import { getDefaultAtlasConfig } from "./config-defaults";
 import { unstable_cache } from "next/cache";
 
 /** Получить сырую запись StorefrontConfig */
-async function getRawConfig(): Promise<{ draft: unknown; published: unknown; } | null> {
+export async function getRawConfig(): Promise<{ draft: unknown; published: unknown; draftUpdatedAt: Date | null; publishedAt: Date | null } | null> {
   try {
     const row = await prisma.storefrontConfig.findUnique({
       where: { themeKey: ATLAS_THEME_KEY },
     });
     if (!row) return null;
-    return { draft: row.draft, published: row.published };
+    return { draft: row.draft, published: row.published, draftUpdatedAt: row.draftUpdatedAt, publishedAt: row.publishedAt };
   } catch {
     return null;
   }
