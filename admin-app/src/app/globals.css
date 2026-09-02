@@ -1,0 +1,1428 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 33% 98%;
+    --foreground: 20 14% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 8%;
+    --primary: 22 95% 48%;
+    --primary-foreground: 40 33% 98%;
+    --secondary: 30 20% 92%;
+    --secondary-foreground: 20 14% 8%;
+    --muted: 30 20% 92%;
+    --muted-foreground: 25 8% 45%;
+    --accent: 22 95% 48%;
+    --accent-foreground: 40 33% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 22 95% 48%;
+    --radius: 0.75rem;
+  }
+
+  /* ===== Светлые темы ===== */
+
+  /* Пресет: industrial-orange (агрессивный розничный) — совпадает с :root */
+  .theme-industrial-orange {
+    --background: 40 33% 98%;
+    --foreground: 20 14% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 14% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 14% 8%;
+    --primary: 22 95% 48%;
+    --primary-foreground: 40 33% 98%;
+    --secondary: 30 20% 92%;
+    --secondary-foreground: 20 14% 8%;
+    --muted: 30 20% 92%;
+    --muted-foreground: 25 8% 45%;
+    --accent: 22 95% 48%;
+    --accent-foreground: 40 33% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 22 95% 48%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: warm-sand (тёплый песочный) */
+  .theme-warm-sand {
+    --background: 38 40% 97%;
+    --foreground: 30 25% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 30 25% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 25% 12%;
+    --primary: 32 90% 45%;
+    --primary-foreground: 38 40% 98%;
+    --secondary: 35 25% 91%;
+    --secondary-foreground: 30 25% 12%;
+    --muted: 35 25% 91%;
+    --muted-foreground: 30 10% 45%;
+    --accent: 32 90% 45%;
+    --accent-foreground: 38 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 35 20% 85%;
+    --input: 35 20% 85%;
+    --ring: 32 90% 45%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: cool-sky (свежий небесный) */
+  .theme-cool-sky {
+    --background: 210 40% 98%;
+    --foreground: 220 25% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 25% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 25% 12%;
+    --primary: 199 89% 45%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 30% 92%;
+    --secondary-foreground: 220 25% 12%;
+    --muted: 210 30% 92%;
+    --muted-foreground: 215 12% 45%;
+    --accent: 199 89% 45%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 210 25% 87%;
+    --input: 210 25% 87%;
+    --ring: 199 89% 45%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: emerald-light (изумрудный светлый) */
+  .theme-emerald-light {
+    --background: 150 30% 98%;
+    --foreground: 160 25% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 160 25% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 160 25% 10%;
+    --primary: 158 64% 35%;
+    --primary-foreground: 150 30% 98%;
+    --secondary: 152 25% 92%;
+    --secondary-foreground: 160 25% 10%;
+    --muted: 152 25% 92%;
+    --muted-foreground: 155 12% 42%;
+    --accent: 158 64% 35%;
+    --accent-foreground: 150 30% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 152 20% 86%;
+    --input: 152 20% 86%;
+    --ring: 158 64% 35%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: rose-blush (нежный розовый) */
+  .theme-rose-blush {
+    --background: 350 40% 98%;
+    --foreground: 340 20% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 340 20% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 340 20% 14%;
+    --primary: 340 82% 52%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 345 30% 93%;
+    --secondary-foreground: 340 20% 14%;
+    --muted: 345 30% 93%;
+    --muted-foreground: 340 12% 46%;
+    --accent: 340 82% 52%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 345 25% 88%;
+    --input: 345 25% 88%;
+    --ring: 340 82% 52%;
+    --radius: 1rem;
+  }
+
+  /* Пресет: violet-mist (фиолетовая дымка) */
+  .theme-violet-mist {
+    --background: 260 40% 98%;
+    --foreground: 260 25% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 260 25% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 260 25% 14%;
+    --primary: 262 80% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 260 30% 93%;
+    --secondary-foreground: 260 25% 14%;
+    --muted: 260 30% 93%;
+    --muted-foreground: 260 12% 46%;
+    --accent: 262 80% 55%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 260 25% 88%;
+    --input: 260 25% 88%;
+    --ring: 262 80% 55%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: amber-sunset (янтарный закат) */
+  .theme-amber-sunset {
+    --background: 40 50% 97%;
+    --foreground: 25 30% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 25 30% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 25 30% 12%;
+    --primary: 25 95% 50%;
+    --primary-foreground: 40 50% 98%;
+    --secondary: 35 35% 92%;
+    --secondary-foreground: 25 30% 12%;
+    --muted: 35 35% 92%;
+    --muted-foreground: 28 15% 45%;
+    --accent: 25 95% 50%;
+    --accent-foreground: 40 50% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 35 30% 86%;
+    --input: 35 30% 86%;
+    --ring: 25 95% 50%;
+    --radius: 1rem;
+  }
+
+  /* Пресет: teal-fresh (свежий бирюзовый) */
+  .theme-teal-fresh {
+    --background: 180 30% 98%;
+    --foreground: 185 25% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 185 25% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 185 25% 12%;
+    --primary: 174 75% 32%;
+    --primary-foreground: 180 30% 98%;
+    --secondary: 178 25% 92%;
+    --secondary-foreground: 185 25% 12%;
+    --muted: 178 25% 92%;
+    --muted-foreground: 180 12% 42%;
+    --accent: 174 75% 32%;
+    --accent-foreground: 180 30% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 178 22% 86%;
+    --input: 178 22% 86%;
+    --ring: 174 75% 32%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: paper-mono (бумажный монохром) */
+  .theme-paper-mono {
+    --background: 0 0% 98%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --primary: 0 0% 12%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 0 0% 92%;
+    --secondary-foreground: 0 0% 10%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 45%;
+    --accent: 0 0% 12%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 0% 87%;
+    --input: 0 0% 87%;
+    --ring: 0 0% 12%;
+    --radius: 0.375rem;
+  }
+
+  /* Пресет: lime-fresh (лаймовый) */
+  .theme-lime-fresh {
+    --background: 90 40% 98%;
+    --foreground: 100 25% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 100 25% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 100 25% 12%;
+    --primary: 95 80% 38%;
+    --primary-foreground: 90 40% 98%;
+    --secondary: 95 30% 92%;
+    --secondary-foreground: 100 25% 12%;
+    --muted: 95 30% 92%;
+    --muted-foreground: 95 15% 42%;
+    --accent: 95 80% 38%;
+    --accent-foreground: 90 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 95 25% 86%;
+    --input: 95 25% 86%;
+    --ring: 95 80% 38%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: peach-cream (персиковый крем) */
+  .theme-peach-cream {
+    --background: 25 60% 97%;
+    --foreground: 20 30% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 30% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 30% 14%;
+    --primary: 12 90% 55%;
+    --primary-foreground: 25 60% 98%;
+    --secondary: 25 40% 92%;
+    --secondary-foreground: 20 30% 14%;
+    --muted: 25 40% 92%;
+    --muted-foreground: 22 15% 45%;
+    --accent: 12 90% 55%;
+    --accent-foreground: 25 60% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 25 35% 87%;
+    --input: 25 35% 87%;
+    --ring: 12 90% 55%;
+    --radius: 1rem;
+  }
+
+  /* ===== Тёмные темы ===== */
+
+  /* Пресет: b2b-dark-slate (строгий корпоративный) */
+  .theme-b2b-dark-slate {
+    --background: 215 28% 10%;
+    --foreground: 210 20% 96%;
+    --card: 215 25% 14%;
+    --card-foreground: 210 20% 96%;
+    --popover: 215 25% 14%;
+    --popover-foreground: 210 20% 96%;
+    --primary: 199 89% 48%;
+    --primary-foreground: 215 28% 10%;
+    --secondary: 215 20% 20%;
+    --secondary-foreground: 210 20% 96%;
+    --muted: 215 20% 20%;
+    --muted-foreground: 215 10% 65%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 215 28% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 20% 96%;
+    --border: 215 20% 22%;
+    --input: 215 20% 22%;
+    --ring: 199 89% 48%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: midnight-navy (полночный флот) */
+  .theme-midnight-navy {
+    --background: 228 45% 8%;
+    --foreground: 220 20% 96%;
+    --card: 228 40% 12%;
+    --card-foreground: 220 20% 96%;
+    --popover: 228 40% 12%;
+    --popover-foreground: 220 20% 96%;
+    --primary: 217 91% 60%;
+    --primary-foreground: 228 45% 8%;
+    --secondary: 228 35% 18%;
+    --secondary-foreground: 220 20% 96%;
+    --muted: 228 35% 18%;
+    --muted-foreground: 225 12% 65%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 228 45% 8%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 220 20% 96%;
+    --border: 228 30% 20%;
+    --input: 228 30% 20%;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: graphite-dark (графитовый) */
+  .theme-graphite-dark {
+    --background: 240 8% 9%;
+    --foreground: 240 10% 95%;
+    --card: 240 8% 13%;
+    --card-foreground: 240 10% 95%;
+    --popover: 240 8% 13%;
+    --popover-foreground: 240 10% 95%;
+    --primary: 240 6% 85%;
+    --primary-foreground: 240 8% 9%;
+    --secondary: 240 7% 18%;
+    --secondary-foreground: 240 10% 95%;
+    --muted: 240 7% 18%;
+    --muted-foreground: 240 6% 62%;
+    --accent: 240 6% 85%;
+    --accent-foreground: 240 8% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 240 10% 95%;
+    --border: 240 7% 20%;
+    --input: 240 7% 20%;
+    --ring: 240 6% 85%;
+    --radius: 0.5rem;
+  }
+
+  /* Пресет: forest-dark (тёмный лес) */
+  .theme-forest-dark {
+    --background: 160 30% 7%;
+    --foreground: 150 20% 95%;
+    --card: 158 28% 11%;
+    --card-foreground: 150 20% 95%;
+    --popover: 158 28% 11%;
+    --popover-foreground: 150 20% 95%;
+    --primary: 152 60% 45%;
+    --primary-foreground: 160 30% 7%;
+    --secondary: 156 25% 17%;
+    --secondary-foreground: 150 20% 95%;
+    --muted: 156 25% 17%;
+    --muted-foreground: 155 12% 62%;
+    --accent: 152 60% 45%;
+    --accent-foreground: 160 30% 7%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 150 20% 95%;
+    --border: 156 22% 19%;
+    --input: 156 22% 19%;
+    --ring: 152 60% 45%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: royal-purple (королевский пурпур) */
+  .theme-royal-purple {
+    --background: 260 40% 9%;
+    --foreground: 260 25% 96%;
+    --card: 260 38% 13%;
+    --card-foreground: 260 25% 96%;
+    --popover: 260 38% 13%;
+    --popover-foreground: 260 25% 96%;
+    --primary: 262 85% 62%;
+    --primary-foreground: 260 40% 9%;
+    --secondary: 260 32% 19%;
+    --secondary-foreground: 260 25% 96%;
+    --muted: 260 32% 19%;
+    --muted-foreground: 260 15% 66%;
+    --accent: 262 85% 62%;
+    --accent-foreground: 260 40% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 260 25% 96%;
+    --border: 260 28% 21%;
+    --input: 260 28% 21%;
+    --ring: 262 85% 62%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: crimson-dark (тёмный багрянец) */
+  .theme-crimson-dark {
+    --background: 350 35% 9%;
+    --foreground: 350 20% 95%;
+    --card: 350 32% 13%;
+    --card-foreground: 350 20% 95%;
+    --popover: 350 32% 13%;
+    --popover-foreground: 350 20% 95%;
+    --primary: 350 84% 55%;
+    --primary-foreground: 350 35% 9%;
+    --secondary: 350 28% 18%;
+    --secondary-foreground: 350 20% 95%;
+    --muted: 350 28% 18%;
+    --muted-foreground: 350 12% 64%;
+    --accent: 350 84% 55%;
+    --accent-foreground: 350 35% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 350 20% 95%;
+    --border: 350 25% 20%;
+    --input: 350 25% 20%;
+    --ring: 350 84% 55%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: ocean-deep (глубокий океан) */
+  .theme-ocean-deep {
+    --background: 210 50% 8%;
+    --foreground: 210 25% 96%;
+    --card: 210 45% 12%;
+    --card-foreground: 210 25% 96%;
+    --popover: 210 45% 12%;
+    --popover-foreground: 210 25% 96%;
+    --primary: 199 89% 50%;
+    --primary-foreground: 210 50% 8%;
+    --secondary: 210 38% 18%;
+    --secondary-foreground: 210 25% 96%;
+    --muted: 210 38% 18%;
+    --muted-foreground: 212 14% 65%;
+    --accent: 199 89% 50%;
+    --accent-foreground: 210 50% 8%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 25% 96%;
+    --border: 210 32% 20%;
+    --input: 210 32% 20%;
+    --ring: 199 89% 50%;
+    --radius: 1rem;
+  }
+
+  /* Пресет: neon-dark (неоновый) */
+  .theme-neon-dark {
+    --background: 150 20% 6%;
+    --foreground: 150 15% 95%;
+    --card: 150 18% 10%;
+    --card-foreground: 150 15% 95%;
+    --popover: 150 18% 10%;
+    --popover-foreground: 150 15% 95%;
+    --primary: 142 90% 50%;
+    --primary-foreground: 150 20% 6%;
+    --secondary: 150 15% 15%;
+    --secondary-foreground: 150 15% 95%;
+    --muted: 150 15% 15%;
+    --muted-foreground: 150 10% 60%;
+    --accent: 142 90% 50%;
+    --accent-foreground: 150 20% 6%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 150 15% 95%;
+    --border: 150 14% 17%;
+    --input: 150 14% 17%;
+    --ring: 142 90% 50%;
+    --radius: 0.5rem;
+  }
+
+  /* Пресет: sunset-dark (тёмный закат) */
+  .theme-sunset-dark {
+    --background: 25 35% 9%;
+    --foreground: 25 20% 95%;
+    --card: 25 32% 13%;
+    --card-foreground: 25 20% 95%;
+    --popover: 25 32% 13%;
+    --popover-foreground: 25 20% 95%;
+    --primary: 22 95% 55%;
+    --primary-foreground: 25 35% 9%;
+    --secondary: 25 28% 18%;
+    --secondary-foreground: 25 20% 95%;
+    --muted: 25 28% 18%;
+    --muted-foreground: 25 12% 64%;
+    --accent: 22 95% 55%;
+    --accent-foreground: 25 35% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 25 20% 95%;
+    --border: 25 24% 20%;
+    --input: 25 24% 20%;
+    --ring: 22 95% 55%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: wine-dark (тёмное вино) */
+  .theme-wine-dark {
+    --background: 340 30% 9%;
+    --foreground: 340 15% 95%;
+    --card: 340 28% 13%;
+    --card-foreground: 340 15% 95%;
+    --popover: 340 28% 13%;
+    --popover-foreground: 340 15% 95%;
+    --primary: 340 70% 55%;
+    --primary-foreground: 340 30% 9%;
+    --secondary: 340 24% 18%;
+    --secondary-foreground: 340 15% 95%;
+    --muted: 340 24% 18%;
+    --muted-foreground: 340 10% 64%;
+    --accent: 340 70% 55%;
+    --accent-foreground: 340 30% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 340 15% 95%;
+    --border: 340 22% 20%;
+    --input: 340 22% 20%;
+    --ring: 340 70% 55%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: steel-dark (тёмная сталь) */
+  .theme-steel-dark {
+    --background: 220 25% 10%;
+    --foreground: 220 15% 95%;
+    --card: 220 22% 14%;
+    --card-foreground: 220 15% 95%;
+    --popover: 220 22% 14%;
+    --popover-foreground: 220 15% 95%;
+    --primary: 215 60% 60%;
+    --primary-foreground: 220 25% 10%;
+    --secondary: 220 20% 19%;
+    --secondary-foreground: 220 15% 95%;
+    --muted: 220 20% 19%;
+    --muted-foreground: 220 10% 64%;
+    --accent: 215 60% 60%;
+    --accent-foreground: 220 25% 10%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 220 15% 95%;
+    --border: 220 18% 21%;
+    --input: 220 18% 21%;
+    --ring: 215 60% 60%;
+    --radius: 0.5rem;
+  }
+
+  /* Пресет: copper-dark (тёмная медь) */
+  .theme-copper-dark {
+    --background: 25 25% 9%;
+    --foreground: 25 15% 95%;
+    --card: 25 22% 13%;
+    --card-foreground: 25 15% 95%;
+    --popover: 25 22% 13%;
+    --popover-foreground: 25 15% 95%;
+    --primary: 25 80% 55%;
+    --primary-foreground: 25 25% 9%;
+    --secondary: 25 20% 18%;
+    --secondary-foreground: 25 15% 95%;
+    --muted: 25 20% 18%;
+    --muted-foreground: 25 10% 63%;
+    --accent: 25 80% 55%;
+    --accent-foreground: 25 25% 9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 25 15% 95%;
+    --border: 25 18% 20%;
+    --input: 25 18% 20%;
+    --ring: 25 80% 55%;
+    --radius: 0.875rem;
+  }
+
+  /* Пресет: clean-minimal (минималистичный светлый) */
+  .theme-clean-minimal {
+    --background: 0 0% 100%;
+    --foreground: 220 10% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 10% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 10% 12%;
+    --primary: 220 60% 30%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 220 15% 95%;
+    --secondary-foreground: 220 10% 12%;
+    --muted: 220 15% 95%;
+    --muted-foreground: 220 8% 45%;
+    --accent: 220 60% 30%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 220 15% 88%;
+    --input: 220 15% 88%;
+    --ring: 220 60% 30%;
+    --radius: 0.75rem;
+  }
+
+  /* Пресет: aurora-forge (Aurora Forge Pro) — премиальный тёмный bento:
+     графитовая база, северное сияние (cyan/violet), янтарный акцент, стекло */
+  .theme-aurora-forge {
+    --background: 222 47% 5%;
+    --foreground: 210 40% 98%;
+    --card: 222 38% 8%;
+    --card-foreground: 210 40% 98%;
+    --popover: 222 38% 7%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 30 100% 56%;
+    --primary-foreground: 222 47% 5%;
+    --secondary: 190 95% 50%;
+    --secondary-foreground: 222 47% 5%;
+    --muted: 220 28% 14%;
+    --muted-foreground: 215 20% 72%;
+    --accent: 265 95% 68%;
+    --accent-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 18%;
+    --input: 214 32% 18%;
+    --ring: 190 95% 50%;
+    --radius: 1.25rem;
+  }
+
+  /* Пресет: ideal (Идеал) — премиальный светлый гибрид */
+  .theme-ideal {
+    --background: 210 40% 98%;
+    --foreground: 222 47% 8%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 8%;
+    --primary: 217 91% 48%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 210 24% 94%;
+    --secondary-foreground: 222 47% 12%;
+    --muted: 210 28% 95%;
+    --muted-foreground: 215 16% 45%;
+    --accent: 164 84% 42%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 32% 88%;
+    --input: 214 32% 88%;
+    --ring: 217 91% 48%;
+    --radius: 1.35rem;
+  }
+
+  /* Пресет: arena (Arena) — тёмная «торговая арена снабжения» */
+  .theme-arena {
+    --background: 220 24% 6%;
+    --foreground: 210 40% 98%;
+    --card: 220 22% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 220 24% 7%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 24 100% 55%;
+    --primary-foreground: 220 24% 6%;
+    --secondary: 195 100% 48%;
+    --secondary-foreground: 220 24% 6%;
+    --muted: 220 18% 14%;
+    --muted-foreground: 215 18% 68%;
+    --accent: 83 90% 55%;
+    --accent-foreground: 220 24% 6%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 220 16% 20%;
+    --input: 220 16% 18%;
+    --ring: 24 100% 55%;
+    --radius: 1rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Анимации */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.6s ease-out both;
+}
+
+.animate-float {
+  animation: float 5s ease-in-out infinite;
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2.5s ease-in-out infinite;
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: hsl(var(--border));
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.5);
+}
+
+/* Сетка-паттерн для hero */
+.hero-grid-pattern {
+  background-image:
+    linear-gradient(hsl(var(--primary-foreground) / 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--primary-foreground) / 0.06) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* Печать: показываем только счёт */
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible;
+  }
+  .print-area {
+    position: absolute;
+    inset: 0;
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
+
+/* ============================================================
+   STYLE ENGINE — 4 архитектурных стиля
+   Каждая тема = палитра (.theme-*) + структура (.style-*)
+   Структура меняет раскладку, типографику, формы и анимации.
+   ============================================================ */
+
+/* --- Базовые структурные переменные --- */
+.style-minimal,
+.style-bento,
+.style-editorial,
+.style-commerce {
+  --font-heading: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --section-gap: 4rem;
+  --heading-size: 2.25rem;
+  --heading-weight: 700;
+  --heading-ls: -0.02em;
+  --card-radius: var(--radius);
+  --card-pad: 1.5rem;
+  --grid-cols: 3;
+  --grid-gap: 1.5rem;
+  --hero-pad: 4rem 1.5rem;
+  --hero-align: center;
+  --hero-cols: 1fr;
+  --card-border: 1px solid hsl(var(--border));
+  --card-shadow: none;
+  --card-hover: none;
+  --ticker-display: none;
+  --badge-style: solid;
+  font-family: var(--font-body);
+}
+
+/* --- 1. Clean & Minimalist: luxury, fashion, cosmetics --- */
+.style-minimal {
+  --font-heading: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --section-gap: 7rem;
+  --heading-size: clamp(2.75rem, 6vw, 4.5rem);
+  --heading-weight: 500;
+  --heading-ls: -0.03em;
+  --card-radius: 0.25rem;
+  --card-pad: 2.5rem;
+  --grid-cols: 3;
+  --grid-gap: 2.5rem;
+  --hero-pad: 8rem 1.5rem;
+  --hero-align: center;
+  --card-border: 1px solid hsl(var(--border));
+  --card-shadow: none;
+  --card-hover: translateY(-4px);
+}
+.style-minimal .block-eyebrow {
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+.style-minimal .block-heading {
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-ls);
+  line-height: 1.05;
+}
+.style-minimal .block-card {
+  border: var(--card-border);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.5s;
+}
+.style-minimal .block-card:hover {
+  transform: var(--card-hover);
+  box-shadow: 0 24px 48px -24px hsl(var(--foreground) / 0.15);
+}
+.style-minimal .block-hero {
+  text-align: var(--hero-align);
+  padding: var(--hero-pad);
+  border-bottom: 1px solid hsl(var(--border));
+  background: transparent;
+}
+.style-minimal .block-hero-title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 0.98;
+}
+.style-minimal .block-hero-subtitle {
+  font-size: 1.125rem;
+  max-width: 42rem;
+  margin-inline: auto;
+  color: hsl(var(--muted-foreground));
+}
+.style-minimal .block-hero-cta {
+  justify-content: center;
+}
+.style-minimal .block-hero-cta .btn-primary {
+  border-radius: 9999px;
+  padding-inline: 2.5rem;
+}
+.style-minimal .block-grid {
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+.style-minimal .block-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.style-minimal .block-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.style-minimal .block-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- 2. Bento Grid & Brutalism: tech, streetwear, gadgets --- */
+.style-bento {
+  --font-heading: var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --section-gap: 5rem;
+  --heading-size: clamp(2.25rem, 5vw, 3.5rem);
+  --heading-weight: 700;
+  --heading-ls: -0.02em;
+  --card-radius: 1.5rem;
+  --card-pad: 1.75rem;
+  --grid-cols: 4;
+  --grid-gap: 1rem;
+  --hero-pad: 3rem 1.5rem;
+  --hero-align: left;
+  --card-border: 1px solid hsl(var(--border) / 0.6);
+  --card-shadow: 0 8px 30px -12px hsl(var(--foreground) / 0.25);
+  --card-hover: translateY(-6px) scale(1.01);
+  --ticker-display: flex;
+}
+.style-bento .block-eyebrow {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+.style-bento .block-heading {
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-ls);
+  line-height: 1.02;
+}
+.style-bento .block-card {
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.3s, border-color 0.3s;
+}
+.style-bento .block-card:hover {
+  transform: var(--card-hover);
+  box-shadow: 0 20px 50px -16px hsl(var(--primary) / 0.45);
+  border-color: hsl(var(--primary) / 0.5);
+}
+.style-bento .block-hero {
+  text-align: var(--hero-align);
+  padding: var(--hero-pad);
+  border-radius: var(--card-radius);
+  background:
+    radial-gradient(120% 140% at 100% 0%, hsl(var(--primary) / 0.25), transparent 55%),
+    hsl(var(--card));
+  border: var(--card-border);
+}
+.style-bento .block-hero-title {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 0.95;
+}
+.style-bento .block-hero-subtitle {
+  font-size: 1.05rem;
+  max-width: 40rem;
+  color: hsl(var(--muted-foreground));
+}
+.style-bento .block-hero-cta .btn-primary {
+  border-radius: 0.75rem;
+  box-shadow: 0 0 0 1px hsl(var(--primary) / 0.4), 0 0 24px hsl(var(--primary) / 0.35);
+}
+.style-bento .block-grid {
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+.style-bento .block-grid .block-card:nth-child(1),
+.style-bento .block-grid .block-card:nth-child(6) {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+.style-bento .block-price {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.style-bento .block-ticker {
+  display: var(--ticker-display);
+  overflow: hidden;
+  white-space: nowrap;
+  border-block: 1px solid hsl(var(--border));
+  padding-block: 0.75rem;
+  user-select: none;
+}
+.style-bento .block-ticker-track {
+  display: inline-flex;
+  gap: 3rem;
+  animation: ticker-scroll var(--ticker-speed, 30s) linear infinite;
+}
+.style-bento .block-ticker-track span {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  color: hsl(var(--muted-foreground));
+}
+.style-bento .block-ticker-track span::after {
+  content: "✦";
+  margin-left: 3rem;
+  color: hsl(var(--primary));
+}
+.style-bento .block-glow {
+  position: relative;
+}
+.style-bento .block-glow::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, hsl(var(--primary) / 0.5), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+}
+.style-bento .block-glow:hover::before {
+  opacity: 1;
+}
+
+/* --- 3. Editorial & Magazine: art, decor, coffee --- */
+.style-editorial {
+  --font-heading: var(--font-playfair), Georgia, serif;
+  --font-body: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --section-gap: 6rem;
+  --heading-size: clamp(2.5rem, 5.5vw, 4rem);
+  --heading-weight: 600;
+  --heading-ls: -0.01em;
+  --card-radius: 0;
+  --card-pad: 2rem;
+  --grid-cols: 3;
+  --grid-gap: 2rem;
+  --hero-pad: 5rem 1.5rem;
+  --hero-align: left;
+  --hero-cols: minmax(0, 1fr) minmax(0, 1fr);
+  --card-border: 1px solid hsl(var(--border));
+  --card-shadow: none;
+  --card-hover: none;
+}
+.style-editorial .block-eyebrow {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1rem;
+  color: hsl(var(--primary));
+}
+.style-editorial .block-heading {
+  font-family: var(--font-heading);
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-ls);
+  line-height: 1.08;
+}
+.style-editorial .block-heading em {
+  font-style: italic;
+  color: hsl(var(--primary));
+}
+.style-editorial .block-card {
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: background 0.4s;
+}
+.style-editorial .block-card:hover {
+  background: hsl(var(--secondary) / 0.5);
+}
+.style-editorial .block-hero {
+  text-align: var(--hero-align);
+  padding: var(--hero-pad);
+  display: grid;
+  grid-template-columns: var(--hero-cols);
+  gap: 3rem;
+  align-items: center;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.style-editorial .block-hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.75rem, 6.5vw, 5rem);
+  font-weight: 600;
+  line-height: 1.02;
+}
+.style-editorial .block-hero-title em {
+  font-style: italic;
+  color: hsl(var(--primary));
+}
+.style-editorial .block-hero-subtitle {
+  font-size: 1.125rem;
+  max-width: 34rem;
+  color: hsl(var(--muted-foreground));
+  line-height: 1.7;
+}
+.style-editorial .block-hero-cta .btn-primary {
+  border-radius: 0;
+  border-bottom: 2px solid hsl(var(--primary));
+  background: transparent;
+  color: hsl(var(--foreground));
+  box-shadow: none;
+  padding-inline: 0;
+}
+.style-editorial .block-hero-cta .btn-primary:hover {
+  background: hsl(var(--primary) / 0.08);
+}
+.style-editorial .block-grid {
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+.style-editorial .block-grid .block-card:nth-child(odd) {
+  transform: translateY(2rem);
+}
+.style-editorial .block-price {
+  font-family: var(--font-heading);
+  font-size: 1.375rem;
+}
+.style-editorial .block-fade {
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.style-editorial .block-fade.is-visible {
+  opacity: 1;
+  transform: none;
+}
+.style-editorial .block-rule {
+  height: 1px;
+  background: linear-gradient(90deg, hsl(var(--primary)), transparent);
+  border: none;
+  margin-block: 2rem;
+}
+
+/* --- 4. High-Conversion Commerce: catalogs, retail --- */
+.style-commerce {
+  --font-heading: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --section-gap: 3.5rem;
+  --heading-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  --heading-weight: 800;
+  --heading-ls: -0.02em;
+  --card-radius: 0.625rem;
+  --card-pad: 1.25rem;
+  --grid-cols: 4;
+  --grid-gap: 1rem;
+  --hero-pad: 3.5rem 1.5rem;
+  --hero-align: left;
+  --card-border: 1px solid hsl(var(--border));
+  --card-shadow: 0 1px 3px hsl(var(--foreground) / 0.08);
+  --card-hover: translateY(-3px);
+  --badge-style: flat;
+}
+.style-commerce .block-eyebrow {
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+.style-commerce .block-heading {
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-ls);
+  line-height: 1.15;
+}
+.style-commerce .block-card {
+  border: var(--card-border);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.style-commerce .block-card:hover {
+  transform: var(--card-hover);
+  box-shadow: 0 12px 24px -12px hsl(var(--foreground) / 0.2);
+}
+.style-commerce .block-hero {
+  text-align: var(--hero-align);
+  padding: var(--hero-pad);
+  border-radius: var(--card-radius);
+  background:
+    linear-gradient(120deg, hsl(var(--primary) / 0.12), transparent 60%),
+    hsl(var(--card));
+  border: var(--card-border);
+}
+.style-commerce .block-hero-title {
+  font-size: clamp(2rem, 4.5vw, 3.25rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.style-commerce .block-hero-subtitle {
+  font-size: 1rem;
+  max-width: 38rem;
+  color: hsl(var(--muted-foreground));
+}
+.style-commerce .block-hero-cta .btn-primary {
+  border-radius: 0.5rem;
+}
+.style-commerce .block-grid {
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+.style-commerce .block-price {
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+.style-commerce .block-badge {
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  z-index: 10;
+  background: hsl(var(--destructive));
+  color: hsl(var(--destructive-foreground));
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+}
+.style-commerce .block-sticky {
+  position: sticky;
+  top: 1rem;
+}
+.style-commerce .block-quickbuy {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.2s, transform 0.2s;
+}
+.style-commerce .block-card:hover .block-quickbuy {
+  opacity: 1;
+  transform: none;
+}
+
+/* --- Общие семантические классы блоков --- */
+.block-section {
+  width: 100%;
+}
+.block-eyebrow {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: hsl(var(--primary));
+}
+.block-heading {
+  font-family: var(--font-heading);
+  font-size: var(--heading-size);
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-ls);
+  color: hsl(var(--foreground));
+}
+.block-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  gap: var(--grid-gap);
+}
+.block-card {
+  background: hsl(var(--card));
+  color: hsl(var(--card-foreground));
+  border-radius: var(--card-radius);
+  padding: var(--card-pad);
+}
+.block-hero {
+  position: relative;
+  overflow: hidden;
+  padding: var(--hero-pad);
+}
+.block-hero-title {
+  font-family: var(--font-heading);
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: var(--heading-weight);
+  letter-spacing: var(--heading-ls);
+  line-height: 1;
+  color: hsl(var(--foreground));
+}
+.block-hero-subtitle {
+  margin-top: 1.25rem;
+  font-size: 1.125rem;
+  color: hsl(var(--muted-foreground));
+}
+.block-hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+.block-price {
+  color: hsl(var(--primary));
+  font-weight: 700;
+}
+.block-ticker {
+  display: var(--ticker-display);
+}
+
+/* --- Анимации стилевого движка --- */
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 12px hsl(var(--primary) / 0.35);
+  }
+  50% {
+    box-shadow: 0 0 28px hsl(var(--primary) / 0.6);
+  }
+}
+
+@keyframes marquee-fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+/* Уважение к prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  .style-bento .block-ticker-track,
+  .style-minimal .block-reveal,
+  .style-editorial .block-fade {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* --- Структура hero: текст + визуальная колонка --- */
+.block-hero-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2.5rem;
+  align-items: center;
+  max-width: 80rem;
+  margin-inline: auto;
+}
+.block-hero-copy {
+  min-width: 0;
+}
+.block-hero-visual {
+  display: none;
+}
+.block-hero-trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  margin-top: 1.75rem;
+  font-size: 0.875rem;
+  color: hsl(var(--muted-foreground));
+}
+.block-hero-trust li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.block-hero-trust svg {
+  color: hsl(var(--primary));
+}
+.hero-float-card {
+  position: relative;
+}
+.hero-float-card strong {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: hsl(var(--foreground));
+}
+.hero-float-card span {
+  font-size: 0.8rem;
+  color: hsl(var(--muted-foreground));
+}
+
+/* minimal: чистая типографика, визуал скрыт */
+.style-minimal .block-hero-inner {
+  grid-template-columns: 1fr;
+}
+.style-minimal .block-hero-visual {
+  display: none;
+}
+.style-minimal .block-hero-trust {
+  justify-content: center;
+}
+
+/* bento: визуал = плитки разного размера */
+.style-bento .block-hero-inner {
+  grid-template-columns: 1fr;
+}
+.style-bento .block-hero-visual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  max-width: 42rem;
+}
+.style-bento .hero-float-card {
+  border-radius: 1.25rem;
+  background: hsl(var(--card));
+  border: 1px solid hsl(var(--border) / 0.6);
+  box-shadow: var(--card-shadow);
+  padding: 1.25rem;
+}
+.style-bento .hero-float-card:nth-child(2) {
+  transform: translateY(1.5rem);
+}
+.style-bento .hero-float-card:nth-child(3) {
+  grid-column: span 2;
+}
+
+/* editorial: сплит 50/50 */
+.style-editorial .block-hero-inner {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.style-editorial .block-hero-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 2rem;
+  background: linear-gradient(160deg, hsl(var(--primary) / 0.1), transparent 65%);
+  border: 1px solid hsl(var(--border));
+}
+.style-editorial .hero-float-card {
+  padding: 1.25rem 0;
+  border-bottom: 1px solid hsl(var(--border));
+}
+.style-editorial .hero-float-card:last-child {
+  border-bottom: none;
+}
+
+/* commerce: компактно, визуал скрыт */
+.style-commerce .block-hero-inner {
+  grid-template-columns: 1fr;
+}
+.style-commerce .block-hero-visual {
+  display: none;
+}

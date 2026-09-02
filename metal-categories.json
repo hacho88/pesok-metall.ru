@@ -1,0 +1,767 @@
+[
+  {
+    "name": "Арматура",
+    "url": "https://city-met.ru/armatura/",
+    "parentName": null
+  },
+  {
+    "name": "Арматура А3 рифленая",
+    "url": "https://city-met.ru/armatura/armatura_a3/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура А1 Гладкая",
+    "url": "https://city-met.ru/armatura/armatura_a1/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура композитная",
+    "url": "https://city-met.ru/armatura/armatura_kompozitnaya/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 6 мм",
+    "url": "https://city-met.ru/armatura/armatura_6/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 8 мм",
+    "url": "https://city-met.ru/armatura/armatura_8/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 10 мм",
+    "url": "https://city-met.ru/armatura/armatura_10/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 12 мм",
+    "url": "https://city-met.ru/armatura/armatura_12/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 14 мм",
+    "url": "https://city-met.ru/armatura/armatura_14/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 16 мм",
+    "url": "https://city-met.ru/armatura/armatura_16/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 18 мм",
+    "url": "https://city-met.ru/armatura/armatura_18_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 20 мм",
+    "url": "https://city-met.ru/armatura/armatura_20_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 22 мм",
+    "url": "https://city-met.ru/armatura/armatura_22_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 25 мм",
+    "url": "https://city-met.ru/armatura/armatura_25_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 28 мм",
+    "url": "https://city-met.ru/armatura/armatura_28_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 32 мм",
+    "url": "https://city-met.ru/armatura/armatura_32_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 36 мм",
+    "url": "https://city-met.ru/armatura/armatura_36_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Арматура 40 мм",
+    "url": "https://city-met.ru/armatura/armatura_40_mm/",
+    "parentName": "Арматура"
+  },
+  {
+    "name": "Труба профильная",
+    "url": "https://city-met.ru/truba_profilnaya/",
+    "parentName": null
+  },
+  {
+    "name": "Труба профильная квадратная",
+    "url": "https://city-met.ru/truba_profilnaya/truba_profilnaya_kvadratnaya/",
+    "parentName": "Труба профильная"
+  },
+  {
+    "name": "Труба профильная 15х15",
+    "url": "https://city-met.ru/truba_profilnaya/truba_15_kh_15/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 20х20",
+    "url": "https://city-met.ru/truba_profilnaya/truba_20_kh_20/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 25х25",
+    "url": "https://city-met.ru/truba_profilnaya/truba_25_kh_25/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 30х30",
+    "url": "https://city-met.ru/truba_profilnaya/truba_30_kh_30/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 40х40",
+    "url": "https://city-met.ru/truba_profilnaya/truba_40_kh_40/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 50х50",
+    "url": "https://city-met.ru/truba_profilnaya/truba_50_kh_50/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 60х60",
+    "url": "https://city-met.ru/truba_profilnaya/truba_60_kh_60/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 80x80",
+    "url": "https://city-met.ru/truba_profilnaya/truba_80_kh_80/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 100х100",
+    "url": "https://city-met.ru/truba_profilnaya/truba_100_kh_100/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 120x120",
+    "url": "https://city-met.ru/truba_profilnaya/120kh120/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 140х140",
+    "url": "https://city-met.ru/truba_profilnaya/140kh140/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 150х150",
+    "url": "https://city-met.ru/truba_profilnaya/150kh150/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 160х160",
+    "url": "https://city-met.ru/truba_profilnaya/160kh160/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 180х180",
+    "url": "https://city-met.ru/truba_profilnaya/180kh180/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная 200х200",
+    "url": "https://city-met.ru/truba_profilnaya/200kh200/",
+    "parentName": "Труба профильная квадратная"
+  },
+  {
+    "name": "Труба профильная прямоугольная",
+    "url": "https://city-met.ru/truba_profilnaya/truba_profilnaya_pryamougolnaya/",
+    "parentName": "Труба профильная"
+  },
+  {
+    "name": "Труба профильная 20х10",
+    "url": "https://city-met.ru/truba_profilnaya/20kh10/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 30х20",
+    "url": "https://city-met.ru/truba_profilnaya/truba_30_kh_20/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 40х20",
+    "url": "https://city-met.ru/truba_profilnaya/truba_40_kh_20/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 40х25",
+    "url": "https://city-met.ru/truba_profilnaya/truba_40_kh_25/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 50х25",
+    "url": "https://city-met.ru/truba_profilnaya/truba_50_kh_25/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 60х30",
+    "url": "https://city-met.ru/truba_profilnaya/truba_60_kh_30/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 60x40",
+    "url": "https://city-met.ru/truba_profilnaya/truba_60_kh_40/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 80х40",
+    "url": "https://city-met.ru/truba_profilnaya/truba_80_kh_40/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 80х60",
+    "url": "https://city-met.ru/truba_profilnaya/80kh60/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 100х50",
+    "url": "https://city-met.ru/truba_profilnaya/truba_100_kh_50/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 100х60",
+    "url": "https://city-met.ru/truba_profilnaya/100kh60/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 100х80",
+    "url": "https://city-met.ru/truba_profilnaya/100x80/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 120х40",
+    "url": "https://city-met.ru/truba_profilnaya/120kh40/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 120х60",
+    "url": "https://city-met.ru/truba_profilnaya/120kh60/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 120х80",
+    "url": "https://city-met.ru/truba_profilnaya/120kh80/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 140х100",
+    "url": "https://city-met.ru/truba_profilnaya/140kh100/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 150х100",
+    "url": "https://city-met.ru/truba_profilnaya/150kh100/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 160х80",
+    "url": "https://city-met.ru/truba_profilnaya/160kh80/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 200х100",
+    "url": "https://city-met.ru/truba_profilnaya/200kh100/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная 200х160",
+    "url": "https://city-met.ru/truba_profilnaya/200kh160/",
+    "parentName": "Труба профильная прямоугольная"
+  },
+  {
+    "name": "Труба профильная оцинкованная",
+    "url": "https://city-met.ru/truba_profilnaya/truba_profilnaya_otsinkovannaya/",
+    "parentName": "Труба профильная"
+  },
+  {
+    "name": "Трубы",
+    "url": "https://city-met.ru/trubnyy_prokat/",
+    "parentName": null
+  },
+  {
+    "name": "Труба электросварная",
+    "url": "https://city-met.ru/trubnyy_prokat/truba_elektrosvarnaya/",
+    "parentName": "Трубы"
+  },
+  {
+    "name": "Труба электросварная 57 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/57-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 76 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/76-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 89 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/89-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 108 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/108-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 114 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/114-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 133 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/133-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 152 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/152-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 159 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/159-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 219 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/219-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 273 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/273-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 325 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/325-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба электросварная 377 мм",
+    "url": "https://city-met.ru/trubnyy_prokat/377-mm/",
+    "parentName": "Труба электросварная"
+  },
+  {
+    "name": "Труба водогазопроводная",
+    "url": "https://city-met.ru/trubnyy_prokat/truba_vodogazoprovodnaya/",
+    "parentName": "Трубы"
+  },
+  {
+    "name": "Труба оцинкованная",
+    "url": "https://city-met.ru/trubnyy_prokat/truba_otsinkovannaya/",
+    "parentName": "Трубы"
+  },
+  {
+    "name": "Квадрат стальной",
+    "url": "https://city-met.ru/kvadrat_stalnoy/",
+    "parentName": null
+  },
+  {
+    "name": "Проволока",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/",
+    "parentName": null
+  },
+  {
+    "name": "Проволока вязальная",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-vyazalnaya/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока оцинкованная",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-otsinkovannaya/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока 1,2 мм",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-1-2/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока 2 мм",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-2-mm/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока 3 мм",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-3-mm/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока 4 мм",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-4-mm/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока 5 мм",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-5-mm/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Проволока 6 мм",
+    "url": "https://city-met.ru/provoloka_vyazalnaya/provoloka-6-mm/",
+    "parentName": "Проволока"
+  },
+  {
+    "name": "Балка двутавровая",
+    "url": "https://city-met.ru/balka_dvutavrovaya/",
+    "parentName": null
+  },
+  {
+    "name": "Балка 10 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-10/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Балка 12 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-12-m-dvutavr/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Балка 14 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-14-m-dvutavr/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Балка 16 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-16-m-dvutavr/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Балка 20 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-20-m-dvutavr/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Балка 24 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-24-m-dvutavr/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Балка 25 (Двутавр)",
+    "url": "https://city-met.ru/balka_dvutavrovaya/balka-25-m-dvutavr/",
+    "parentName": "Балка двутавровая"
+  },
+  {
+    "name": "Уголок",
+    "url": "https://city-met.ru/ugolok/",
+    "parentName": null
+  },
+  {
+    "name": "Равнополочный",
+    "url": "https://city-met.ru/ugolok/ravnopolochnyy_ygolok/",
+    "parentName": "Уголок"
+  },
+  {
+    "name": "Уголок равнополочный 25х25",
+    "url": "https://city-met.ru/ugolok/25kh25/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 32х32",
+    "url": "https://city-met.ru/ugolok/32kh32/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 35х35",
+    "url": "https://city-met.ru/ugolok/35kh35/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 40х40",
+    "url": "https://city-met.ru/ugolok/40kh40/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 50х50",
+    "url": "https://city-met.ru/ugolok/50kh50/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 63х63",
+    "url": "https://city-met.ru/ugolok/63kh63/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 75х75",
+    "url": "https://city-met.ru/ugolok/75kh75/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 90х90",
+    "url": "https://city-met.ru/ugolok/90kh90/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 100х100",
+    "url": "https://city-met.ru/ugolok/100kh100/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 125х125",
+    "url": "https://city-met.ru/ugolok/125kh125/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Уголок равнополочный 140х140",
+    "url": "https://city-met.ru/ugolok/140kh140/",
+    "parentName": "Равнополочный"
+  },
+  {
+    "name": "Неравнополочный",
+    "url": "https://city-met.ru/ugolok/neravnopolochnyy_ygolok/",
+    "parentName": "Уголок"
+  },
+  {
+    "name": "Швеллер",
+    "url": "https://city-met.ru/shveller/",
+    "parentName": null
+  },
+  {
+    "name": "Швеллер гнутый",
+    "url": "https://city-met.ru/shveller_gnutyy/",
+    "parentName": null
+  },
+  {
+    "name": "Лист металлический",
+    "url": "https://city-met.ru/list_metalicheskiy/",
+    "parentName": null
+  },
+  {
+    "name": "Лист стальной гладкий",
+    "url": "https://city-met.ru/list_metalicheskiy/list_stalnoy/",
+    "parentName": "Лист металлический"
+  },
+  {
+    "name": "Лист рифленый",
+    "url": "https://city-met.ru/list_metalicheskiy/list_riflenyy/",
+    "parentName": "Лист металлический"
+  },
+  {
+    "name": "Лист оцинкованный",
+    "url": "https://city-met.ru/list_metalicheskiy/list_otsinkovannyy/",
+    "parentName": "Лист металлический"
+  },
+  {
+    "name": "Лист просечно-вытяжной",
+    "url": "https://city-met.ru/list_metalicheskiy/prosechno_vytyazhnoy_list/",
+    "parentName": "Лист металлический"
+  },
+  {
+    "name": "Полоса металлическая",
+    "url": "https://city-met.ru/polosa_metallicheskaya/",
+    "parentName": null
+  },
+  {
+    "name": "Полоса стальная",
+    "url": "https://city-met.ru/polosa_metallicheskaya/polosa_stalnaya/",
+    "parentName": "Полоса металлическая"
+  },
+  {
+    "name": "Полоса оцинкованная",
+    "url": "https://city-met.ru/polosa_metallicheskaya/polosa_otsinkovannaya/",
+    "parentName": "Полоса металлическая"
+  },
+  {
+    "name": "Профнастил",
+    "url": "https://city-met.ru/profnastil/",
+    "parentName": null
+  },
+  {
+    "name": "Профнастил крашеный",
+    "url": "https://city-met.ru/profnastil/profnastil_krashenyy/",
+    "parentName": "Профнастил"
+  },
+  {
+    "name": "Профнастил крашеный C-8",
+    "url": "https://city-met.ru/profnastil/c-8/",
+    "parentName": "Профнастил крашеный"
+  },
+  {
+    "name": "Профнастил крашеный C-20",
+    "url": "https://city-met.ru/profnastil/s-20/",
+    "parentName": "Профнастил крашеный"
+  },
+  {
+    "name": "Профнастил крашеный C-21",
+    "url": "https://city-met.ru/profnastil/c-21/",
+    "parentName": "Профнастил крашеный"
+  },
+  {
+    "name": "Профнастил оцинкованный",
+    "url": "https://city-met.ru/profnastil/profnastil_otsinkovannyy/",
+    "parentName": "Профнастил"
+  },
+  {
+    "name": "Профнастил оцинкованный НС-35",
+    "url": "https://city-met.ru/profnastil/ns-35/",
+    "parentName": "Профнастил оцинкованный"
+  },
+  {
+    "name": "Профнастил оцинкованный НС-60",
+    "url": "https://city-met.ru/profnastil/ns-60/",
+    "parentName": "Профнастил оцинкованный"
+  },
+  {
+    "name": "Профнастил оцинкованный НС-75",
+    "url": "https://city-met.ru/profnastil/ns-75/",
+    "parentName": "Профнастил оцинкованный"
+  },
+  {
+    "name": "Металлический штакетник",
+    "url": "https://city-met.ru/metallicheskiy_shtaketnik/",
+    "parentName": null
+  },
+  {
+    "name": "П-образный",
+    "url": "https://city-met.ru/metallicheskiy_shtaketnik/p_obraznyy/",
+    "parentName": "Металлический штакетник"
+  },
+  {
+    "name": "М-образный",
+    "url": "https://city-met.ru/metallicheskiy_shtaketnik/m_obraznyy/",
+    "parentName": "Металлический штакетник"
+  },
+  {
+    "name": "Отводы стальные",
+    "url": "https://city-met.ru/otvody_stalnye/",
+    "parentName": null
+  },
+  {
+    "name": "Отводы неоцинкованные",
+    "url": "https://city-met.ru/otvody_stalnye/otvody_neotsinkovannye/",
+    "parentName": "Отводы стальные"
+  },
+  {
+    "name": "Отводы оцинкованные",
+    "url": "https://city-met.ru/otvody_stalnye/otvody_otsinkovannye/",
+    "parentName": "Отводы стальные"
+  },
+  {
+    "name": "Сетка металлическая",
+    "url": "https://city-met.ru/setka_metallicheskaya/",
+    "parentName": null
+  },
+  {
+    "name": "Сетка сварная в картах",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka_svarnaya_v_kartakh_kladochnaya/",
+    "parentName": "Сетка металлическая"
+  },
+  {
+    "name": "Сетка кладочная",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka-kladochnaya/",
+    "parentName": "Сетка сварная в картах"
+  },
+  {
+    "name": "Сетка дорожная",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka-dorozhnaya/",
+    "parentName": "Сетка сварная в картах"
+  },
+  {
+    "name": "Сетка сварная 50х50",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka-svarnaya-50-50/",
+    "parentName": "Сетка сварная в картах"
+  },
+  {
+    "name": "Сетка сварная 100х100",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka-svarnaya-100-na-100/",
+    "parentName": "Сетка сварная в картах"
+  },
+  {
+    "name": "Сетка сварная 150х150",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka-150-150/",
+    "parentName": "Сетка сварная в картах"
+  },
+  {
+    "name": "Сетка сварная рулон",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka_svarnaya_rulon/",
+    "parentName": "Сетка металлическая"
+  },
+  {
+    "name": "Сетка рабица",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka_rabitsa/",
+    "parentName": "Сетка металлическая"
+  },
+  {
+    "name": "Сетка штукатурная (тканая)",
+    "url": "https://city-met.ru/setka_metallicheskaya/setka_shtukaturnaya_tkanaya/",
+    "parentName": "Сетка металлическая"
+  },
+  {
+    "name": "Дополнительные материалы",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/",
+    "parentName": null
+  },
+  {
+    "name": "Заглушки для профильных труб",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/zaglushki_dlya_profilnykh_trub/",
+    "parentName": "Дополнительные материалы"
+  },
+  {
+    "name": "Фиксатор звездочка",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/fiksator_zvezdochka/",
+    "parentName": "Дополнительные материалы"
+  },
+  {
+    "name": "Фиксатор стульчик",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/fiksator_stulchik/",
+    "parentName": "Дополнительные материалы"
+  },
+  {
+    "name": "Петли",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/petli_garazhnye/",
+    "parentName": "Дополнительные материалы"
+  },
+  {
+    "name": "Саморезы",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/samorezy/",
+    "parentName": "Дополнительные материалы"
+  },
+  {
+    "name": "Электроды",
+    "url": "https://city-met.ru/dopolnitelnye_materialy/elektrody/",
+    "parentName": "Дополнительные материалы"
+  },
+  {
+    "name": "Винтовые сваи",
+    "url": "https://city-met.ru/vintovye_svai/",
+    "parentName": null
+  },
+  {
+    "name": "Сваи винтовые 57",
+    "url": "https://city-met.ru/vintovye_svai/svai_vintovye_57/",
+    "parentName": "Винтовые сваи"
+  },
+  {
+    "name": "Сваи винтовые 76",
+    "url": "https://city-met.ru/vintovye_svai/svai_vintovye_76/",
+    "parentName": "Винтовые сваи"
+  },
+  {
+    "name": "Сваи винтовые 89",
+    "url": "https://city-met.ru/vintovye_svai/svai_vintovye_89/",
+    "parentName": "Винтовые сваи"
+  },
+  {
+    "name": "Сваи винтовые 108",
+    "url": "https://city-met.ru/vintovye_svai/svai_vintovye_108/",
+    "parentName": "Винтовые сваи"
+  },
+  {
+    "name": "Оголовки свай",
+    "url": "https://city-met.ru/vintovye_svai/ogolovki_svay/",
+    "parentName": "Винтовые сваи"
+  }
+]

@@ -1,0 +1,385 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ProductType {
+  METALL
+  BAG_30KG
+  BIG_BAG_1TON
+  GENERAL_CONSTRUCTION // Резерв под общестроительные товары через 6 месяцев
+}
+
+enum TenderStatus {
+  REJECTED
+  RECOMMENDED
+  HOLD
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  WON
+  LOST
+}
+
+enum OrderStatus {
+  NEW
+  CONFIRMED
+  PAID
+  SHIPPED
+  DONE
+  CANCELLED
+}
+
+model GeoZone {
+  id                    String           @id @default(uuid())
+  slug                  String           @unique // Например: "balashiha", "podolsk", "mitino"
+  name                  String           // Например: "Балашиха", "Подольск", "Митино"
+  isRegion              Boolean          @default(false) // true = Город МО, false = Район Москвы
+  deliveryTariffMultiplier Decimal        @default(1.0) // Локальный коэффициент стоимости доставки
+  seoTitle              String?          @db.Text // SEO-заголовок гео-страницы
+  seoDescription        String?          @db.Text // SEO-описание гео-страницы
+  aiDescription         String?          @db.Text // Уникальный локализованный SEO-текст от DeepSeek
+  products              GeoProductData[]
+  blogPosts             BlogPost[]
+  atlasOrders           AtlasOrder[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    // Например: "Арматура", "Песок мытый"
+  slug        String    @unique
+  parentId    String?
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToCategory")
+  products    Product[]
+
+  // Atlas: SEO и описания категорий
+  description       String?  @db.Text // HTML-описание (генерируется DeepSeek или вручную)
+  shortDescription  String?  @db.Text // Краткое описание (≤160 символов)
+  seoTitle          String?
+  seoDescription    String?
+  imageUrl          String?  // Обложка плитки (первое фото товара категории или загруженная)
+  descriptionStatus String   @default("none") // none | generated | failed | manual
+  descriptionGeneratedAt DateTime?
+}
+
+model Product {
+  id              String           @id @default(uuid())
+  categoryId      String
+  category        Category         @relation(fields: [categoryId], references: [id])
+  name            String
+  slug            String           @unique
+  type            ProductType
+  priceCost       Decimal?         // Себестоимость закупки (с city-met.ru или карьера); null = «под заказ»
+  priceRetailBase Decimal?         // Базовая розничная цена; null = «под заказ»
+  isOnOrder       Boolean          @default(false) // Товар «под заказ» (нет цены на сайте-доноре)
+  weightKg        Decimal          // Точный вес единицы (за метр металла, 30 для мешка, 1000 для биг-бега)
+  density         Decimal?         // Насыпная плотность для калькулятора объема песка/щебня
+  stock           Int              @default(0)
+  sourceUrl       String?          @unique // Ссылка на донора для парсера (дедупликация)
+  imageUrl        String?          // Оригинальное фото с city-met.ru (hotlink через next/image)
+  imageLocal      String?          // Локальная копия фото после скачивания парсером (/products/xxx.jpg)
+  unit            String?          // Единица измерения цены: "м", "т", "шт", "лист" (с city-met.ru)
+  description     String?          @db.Text // SEO-описание товара (генерируется ИИ или вручную)
+
+  // Atlas: SEO, описания, метрики
+  shortDescription  String?  @db.Text // Краткое описание (1 предложение, 90–160 символов)
+  seoTitle          String?
+  seoDescription    String?
+  keywords          String[] @default([])
+  descriptionStatus String   @default("none") // none | generated | failed | manual
+  descriptionGeneratedAt DateTime?
+  descriptionModel  String?  // Модель DeepSeek, сгенерировавшая описание
+  imagePlaceholder  Boolean  @default(false) // true, если используется сгенерированный плейсхолдер
+  viewsCount        Int      @default(0)
+  ordersCount       Int      @default(0)
+
+  // Группировка вариантов (диаметр, толщина и т.д.)
+  groupId         String?          // ID группы для объединения похожих товаров (например, Арматура А500С)
+  groupName       String?          // Человеческое название группы для UI
+
+  attributes      ProductAttribute[]
+  geoData         GeoProductData[]
+  advertising     AdCampaign?
+  competitorPrices CompetitorPrice[]
+  blogPosts       BlogPost[]
+  orderItems      OrderItem[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model ProductAttribute {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  key       String   // Например: "diameter", "steel_grade", "fraction"
+  value     String   // Например: "12мм", "А500С", "5-20"
+}
+
+model GeoProductData {
+  id             String   @id @default(uuid())
+  geoZoneId      String
+  geoZone        GeoZone  @relation(fields: [geoZoneId], references: [id])
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  seoTitle       String?  @db.Text
+  seoDescription String?  @db.Text
+  aiDescription  String?  @db.Text // Уникальный локализованный SEO-текст от DeepSeek
+  localPrice     Decimal  // Авто-рассчитанная цена для конкретного района с учетом логистики
+
+  @@unique([geoZoneId, productId])
+}
+
+model CompetitorPrice {
+  id             String   @id @default(uuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id])
+  competitorName String   // Например: "Петрович", "Леруа", "Сити-Металл"
+  url            String
+  priceFound     Decimal
+  updatedAt      DateTime @updatedAt
+}
+
+model AdCampaign {
+  id            String   @id @default(uuid())
+  productId     String   @unique
+  product       Product  @relation(fields: [productId], references: [id])
+  yandexDirectId String?
+  cpcBid        Decimal  @default(0.0)
+  maxBidLimit   Decimal  // Лимит ставки, выше которой ИИ заходить запрещено
+  isActive      Boolean  @default(true)
+  clicks        Int      @default(0)
+  conversions   Int      @default(0)
+  roi           Decimal?
+}
+
+model FleetVehicle {
+  id            String   @id @default(uuid())
+  name          String   // Например: "Газель", "Манипулятор КАМАЗ", "Самосвал"
+  maxWeightKg   Decimal
+  maxLengthMeters Decimal
+  baseFare      Decimal  // Стоимость фиксированной подачи машины
+  perKmCharge   Decimal  // Стоимость за каждый километр от МКАД
+  isActive      Boolean  @default(true)
+}
+
+model TenderAnalysis {
+  id             String       @id @default(uuid())
+  tenderNumber   String       @unique
+  title          String
+  customer       String
+  initialPrice   Decimal
+  calculatedCost Decimal
+  aiStatus       TenderStatus
+  aiReport       String       @db.Text
+  createdAt      DateTime     @default(now())
+}
+
+// Заявка/лид с основного сайта (чат, счёт, калькулятор, формы)
+model Lead {
+  id        String     @id @default(uuid())
+  name      String
+  phone     String
+  email     String?
+  source    String     @default("form") // "chat" | "invoice" | "calculator" | "form" | "map_scraper" | "cold_email"
+  message   String?    @db.Text // Контекст заявки (последнее сообщение чата, состав счёта и т.п.)
+  status    LeadStatus @default(NEW)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// Заказ из FastCheckout: физические лица (нал/перевод водителю) и юрлица (счёт на оплату)
+model Order {
+  id            String    @id @default(uuid())
+  clientType    String    // "fiz" | "yur"
+  paymentMethod String    // "cash_on_delivery" | "bank_wire"
+  customerName  String    // ФИО или контактное лицо
+  customerPhone String    // +7 (999) 999-99-99
+  companyInn    String    @default("") // ИНН организации (пусто для физлиц)
+  cartItems     Json      // CheckoutCartItem[] — состав заказа (SKU, вес, количество)
+  totalWeight   Decimal   // Суммарный вес заказа в тоннах (например, 7.4)
+  status        String    @default("NEW") // NEW | CONTACTED | INVOICED | DONE
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@index([clientType])
+  @@index([createdAt])
+}
+
+// Лиды с картографических платформ (Яндекс/Google Maps — строительные площадки)
+model MapLead {
+  id              String   @id @default(uuid())
+  businessName    String   // Название компании/объекта
+  category        String   // Тип: "construction_site", "concrete_plant", "contractor_office", "building_site"
+  address         String   // Адрес с карты
+  lat             Decimal  // Широта
+  lng             Decimal  // Долгота
+  phone           String?  // Телефон (если найден публично)
+  email           String?  // Email (если найден публично)
+  website         String?  // Сайт компании
+  zoneSlug        String?  // Ближайшая гео-зона (slug из GeoZone)
+  logisticsCost   Decimal? // Расчётная стоимость логистики от нашего склада
+  proposalText    String?  @db.Text // Сгенерированное КП от DeepSeek
+  proposalStatus  String   @default("draft") // "draft" | "queued_email" | "queued_whatsapp" | "sent" | "replied"
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([zoneSlug])
+  @@index([category])
+}
+
+model BlogPost {
+  id             String   @id @default(uuid())
+  title          String
+  slug           String   @unique
+  content        String   @db.Text
+  seoTitle       String?
+  seoDescription String?
+  targetProductId String?
+  product        Product? @relation(fields: [targetProductId], references: [id])
+  geoZoneId      String?
+  geoZone        GeoZone? @relation(fields: [geoZoneId], references: [id])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([geoZoneId])
+}
+
+// JSON-driven UI: админка/ИИ перестраивают витрину без переписывания кода
+model PageConfig {
+  id        String   @id @default(uuid())
+  slug      String   @unique // "home" | "geo:balashiha" | ...
+  theme     String   @default("industrial-orange") // industrial-orange | b2b-dark-slate | clean-minimal
+  blocks    Json     // JSON-массив блоков витрины (MainHeroBanner, InteractiveCalculator, ...)
+  updatedAt DateTime @updatedAt
+}
+
+// Пользовательские темы, созданные в админке (раздел «Темы»)
+model Theme {
+  id        String   @id @default(uuid())
+  slug      String   @unique // "custom-amber" — используется как theme в PageConfig
+  name      String   // Название темы в админке
+  isCustom  Boolean  @default(true) // true = создана пользователем, false = встроенная
+  palette   Json     // JSON-палитра: background, foreground, primary, radius и т.д.
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// STRIKER.Engine — сериализованные чертежи дизайн-системы и архитектуры витрины
+model StrikerBlueprint {
+  id         String   @id @default(uuid())
+  slug       String   @unique // "striker:city-brutal" — используется как theme в PageConfig
+  name       String   // Название чертежа в админке
+  tokens     Json     // Дизайн-токены: radius, borderWeight, noise, palette, viewMode, heroMode, searchMode, calculatorTabs
+  layout     Json     // JSON-массив LayoutComponent[] — порядок модулей страницы
+  content    Json     // Content Overrides: телефон, адрес, тексты hero/промо, trendingQueries
+  components Json     // STRIKER.Engine ULTRA: карточки, категории, селекторы единиц, оформление заказа
+  isActive   Boolean  @default(false) // Активный чертёж для витрины
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  versions   StrikerBlueprintVersion[] // История версий чертежа (откат после неудачных ИИ-правок)
+}
+
+// STRIKER.Engine — снапшот версии чертежа (создаётся перед каждым сохранением/обновлением)
+model StrikerBlueprintVersion {
+  id          String   @id @default(uuid())
+  blueprintId String
+  blueprint   StrikerBlueprint @relation(fields: [blueprintId], references: [id], onDelete: Cascade)
+  name        String   // Название чертежа на момент версии
+  tokens      Json
+  layout      Json
+  content     Json
+  components  Json
+  createdAt   DateTime @default(now())
+
+  @@index([blueprintId, createdAt])
+}
+
+// Atlas: конфигурация витрины (draft/published/versions)
+model StorefrontConfig {
+  id              String   @id @default(uuid())
+  themeKey        String   @unique // "atlas"
+  draft           Json     // Текущий черновик конфига
+  published       Json?    // Опубликованный конфиг
+  draftUpdatedAt  DateTime @updatedAt
+  publishedAt     DateTime?
+
+  versions        StorefrontConfigVersion[]
+}
+
+// Atlas: версия конфигурации (история публикаций)
+model StorefrontConfigVersion {
+  id          String   @id @default(uuid())
+  themeKey    String
+  version     Int
+  data        Json     // Снапшот опубликованного конфига
+  note        String?  // Примечание к публикации
+  createdAt   DateTime @default(now())
+
+  config      StorefrontConfig? @relation(fields: [themeKey], references: [themeKey])
+
+  @@unique([themeKey, version])
+  @@index([themeKey, createdAt])
+}
+
+// Atlas: загруженные медиа-файлы (баннеры, логотипы)
+model MediaAsset {
+  id        String   @id @default(uuid())
+  url       String   @unique // /uploads/atlas/<uuid>.<ext>
+  width     Int?
+  height    Int?
+  alt       String?
+  size      Int      // размер в байтах
+  mime      String   // image/jpeg, image/png, image/webp, image/svg+xml
+  createdAt DateTime @default(now())
+}
+
+// Atlas: заказ покупателя (интернет-магазин)
+model AtlasOrder {
+  id            String      @id @default(uuid())
+  number        String      @unique // PM-2026-000123
+  status        OrderStatus @default(NEW)
+  customerName  String
+  phone         String
+  email         String?
+  company       String?
+  inn           String?
+  deliveryType  String      // "delivery" | "pickup"
+  address       String?
+  comment       String?     @db.Text
+  geoZoneId     String?
+  geoZone       GeoZone?    @relation(fields: [geoZoneId], references: [id])
+  subtotal      Float       // Сумма товаров
+  deliveryCost  Float       @default(0) // Стоимость доставки
+  total         Float       // Итого
+  items         OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+// Atlas: позиция заказа
+model OrderItem {
+  id        String      @id @default(uuid())
+  orderId   String
+  order     AtlasOrder   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String?
+  product   Product?    @relation(fields: [productId], references: [id])
+  name      String      // Наименование товара на момент заказа
+  unit      String      // Единица измерения
+  qty       Float       // Количество
+  price     Float       // Цена за единицу
+  total     Float       // Сумма позиции
+
+  @@index([orderId])
+}

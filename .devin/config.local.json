@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Exec(npm run)",
+      "Exec(New-Item)",
+      "Exec(Get-Service)",
+      "Exec(Get-ChildItem)",
+      "Exec(http://localhost:3100)"
+    ]
+  }
+}

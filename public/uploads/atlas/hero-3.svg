@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="500" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0C4A6E"/>
+      <stop offset="50%" stop-color="#075985"/>
+      <stop offset="100%" stop-color="#0C4A6E"/>
+    </linearGradient>
+    <radialGradient id="glow3" cx="0.5" cy="0.3" r="0.5">
+      <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.25"/>
+      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="500" fill="url(#bg3)"/>
+  <rect width="1440" height="500" fill="url(#glow3)"/>
+  <g stroke="#0284C7" stroke-width="1" opacity="0.3">
+    <line x1="100" y1="0" x2="100" y2="500"/>
+    <line x1="300" y1="0" x2="300" y2="500"/>
+    <line x1="500" y1="0" x2="500" y2="500"/>
+    <line x1="700" y1="0" x2="700" y2="500"/>
+    <line x1="900" y1="0" x2="900" y2="500"/>
+    <line x1="1100" y1="0" x2="1100" y2="500"/>
+    <line x1="1300" y1="0" x2="1300" y2="500"/>
+  </g>
+  <g fill="#F97316" opacity="0.6">
+    <rect x="600" y="350" width="240" height="12" rx="2"/>
+    <rect x="600" y="370" width="180" height="12" rx="2"/>
+    <rect x="600" y="390" width="200" height="12" rx="2"/>
+  </g>
+  <g fill="#38BDF8" opacity="0.4">
+    <rect x="200" y="100" width="120" height="60" rx="8"/>
+    <rect x="350" y="100" width="120" height="60" rx="8"/>
+  </g>
+</svg>

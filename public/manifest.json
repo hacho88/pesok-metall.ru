@@ -1,0 +1,41 @@
+{
+  "name": "Песок и Металл — pesok-metall.ru",
+  "short_name": "Песок-Металл",
+  "description": "Металлопрокат, песок и щебень с доставкой по Москве и МО в день заказа",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#f97316",
+  "orientation": "portrait-primary",
+  "categories": ["business", "shopping", "productivity"],
+  "lang": "ru",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Металлопрокат",
+      "short_name": "Металл",
+      "url": "/metall",
+      "description": "Арматура, трубы, листы, сетка"
+    },
+    {
+      "name": "Песок и щебень",
+      "short_name": "Сыпучие",
+      "url": "/pesok-scheben",
+      "description": "Песок, щебень в мешках и биг-бегах"
+    },
+    {
+      "name": "Калькулятор",
+      "short_name": "Расчёт",
+      "url": "/#calculator",
+      "description": "ИИ-калькулятор доставки"
+    }
+  ]
+}

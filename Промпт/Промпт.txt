@@ -1,0 +1,248 @@
+СИСТЕМНАЯ АРХИТЕКТУРА И МАСТЕР-ПРОМПТ ДЛЯ WINDSURF / DEVIN⚠️ ЖЕСТКИЕ ДИРЕКТИВЫ ДЛЯ ИИ-АГЕНТА (ПРОЧИТАЙ ПЕРЕД НАЧАЛОМ):МАНИФЕСТ СУПЕР-ПАМЯТИ: Перед тем как написать или изменить хоть одну строчку кода, ты ОБЯЗАН создать файл .ai_development_log.md в корневом каталоге проекта. После завершения любой микрозадачи или шага ты ОБЯЗАН сделать запись в этот лог: дата, измененный файл, примененная логика и текущий статус архитектуры. Ни в коем случае не переходи к следующему шагу, не сохранив текущий статус в этот файл. НИКОГДА НЕ ЗАБЫВАЙ О МУЛЬТИДОМЕННОСТИ И АВТОНОМИИ ИИ.ПОЛНЫЙ КОД БЕЗ ЗАГЛУШЕК: Тебе строго запрещено писать комментарии вида // ТУТ КУСОК КОДА или // TODO: допишу позже. Пиши только полный, Production-Ready, готовый к деплою код корпоративного уровня.ТЕХНОЛОГИЧЕСКИЙ СТЕК: Next.js 15+ (App Router, Server Actions, React 19), Tailwind CSS, Shadcn/ui, PostgreSQL с Prisma ORM, DeepSeek API (через совместимый клиент OpenAI Node SDK).🎯 ГЛАВНОЕ ВИДЕНИЕ ПРОЕКТАТы создаешь pesok-metall.ru — автономную строительную экосистему, разработанную для полного доминирования на рынке металлопроката и сыпучих материалов в Москве и Московской области (МО). Система работает в режиме «Автопилот»: ИИ сам управляет контентом, круглосуточно парсит конкурентов, пересчитывает цены на лету, управляет локальной рекламой, геотаргетингом и выставляет счета.Текущий каталог товаров:Металлопрокат: Автоматически парсится и обновляется каждый день с сайта https://city-met.ru (арматура, трубы, листы, сетка). Продажа метрами, штуками или тоннами.Сыпучие материалы (Песок, Щебень): Добавляются отдельно. Строго фасуются и продаются в двух видах: мешки по 30 кг (розница/ручной подъем) и Биг-Беги по 1 тонне (опт/кран-манипулятор).Горизонт расширения (Через 6 месяцев): Архитектура БД должна ИЗНАЧАЛЬНО поддерживать бесшовное добавление общестроительных товаров (цемент, кирпич, блоки, смеси) через гибкую EAV-модель без переписывания ядра.🏗 ШАГ 1: СТРУКТУРА БАЗЫ ДАННЫХ POSTGRESQL (PRISMA ORM)Инициализируй схему Prisma. База должна поддерживать мультиподдоменность (гео-копии сайта для каждого района), динамические свойства товаров, автоматическую логистику и рекламные метрики.
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum ProductType {
+  METALL
+  BAG_30KG
+  BIG_BAG_1TON
+  GENERAL_CONSTRUCTION // Резерв под общестроительные товары через 6 месяцев
+}
+
+enum TenderStatus {
+  REJECTED
+  RECOMMENDED
+  HOLD
+}
+
+model GeoZone {
+  id                    String   @id @default(uuid())
+  slug                  String   @unique // Например: "balashiha", "podolsk", "mitino"
+  name                  String   // Например: "Балашиха", "Подольск", "Митино"
+  isRegion              Boolean  @default(false) // true = Город МО, false = Район Москвы
+  deliveryTariffMultiplier Decimal @default(1.0) // Локальный коэффициент стоимости доставки
+  products              GeoProductData[]
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String    // Например: "Арматура", "Песок мытый"
+  slug        String    @unique
+  parentId    String?
+  parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
+  children    Category[] @relation("CategoryToCategory")
+  products    Product[]
+}
+
+model Product {
+  id              String           @id @default(uuid())
+  categoryId      String
+  category        Category         @relation(fields: [categoryId], references: [id])
+  name            String
+  slug            String           @unique
+  type            ProductType
+  priceCost       Decimal          // Себестоимость закупки (с city-met.ru или карьера)
+  priceRetailBase Decimal          // Базовая розничная цена на основном домене
+  weightKg        Decimal          // Точный вес единицы (за метр металла, 30 для мешка, 1000 для биг-бега)
+  density         Decimal?         // Насыпная плотность для калькулятора объема песка/щебня
+  stock           Int              @default(0)
+  sourceUrl       String?          // Ссылка на донора для парсера
+  attributes      ProductAttribute[]
+  geoData         GeoProductData[]
+  advertising     AdCampaign?
+  competitorPrices CompetitorPrice[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+model ProductAttribute {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  key       String   // Например: "diameter", "steel_grade", "fraction"
+  value     String   // Например: "12мм", "А500С", "5-20"
+}
+
+model GeoProductData {
+  id             String   @id @default(uuid())
+  geoZoneId      String
+  geoZone        GeoZone  @relation(fields: [geoZoneId], references: [id])
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  seoTitle       String?  @db.Text
+  seoDescription String?  @db.Text
+  aiDescription  String?  @db.Text // Уникальный локализованный SEO-текст от DeepSeek
+  localPrice     Decimal  // Авто-рассчитанная цена для конкретного района с учетом логистики
+  
+  @@unique([geoZoneId, productId])
+}
+
+model CompetitorPrice {
+  id             String   @id @default(uuid())
+  productId      String
+  product        Product  @relation(fields: [productId], references: [id])
+  competitorName String   // Например: "Петрович", "Леруа", "Сити-Металл"
+  url            String
+  priceFound     Decimal
+  updatedAt      DateTime @updatedAt
+}
+
+model AdCampaign {
+  id            String   @id @default(uuid())
+  productId     String   @unique
+  product       Product  @relation(fields: [productId], references: [id])
+  yandexDirectId String?
+  cpcBid        Decimal  @default(0.0)
+  maxBidLimit   Decimal  // Лимит ставки, выше которой ИИ заходить запрещено
+  clicks        Int      @default(0)
+  conversions   Int      @default(0)
+  roi           Decimal?
+}
+
+model FleetVehicle {
+  id            String   @id @default(uuid())
+  name          String   // Например: "Газель", "Манипулятор КАМАЗ", "Самосвал"
+  maxWeightKg   Decimal
+  maxLengthMeters Decimal
+  baseFare      Decimal  // Стоимость фиксированной подачи машины
+  perKmCharge   Decimal  // Стоимость за каждый километр от МКАД
+  isActive      Boolean  @default(true)
+}
+
+model TenderAnalysis {
+  id             String       @id @default(uuid())
+  tenderNumber   String       @unique
+  title          String
+  customer       String
+  initialPrice   Decimal
+  calculatedCost Decimal
+  aiStatus       TenderStatus
+  aiReport       String       @db.Text
+  createdAt      DateTime     @default(now())
+}
+
+ ШАГ 2: NEXT.JS МУЛЬТИПОДДОМЕННЫЙ MIDDLEWAREЗапрограммируй логику роутинга в файле src/middleware.ts. Middleware должен перехватывать запросы со сторонних субдоменов (например, podolsk.pesok-metall.ru) и незаметно подменять их внутри директории _geo/[slug] без изменения URL-адреса у пользователя.
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
+
+export function middleware(request: NextRequest) {
+  const url = request.nextUrl
+  const hostname = request.headers.get('host') || ''
+  
+  // Пропускаем системные файлы, API и статику
+  if (
+    url.pathname.startsWith('/_next') ||
+    url.pathname.startsWith('/api') ||
+    url.pathname.includes('.')
+  ) {
+    return NextResponse.next()
+  }
+
+  const hostnameParts = hostname.split('.')
+  
+  // Локально: balashiha.localhost:3000 | В проде: balashiha.pesok-metall.ru
+  if (hostnameParts.length >= 3) {
+    const subdomain = hostnameParts[0].toLowerCase()
+    
+    if (subdomain !== 'www' && subdomain !== 'pesok-metall') {
+      // Магия рерайта: незаметно подменяем страницу под гео-зону
+      url.pathname = `/_geo/${subdomain}${url.pathname}`
+      return NextResponse.rewrite(url)
+    }
+  }
+  
+  return NextResponse.next()
+}
+ШАГ 3: ИНТЕГРАЦИЯ СЕРВИСОВ ИИ DEEPSEEK (АВТОНОМНЫЕ СКРИПТЫ)Создай абстрактный класс-сервис, работающий через OpenAI SDK, перенаправленный на эндпоинты https://deepseek.com. Напиши два ключевых процесса автопилота:А. Конвейер гео-уникализации текстов (DeepSeek-V3)Процесс автоматически запускается при парсинге нового товара, обходит все GeoZone и генерирует уникальный контент.
+import OpenAI from "openai";
+
+const deepseek = new OpenAI({
+  baseURL: "https://deepseek.com",
+  apiKey: process.env.DEEPSEEK_API_KEY,
+});
+
+export async function generateLocalizedContent(productName: string, productType: string, zoneName: string, specs: string) {
+  const systemPrompt = `Ты — ведущий AI-маркетолог и SEO-эксперт в строительной нише Москвы и Московской области. 
+Твоя цель — написать коммерчески привлекательное, продающее и на 100% уникальное описание товара для локального поддомена конкретного города/района, чтобы Яндекс вывел страницу в топ.
+Сайт: pesok-metall.ru
+Локация: Москва, район/город ${zoneName}.
+Товар: ${productName}.
+Характеристики: ${specs}.
+Тип упаковки: ${productType === 'BAG_30KG' ? 'Мешки по 30 кг (удобно для ручной переноски, точечного ремонта и подъема на этаж)' : productType === 'BIG_BAG_1TON' ? 'Биг-Беги по 1 тонне (прочные промышленные мягкие контейнеры с стропами под кран-манипулятор)' : 'Металлопрокат по метрам напрямую со склада Сити-Металл'}.
+
+ПРАВИЛА ГЕНЕРАЦИИ:
+1. Пиши живым языком. Никаких штампов вроде "высокое качество по доступным ценам". Текст должен выглядеть так, будто его написал местный строитель-эксперт.
+2. Органично вставь LSI-ключи: "доставка в ${zoneName} в день заказа", "купить в розницу и оптом", "соответствует ГОСТ".
+3. Сделай понятный маркированный список преимуществ использования этой фасовки именно для строек в ${zoneName}.
+4. В конце сделай призыв к действию (CTA): использовать интерактивный ИИ-калькулятор на странице для точного перевода объема в мешки и автоподбора грузовой машины.
+Выдай ответ строго в формате JSON с полями: seoTitle, seoDescription, aiText.`;
+
+  const response = await deepseek.chat.completions.create({
+    model: "deepseek-chat", // Используем DeepSeek-V3
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: `Сгенерируй JSON-описание для товара ${productName} в городе/районе ${zoneName}` }
+    ],
+    response_format: { type: "json_object" }
+  });
+
+  return JSON.parse(response.choices.message.content || '{}');
+}
+
+ИИ-Биддер ставок Директа и Аналитик Конкурентов (DeepSeek-R1)Запускается по Cron каждые 2 часа. Получает финансовую матрицу товара и выдает решение по ставкам и ценам.
+export async function analyzeAdBidsAndPricing(data: {
+  productName: string,
+  costPrice: number,
+  retailPrice: number,
+  competitorAverage: number,
+  currentBid: number,
+  maxBidLimit: number,
+  conversionRate: number
+}) {
+  const systemPrompt = `Ты — финансовый аналитик и сверхразумный ИИ-биддер рекламных кампаний Яндекс.Директ. Твоя задача — проанализировать данные по товару, маржинальность, цены конкурентов в Москве и выдать решение по корректировке цены на нашем сайте и ставки CPC в Яндексе для удержания ТОП-1 и максимизации прибыли.
+Используй глубокое пошаговое рассуждение (модель рассуждений Chain-of-Thought). Выдай финальный результат СТРОГО в формате JSON с полями:
+- priceRecommendation: (число, новая рекомендуемая цена для сайта)
+- bidAction: ("UP" | "DOWN" | "HOLD")
+- targetBid: (число, новая ставка в рублях для Яндекс.Директ API)
+- reasoning: (строка, краткое логичное объяснение твоего решения на русском языке для админ-панели)`;
+
+  const response = await deepseek.chat.completions.create({
+    model: "deepseek-reasoner", // Используем DeepSeek-R1 (Рассуждающая модель)
+    messages: [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: JSON.stringify(data) }
+    ]
+  });
+
+  return JSON.parse(response.choices.message.content || '{}');
+}
+
+ ШАГ 4: ИНТЕРАКТИВНЫЙ ИИ-КАЛЬКУЛЯТОР И ЛОГИКА АВТОПАРКАЗапрограммируй математическую и логическую модель калькулятора доставки на фронтенде (src/components/AiCalculator.tsx). Калькулятор должен на лету переводить объем сыпучих материалов в мешки по 30 кг / Биг-Беги и выбирать оптимальную машину из базы данных.
+// Алгоритм перевода объема в физическую тару на основе плотности
+export function calculateBulkMaterials(areaM2: number, thicknessCm: number, density: number) {
+  const volumeM3 = areaM2 * (thicknessCm / 100);
+  const totalWeightKg = volumeM3 * density;
+  
+  const bags30kg = Math.ceil(totalWeightKg / 30);
+  const bigBags1Ton = Math.ceil(totalWeightKg / 1000);
+  
+  return { volumeM3, totalWeightKg, bags30kg, bigBags1Ton };
+}
+
+// Алгоритм автоподбора оптимального грузовика под габариты и вес заказа
+export function assignOptimalVehicle(weightKg: number, maxLengthMeters: number, fleet: any[]) {
+  // Фильтруем только активные машины, которые проходят по весу и длине металла
+  const fitVehicles = fleet
+    .filter(v => v.isActive && weightKg <= v.maxWeightKg && maxLengthMeters <= v.maxLengthMeters)
+    .sort((a, b) => Number(a.baseFare) - Number(b.baseFare)); // Сортируем от самых дешевых по подаче
+    
+  return fitVehicles.length > 0 ? fitVehicles[0] : null; // Возвращаем идеальный транспорт
+}
+
+ШАГ 5: JSON-DRIVEN UI И СИСТЕМА ДИНАМИЧЕСКИХ ТЕМЧтобы ИИ и администратор могли полностью перестраивать интерфейс витрины Next.js прямо из админки без программирования, создай компонент-роутер в src/app/page.tsx, который рендерит страницу на основе JSON-массива блоков, используя CSS-переменные дизайн-токенов Tailwind CSS.Разрешенные токены тем (Глобальные стили):Пресеты тем: industrial-orange (Агрессивный розничный), b2b-dark-slate (Строгий корпоративный), clean-minimal (Минималистичный светлый).Разрешенные динамические блоки для рендеринга из JSON: MainHeroBanner, InteractiveCalculator, LiveProductGrid, AiChatWidget, InvoiceGeneratorCard.⚙️ РУКОВОДСТВО ДЛЯ WINDSURF / DEVIN ПО ЗАПУСКУ РАЗРАБОТКИРазверни базовую структуру репозитория Next.js.Создай файл .ai_development_log.md и сделай в нем первую запись об инициализации проекта.Опиши модели данных в файле prisma/schema.prisma в строгом соответствии с кодом из Шага 1.Настрой мультиподдоменный Middleware.Напиши обертки для API DeepSeek на бэкенде.Напиши фронтенд ИИ-калькулятора и вынеси дизайн-токены тем в конфигурацию Tailwind CSS.Перед выполнением каждого подпункта фиксируй свои действия в лог-файле. Не забывай контекст!Приступай к разработке. Следуй инструкциям пошагово, пиши чистый, завершенный код.
