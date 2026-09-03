@@ -4,12 +4,12 @@ import { getBlueprintBySlug } from "@/lib/striker-blueprints";
 import type { ThemeConfigBlueprint } from "@/types/striker-engine";
 
 /** Активная тема главной страницы из админки (PageConfig.home.theme) */
-export type StorefrontTheme = "city" | "vi" | "city-met" | "ideal" | "atlas";
+export type StorefrontTheme = "city" | "vi" | "city-met" | "ideal" | "atlas" | "flat";
 
-export const STOREFRONT_THEMES: StorefrontTheme[] = ["city", "vi", "city-met", "ideal", "atlas"];
+export const STOREFRONT_THEMES: StorefrontTheme[] = ["city", "vi", "city-met", "ideal", "atlas", "flat"];
 
 export function isStorefrontTheme(theme: string | undefined | null): theme is StorefrontTheme {
-  return theme === "city" || theme === "vi" || theme === "city-met" || theme === "ideal" || theme === "atlas";
+  return theme === "city" || theme === "vi" || theme === "city-met" || theme === "ideal" || theme === "atlas" || theme === "flat";
 }
 
 /** Товар для витрины: металл + сыпучие, с ГОСТ/атрибутами */

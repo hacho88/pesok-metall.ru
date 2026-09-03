@@ -6,6 +6,8 @@ import { AtlasTokensProvider } from "@/components/atlas/tokens/AtlasTokensProvid
 import { AtlasChrome } from "@/components/atlas/chrome/AtlasChrome";
 import { AtlasCatalogPage } from "@/components/atlas/catalog/AtlasCatalogPage";
 import { resolvePrice } from "@/lib/atlas/pricing";
+import { getActiveStorefrontTheme, getStorefrontProducts } from "@/lib/theme-storefront";
+import { FlatShop } from "@/components/flat/FlatShop";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,12 @@ export const metadata: Metadata = {
 };
 
 export default async function ShopPage() {
+  // FLAT theme override
+  if ((await getActiveStorefrontTheme()) === "flat") {
+    const products = await getStorefrontProducts(100);
+    return <FlatShop products={products} />;
+  }
+
   const preview = await isPreviewMode();
   const config = preview ? await getDraftConfig() : await getPublishedConfig();
   const [tree, zones, currentZone, result] = await Promise.all([

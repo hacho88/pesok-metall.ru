@@ -9,6 +9,8 @@ import { resolvePrice } from "@/lib/atlas/pricing";
 import { resolveSections } from "@/lib/atlas/resolver";
 import { prisma } from "@/lib/prisma";
 import { productJsonLd } from "@/lib/atlas/seo";
+import { getActiveStorefrontTheme, getStorefrontProducts } from "@/lib/theme-storefront";
+import { FlatProduct } from "@/components/flat/FlatProduct";
 
 export const dynamic = "force-dynamic";
 
@@ -29,6 +31,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decoded = decodeURIComponent(slug);
+
+  // FLAT theme override
+  if ((await getActiveStorefrontTheme()) === "flat") {
+    const allProducts = await getStorefrontProducts(200);
+    const product = allProducts.find((p) => p.slug === decoded);
+    if (product) return <FlatProduct product={product} allProducts={allProducts} />;
+  }
+
   const preview = await isPreviewMode();
   const config = preview ? await getDraftConfig() : await getPublishedConfig();
   const [tree, zones, currentZone, product] = await Promise.all([

@@ -1,26 +1,26 @@
 import type { Metadata } from "next";
+import { getActiveStorefrontTheme } from "@/lib/theme-storefront";
+import { FlatCart } from "@/components/flat/FlatCart";
 import { getPublishedConfig, getDraftConfig } from "@/lib/atlas/config-store";
 import { getAtlasCategoryTree } from "@/lib/atlas/catalog";
 import { getAtlasZones, getCurrentZone, isPreviewMode } from "@/lib/atlas/server";
 import { AtlasTokensProvider } from "@/components/atlas/tokens/AtlasTokensProvider";
 import { AtlasChrome } from "@/components/atlas/chrome/AtlasChrome";
 import { AtlasCheckout } from "@/components/atlas/checkout/AtlasCheckout";
-import { getActiveStorefrontTheme } from "@/lib/theme-storefront";
-import { FlatCheckout } from "@/components/flat/FlatCheckout";
 
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Оформление заказа | pesok-metall.ru",
-  description: "Оформление заказа на металлопрокат и сыпучие материалы с доставкой по Москве и МО.",
+  title: "Корзина | pesok-metall.ru",
 };
 
-export default async function CheckoutPage() {
+export default async function CartPage() {
   // FLAT theme override
   if ((await getActiveStorefrontTheme()) === "flat") {
-    return <FlatCheckout />;
+    return <FlatCart />;
   }
 
+  // Atlas theme: redirect cart to checkout (Atlas uses drawer)
   const preview = await isPreviewMode();
   const config = preview ? await getDraftConfig() : await getPublishedConfig();
   const [tree, zones, currentZone] = await Promise.all([

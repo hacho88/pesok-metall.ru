@@ -21,6 +21,7 @@ import { CorporateBanner } from "@/components/vi/CorporateBanner";
 import CityMetStorefront from "@/components/themes/city-met/CityMetStorefront";
 import IdealStorefront from "@/components/themes/ideal/IdealStorefront";
 import { AtlasHomePage } from "@/components/atlas/AtlasHomePage";
+import { FlatHome } from "@/components/flat/FlatHome";
 
 export const dynamic = "force-dynamic";
 
@@ -46,10 +47,14 @@ export default async function HomePage() {
     );
   }
 
-  // Специализированные витрины (city/vi/city-met/ideal/atlas) — свои header/footer, без SiteChrome
+  // Специализированные витрины (city/vi/city-met/ideal/atlas/flat) — свои header/footer, без SiteChrome
   if (theme) {
     if (theme === "atlas") {
       return <AtlasHomePage />;
+    }
+    if (theme === "flat") {
+      const products = await getStorefrontProducts(60);
+      return <FlatHome products={products} />;
     }
     const products = await getStorefrontProducts(60);
     return (
