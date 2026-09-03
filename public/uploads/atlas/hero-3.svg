@@ -1,33 +1,51 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="500" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#0C4A6E"/>
-      <stop offset="50%" stop-color="#075985"/>
-      <stop offset="100%" stop-color="#0C4A6E"/>
+      <stop offset="0%" stop-color="#1E3A5F"/>
+      <stop offset="50%" stop-color="#0F2942"/>
+      <stop offset="100%" stop-color="#0B1F33"/>
     </linearGradient>
-    <radialGradient id="glow3" cx="0.5" cy="0.3" r="0.5">
-      <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.25"/>
-      <stop offset="100%" stop-color="#0EA5E9" stop-opacity="0"/>
+    <radialGradient id="glow3" cx="0.7" cy="0.4" r="0.5">
+      <stop offset="0%" stop-color="#F97316" stop-opacity="0.2"/>
+      <stop offset="100%" stop-color="#F97316" stop-opacity="0"/>
     </radialGradient>
+    <linearGradient id="road" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#1F2937"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
   </defs>
   <rect width="1440" height="500" fill="url(#bg3)"/>
   <rect width="1440" height="500" fill="url(#glow3)"/>
-  <g stroke="#0284C7" stroke-width="1" opacity="0.3">
-    <line x1="100" y1="0" x2="100" y2="500"/>
-    <line x1="300" y1="0" x2="300" y2="500"/>
-    <line x1="500" y1="0" x2="500" y2="500"/>
-    <line x1="700" y1="0" x2="700" y2="500"/>
-    <line x1="900" y1="0" x2="900" y2="500"/>
-    <line x1="1100" y1="0" x2="1100" y2="500"/>
-    <line x1="1300" y1="0" x2="1300" y2="500"/>
+  <!-- Road -->
+  <path d="M 0 430 L 1440 380 L 1440 500 L 0 500 Z" fill="url(#road)"/>
+  <!-- Road dashes -->
+  <g stroke="#FCD34D" stroke-width="4" stroke-dasharray="40 30" opacity="0.5">
+    <line x1="0" y1="465" x2="1440" y2="430"/>
   </g>
-  <g fill="#F97316" opacity="0.6">
-    <rect x="600" y="350" width="240" height="12" rx="2"/>
-    <rect x="600" y="370" width="180" height="12" rx="2"/>
-    <rect x="600" y="390" width="200" height="12" rx="2"/>
+  <!-- Truck silhouette -->
+  <g opacity="0.85">
+    <!-- Truck body -->
+    <rect x="700" y="300" width="280" height="100" rx="6" fill="#F97316"/>
+    <rect x="720" y="310" width="240" height="80" rx="4" fill="#FB923C" opacity="0.5"/>
+    <!-- Cab -->
+    <rect x="980" y="280" width="120" height="120" rx="8" fill="#E5E7EB"/>
+    <rect x="995" y="295" width="90" height="50" rx="4" fill="#93C5FD" opacity="0.6"/>
+    <!-- Wheels -->
+    <circle cx="760" cy="400" r="28" fill="#1F2937" stroke="#4B5563" stroke-width="3"/>
+    <circle cx="760" cy="400" r="14" fill="#4B5563"/>
+    <circle cx="860" cy="400" r="28" fill="#1F2937" stroke="#4B5563" stroke-width="3"/>
+    <circle cx="860" cy="400" r="14" fill="#4B5563"/>
+    <circle cx="1040" cy="400" r="28" fill="#1F2937" stroke="#4B5563" stroke-width="3"/>
+    <circle cx="1040" cy="400" r="14" fill="#4B5563"/>
+    <!-- Headlight -->
+    <circle cx="1095" cy="320" r="6" fill="#FCD34D" opacity="0.9"/>
+    <ellipse cx="1095" cy="320" rx="20" ry="8" fill="#FCD34D" opacity="0.2"/>
   </g>
-  <g fill="#38BDF8" opacity="0.4">
-    <rect x="200" y="100" width="120" height="60" rx="8"/>
-    <rect x="350" y="100" width="120" height="60" rx="8"/>
+  <!-- Speed lines -->
+  <g stroke="#F97316" stroke-width="2" opacity="0.3" stroke-linecap="round">
+    <line x1="500" y1="320" x2="620" y2="320"/>
+    <line x1="480" y1="350" x2="640" y2="350"/>
+    <line x1="520" y1="380" x2="630" y2="380"/>
   </g>
+  <rect x="0" y="495" width="1440" height="5" fill="#F97316"/>
 </svg>

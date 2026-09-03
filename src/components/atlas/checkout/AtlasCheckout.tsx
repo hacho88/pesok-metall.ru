@@ -33,6 +33,8 @@ export function AtlasCheckout({
   const [submitting, setSubmitting] = useState(false);
   const [orderId, setOrderId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [promo, setPromo] = useState("");
+  const [promoApplied, setPromoApplied] = useState(false);
 
   if (store.items.length === 0 && !orderId) {
     return (
@@ -98,9 +100,19 @@ export function AtlasCheckout({
   }
 
   return (
-    <div>
+    <div className="atlas-fade-in">
       <AtlasBreadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Оформление заказа" }]} />
-      <h1 className="text-2xl font-bold mt-4 mb-6" style={{ fontFamily: "var(--atlas-font-heading)" }}>Оформление заказа</h1>
+
+      {/* Progress steps */}
+      <div className="flex items-center gap-2 mt-4 mb-6 text-sm">
+        <StepBadge num={1} label="Корзина" active={false} done={true} />
+        <div className="flex-1 h-0.5 max-w-[60px]" style={{ background: "var(--atlas-primary)" }} />
+        <StepBadge num={2} label="Оформление" active={true} done={false} />
+        <div className="flex-1 h-0.5 max-w-[60px]" style={{ background: "var(--atlas-border)" }} />
+        <StepBadge num={3} label="Подтверждение" active={false} done={false} />
+      </div>
+
+      <h1 className="text-2xl font-bold mb-6 atlas-heading-accent" style={{ fontFamily: "var(--atlas-font-heading)" }}>Оформление заказа</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Form */}
@@ -201,6 +213,17 @@ export function AtlasCheckout({
               <span className="font-bold">Итого:</span>
               <span className="text-2xl font-bold" style={{ color: "var(--atlas-primary)" }}>{formatRub(totals.subtotal)} ₽</span>
             </div>
+            {/* Promo code */}
+            <div className="mb-3">
+              <div className="flex gap-2">
+                <input className="atlas-input" placeholder="Промокод" value={promo} onChange={(e) => setPromo(e.target.value)} style={{ height: 40 }} />
+                <button className="atlas-btn atlas-btn-secondary atlas-btn-sm" onClick={() => setPromoApplied(promo === "PESOK2026")}>
+                  Применить
+                </button>
+              </div>
+              {promoApplied && <div className="text-xs mt-1.5" style={{ color: "var(--atlas-success)" }}>✓ Промокод применён: скидка 5%</div>}
+            </div>
+
             {error && (
               <div className="p-3 rounded-lg text-sm mb-3" style={{ background: "color-mix(in srgb, var(--atlas-danger) 8%, transparent)", color: "var(--atlas-danger)" }}>{error}</div>
             )}
@@ -239,5 +262,22 @@ function PaymentOption({ icon, label, value, current, onSelect }: { icon: React.
       <span style={{ color: current === value ? "var(--atlas-primary)" : "var(--atlas-text-muted)" }}>{icon}</span>
       {label}
     </button>
+  );
+}
+
+function StepBadge({ num, label, active, done }: { num: number; label: string; active: boolean; done: boolean }) {
+  return (
+    <div className="flex items-center gap-2 shrink-0">
+      <div
+        className="w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all"
+        style={{
+          background: done ? "var(--atlas-success)" : active ? "var(--atlas-primary)" : "var(--atlas-surface-2)",
+          color: done || active ? "#fff" : "var(--atlas-text-muted)",
+        }}
+      >
+        {done ? <Check size={16} /> : num}
+      </div>
+      <span className="hidden sm:inline font-medium" style={{ color: active ? "var(--atlas-text)" : "var(--atlas-text-muted)" }}>{label}</span>
+    </div>
   );
 }

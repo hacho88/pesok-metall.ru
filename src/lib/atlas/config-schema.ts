@@ -118,7 +118,7 @@ export type SectionSettings = z.infer<typeof sectionSettingsSchema>;
 export const sectionTypeSchema = z.enum([
   // Общие
   "HeroSlider", "HeroSplit", "CategoryTiles", "FeaturedProducts", "PriceBoard",
-  "PromoStrip", "Advantages", "Stats", "Calculator", "DeliveryZones",
+  "PromoStrip", "Advantages", "Stats", "StatsSection", "Calculator", "DeliveryZones",
   "BannerGrid", "BlogTeasers", "Faq", "Testimonials", "CtaBanner", "Steps",
   "Certificates", "Contacts", "RichText", "CustomHtml", "Spacer", "Divider",
   // Товарные

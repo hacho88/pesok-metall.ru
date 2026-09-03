@@ -18,8 +18,8 @@ export function CategoryTiles({ props, data }: SectionComponentProps) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
         {items.map((cat) => (
-          <Link key={cat.id} href={`/catalog/${encodeURIComponent(cat.slug)}`}
-            className="flex items-center justify-between p-3 rounded-lg transition-colors hover:bg-[var(--atlas-surface-2)]"
+          <Link key={cat.id} href={`/shop/${encodeURIComponent(cat.slug)}`}
+            className="flex items-center justify-between p-3 rounded-lg transition-all hover:shadow-md atlas-card"
             style={{ border: "1px solid var(--atlas-border)" }}>
             <span className="font-medium text-sm">{cat.name}</span>
             <span className="text-xs" style={{ color: "var(--atlas-text-muted)" }}>{cat.totalProductCount} тов.</span>
@@ -37,10 +37,11 @@ export function CategoryTiles({ props, data }: SectionComponentProps) {
         return (
           <Link
             key={cat.id}
-            href={`/catalog/${encodeURIComponent(cat.slug)}`}
-            className="atlas-card atlas-card-elevated p-4 flex flex-col items-center text-center group"
+            href={`/shop/${encodeURIComponent(cat.slug)}`}
+            className="atlas-card atlas-card-elevated p-4 flex flex-col items-center text-center group atlas-fade-in"
+            style={{ animationDelay: `${items.indexOf(cat) * 0.05}s` }}
           >
-            <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-105"
+            <div className="w-16 h-16 rounded-xl flex items-center justify-center mb-3 transition-transform group-hover:scale-110"
               style={{ background: "var(--atlas-surface-2)" }}>
               {cat.imageUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -49,7 +50,7 @@ export function CategoryTiles({ props, data }: SectionComponentProps) {
                 <Icon size={28} style={{ color: "var(--atlas-primary)" }} />
               )}
             </div>
-            <div className="font-semibold text-sm line-clamp-2">{cat.name}</div>
+            <div className="font-semibold text-sm line-clamp-2 group-hover:text-[var(--atlas-primary)] transition-colors">{cat.name}</div>
             <div className="text-xs mt-1" style={{ color: "var(--atlas-text-muted)" }}>
               {cat.totalProductCount} товаров
             </div>

@@ -1,29 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1440" height="500" viewBox="0 0 1440 500" preserveAspectRatio="xMidYMid slice">
   <defs>
     <linearGradient id="bg2" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0%" stop-color="#1C1917"/>
-      <stop offset="50%" stop-color="#292524"/>
-      <stop offset="100%" stop-color="#1C1917"/>
+      <stop offset="0%" stop-color="#92400E"/>
+      <stop offset="40%" stop-color="#78350F"/>
+      <stop offset="100%" stop-color="#451A03"/>
     </linearGradient>
-    <radialGradient id="glow2" cx="0.3" cy="0.5" r="0.6">
-      <stop offset="0%" stop-color="#D97706" stop-opacity="0.25"/>
-      <stop offset="100%" stop-color="#D97706" stop-opacity="0"/>
+    <radialGradient id="sun2" cx="0.8" cy="0.2" r="0.4">
+      <stop offset="0%" stop-color="#FCD34D" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#FCD34D" stop-opacity="0"/>
     </radialGradient>
+    <pattern id="sandPattern" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
+      <circle cx="3" cy="3" r="1" fill="#D97706" opacity="0.15"/>
+    </pattern>
   </defs>
   <rect width="1440" height="500" fill="url(#bg2)"/>
-  <rect width="1440" height="500" fill="url(#glow2)"/>
-  <g fill="#D97706" opacity="0.15">
-    <circle cx="200" cy="250" r="80"/>
-    <circle cx="350" cy="250" r="80"/>
-    <circle cx="500" cy="250" r="80"/>
+  <rect width="1440" height="500" fill="url(#sandPattern)"/>
+  <rect width="1440" height="500" fill="url(#sun2)"/>
+  <!-- Sand piles -->
+  <g opacity="0.6">
+    <path d="M 900 450 Q 1050 380 1200 450 Z" fill="#D97706"/>
+    <path d="M 950 460 Q 1100 400 1250 460 Z" fill="#B45309"/>
+    <path d="M 1000 470 Q 1150 420 1300 470 Z" fill="#92400E"/>
   </g>
-  <g stroke="#57534E" stroke-width="1" opacity="0.2">
-    <line x1="0" y1="150" x2="1440" y2="150"/>
-    <line x1="0" y1="350" x2="1440" y2="350"/>
+  <!-- Big bags -->
+  <g opacity="0.7">
+    <rect x="200" y="340" width="100" height="120" rx="4" fill="#6B7280" stroke="#9CA3AF" stroke-width="1"/>
+    <rect x="210" y="350" width="80" height="100" rx="2" fill="#92400E" opacity="0.6"/>
+    <line x1="220" y1="340" x2="240" y2="310" stroke="#6B7280" stroke-width="3"/>
+    <line x1="280" y1="340" x2="260" y2="310" stroke="#6B7280" stroke-width="3"/>
+
+    <rect x="320" y="350" width="90" height="110" rx="4" fill="#6B7280" stroke="#9CA3AF" stroke-width="1"/>
+    <rect x="330" y="360" width="70" height="90" rx="2" fill="#B45309" opacity="0.6"/>
+    <line x1="340" y1="350" x2="360" y2="325" stroke="#6B7280" stroke-width="3"/>
+    <line x1="390" y1="350" x2="370" y2="325" stroke="#6B7280" stroke-width="3"/>
   </g>
-  <g fill="#FBBF24" opacity="0.4">
-    <rect x="1100" y="200" width="80" height="100" rx="8"/>
-    <rect x="1200" y="180" width="80" height="120" rx="8"/>
-    <rect x="1300" y="220" width="80" height="80" rx="8"/>
+  <!-- Gravel texture dots -->
+  <g opacity="0.4" fill="#FCD34D">
+    <circle cx="600" cy="420" r="3"/>
+    <circle cx="650" cy="440" r="2"/>
+    <circle cx="700" cy="430" r="4"/>
+    <circle cx="750" cy="445" r="2"/>
+    <circle cx="800" cy="425" r="3"/>
+    <circle cx="620" cy="460" r="2"/>
+    <circle cx="680" cy="465" r="3"/>
+    <circle cx="730" cy="455" r="2"/>
+    <circle cx="780" cy="460" r="3"/>
   </g>
+  <rect x="0" y="495" width="1440" height="5" fill="#F97316"/>
 </svg>

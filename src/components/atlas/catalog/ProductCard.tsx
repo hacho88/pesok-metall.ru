@@ -1,16 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Minus, Plus, ShoppingCart, Check, Eye } from "lucide-react";
+import { Minus, Plus, ShoppingCart, Check, Heart, Eye } from "lucide-react";
 import { useState } from "react";
 import type { AtlasProduct } from "@/lib/atlas/catalog";
 import { formatRub, type AtlasPrice } from "@/lib/atlas/pricing";
 import { useCartStore } from "../checkout/cart-store";
+import { useFavoritesStore } from "../checkout/favorites-store";
 
 export function ProductCard({ product, price }: { product: AtlasProduct; price: AtlasPrice }) {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const addToCart = useCartStore((s) => s.add);
+  const favStore = useFavoritesStore();
+  const isFav = favStore.has(product.id);
 
   const handleAdd = () => {
     addToCart(product, qty);
@@ -51,6 +54,18 @@ export function ProductCard({ product, price }: { product: AtlasProduct; price: 
             <span className="atlas-badge atlas-badge-neutral" style={{ fontSize: 10 }}>Фото типовое</span>
           )}
         </div>
+        {/* Favorite button */}
+        <button
+          className={`absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center z-10 transition-all atlas-quick-add ${isFav ? "opacity-100" : ""}`}
+          style={{
+            background: isFav ? "color-mix(in srgb, #EF4444 10%, white)" : "rgba(255,255,255,0.9)",
+            border: "1px solid var(--atlas-border)",
+          }}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); favStore.toggle(product.id); }}
+          title={isFav ? "Убрать из избранного" : "В избранное"}
+        >
+          <Heart size={16} fill={isFav ? "#EF4444" : "none"} color={isFav ? "#EF4444" : "var(--atlas-text-muted)"} />
+        </button>
         {/* Quick add button (reveal on hover) */}
         {hasPrice && (
           <button

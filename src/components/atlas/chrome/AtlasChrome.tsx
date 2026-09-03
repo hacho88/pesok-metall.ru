@@ -5,6 +5,7 @@ import { AtlasFooter } from "./AtlasFooter";
 import { AtlasCategoryTree } from "./AtlasCategoryTree";
 import { AtlasCartDrawer } from "./AtlasCartDrawer";
 import { AtlasPreviewBar } from "./AtlasPreviewBar";
+import { AtlasToaster } from "./AtlasToaster";
 
 export function AtlasChrome({
   config,
@@ -26,7 +27,7 @@ export function AtlasChrome({
   return (
     <>
       {isPreview && <AtlasPreviewBar />}
-      <AtlasHeader config={config} zones={zones} currentZone={currentZone} />
+      <AtlasHeader config={config} zones={zones} currentZone={currentZone} tree={tree} />
       <div className="atlas-container flex gap-8 py-6">
         {sidebar && config.sidebar.enabled && (
           <aside className="hidden lg:block w-[280px] shrink-0">
@@ -37,6 +38,7 @@ export function AtlasChrome({
       </div>
       <AtlasFooter config={config} zones={zones} />
       <AtlasCartDrawer />
+      <AtlasToaster />
     </>
   );
 }

@@ -32,7 +32,7 @@ export function productMetadata(product: AtlasProduct): Metadata {
 export function categoryMetadata(node: AtlasCategoryNode, description?: string | null): Metadata {
   const title = `${node.name} — купить, цены | ${SITE_NAME}`;
   const desc = description || `${node.name} — ${node.totalProductCount} товаров в каталоге. Доставка по Москве и МО в день заказа.`;
-  const url = `${SITE_URL}/catalog/${encodeURIComponent(node.slug)}`;
+  const url = `${SITE_URL}/shop/${encodeURIComponent(node.slug)}`;
 
   return {
     title,

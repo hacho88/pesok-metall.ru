@@ -36,6 +36,7 @@ import { ProductSpecs } from "./ProductSpecs";
 import { ProductCalculator } from "./ProductCalculator";
 import { ProductDelivery } from "./ProductDelivery";
 import { SimilarProducts } from "./SimilarProducts";
+import { StatsSection } from "./StatsSection";
 
 const REGISTRY: Record<string, SectionEntry> = {};
 
@@ -64,6 +65,7 @@ register({ type: "ProductSpecs", Component: ProductSpecs, group: "product", labe
 register({ type: "ProductCalculator", Component: ProductCalculator, group: "product", label: "Калькулятор товара", icon: "Calculator" });
 register({ type: "ProductDelivery", Component: ProductDelivery, group: "product", label: "Доставка товара", icon: "Truck" });
 register({ type: "SimilarProducts", Component: SimilarProducts, group: "product", label: "Похожие товары", icon: "Package" });
+register({ type: "StatsSection", Component: StatsSection, group: "trust", label: "Статистика", icon: "BarChart3" });
 
 export function getSectionComponent(type: string): SectionEntry | null {
   return REGISTRY[type] ?? null;

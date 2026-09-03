@@ -9,15 +9,24 @@ import { ATLAS_THEME_KEY } from "../../src/lib/atlas/constants";
 const prisma = new PrismaClient();
 
 async function main() {
+  const def = getDefaultAtlasConfig();
   const existing = await prisma.storefrontConfig.findUnique({
     where: { themeKey: ATLAS_THEME_KEY },
   });
   if (existing) {
-    console.log(`Config for "${ATLAS_THEME_KEY}" already exists. Skipping.`);
+    await prisma.storefrontConfig.update({
+      where: { themeKey: ATLAS_THEME_KEY },
+      data: {
+        draft: def as any,
+        published: def as any,
+        draftUpdatedAt: new Date(),
+        publishedAt: new Date(),
+      },
+    });
+    console.log(`Atlas config updated (re-seeded). Theme key: ${ATLAS_THEME_KEY}`);
     return;
   }
 
-  const def = getDefaultAtlasConfig();
   await prisma.storefrontConfig.create({
     data: {
       themeKey: ATLAS_THEME_KEY,

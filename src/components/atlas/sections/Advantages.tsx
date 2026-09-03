@@ -35,8 +35,8 @@ export function Advantages({ props }: SectionComponentProps) {
       {items.map((item, i) => {
         const Icon = (Icons as any)[item.icon] ?? Icons.CheckCircle;
         return (
-          <div key={i} className="atlas-card atlas-card-elevated p-5">
-            <div className="flex items-center justify-center w-12 h-12 rounded-xl mb-3" style={{ background: "color-mix(in srgb, var(--atlas-primary) 10%, transparent)" }}>
+          <div key={i} className="atlas-card atlas-card-elevated p-5 atlas-fade-in group" style={{ animationDelay: `${i * 0.08}s` }}>
+            <div className="flex items-center justify-center w-12 h-12 rounded-xl mb-3 transition-transform group-hover:scale-110" style={{ background: "color-mix(in srgb, var(--atlas-primary) 10%, transparent)" }}>
               <Icon size={24} style={{ color: "var(--atlas-primary)" }} />
             </div>
             <h3 className="font-bold text-base mb-1">{item.title}</h3>

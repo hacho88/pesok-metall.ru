@@ -168,8 +168,8 @@ function TreeItem({
           <span className="w-5 shrink-0" />
         )}
         <a
-          href={`/catalog/${encodeURIComponent(node.slug)}`}
-          className="flex-1 text-sm font-medium truncate transition-colors"
+          href={`/shop/${encodeURIComponent(node.slug)}`}
+          className="flex-1 text-sm font-medium truncate transition-colors hover:text-[var(--atlas-primary)]"
           style={{
             color: isActive ? "var(--atlas-primary)" : "var(--atlas-text)",
             fontWeight: isActive ? 600 : 500,
