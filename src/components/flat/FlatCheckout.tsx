@@ -18,10 +18,10 @@ export function FlatCheckout() {
   if (store.items.length === 0 && !orderId) {
     return (
       <div className="flat-theme">
-        <FlatHeader products={[]} />
+        <FlatHeader />
         <div className="flat-container">
           <div className="flat-empty">
-            <div className="flat-empty__icon"><ShoppingBag size={32} /></div>
+            <div className="flat-empty__icon"><ShoppingBag size={36} /></div>
             <div className="flat-empty__title">Корзина пуста</div>
             <Link href="/shop" className="flat-btn flat-btn-primary">В каталог</Link>
           </div>
@@ -34,12 +34,10 @@ export function FlatCheckout() {
   if (orderId) {
     return (
       <div className="flat-theme">
-        <FlatHeader products={[]} />
+        <FlatHeader />
         <div className="flat-container">
           <div className="flat-empty">
-            <div className="flat-empty__icon" style={{ background: "rgba(33,174,140,0.12)", color: "var(--flat-success)" }}>
-              <Check size={32} />
-            </div>
+            <div className="flat-empty__icon" style={{ background: "rgba(33,174,140,0.1)", color: "var(--flat-success)" }}><Check size={36} /></div>
             <div className="flat-empty__title">Заказ оформлен!</div>
             <div className="flat-empty__text">Номер заказа: <strong style={{ color: "var(--flat-primary)" }}>#{orderId.slice(0, 8).toUpperCase()}</strong></div>
             <Link href="/shop" className="flat-btn flat-btn-primary">Продолжить покупки</Link>
@@ -70,15 +68,15 @@ export function FlatCheckout() {
 
   return (
     <div className="flat-theme">
-      <FlatHeader products={[]} />
+      <FlatHeader />
       <div className="flat-container">
         <FlatBreadcrumbs items={[{ label: "Главная", href: "/" }, { label: "Корзина", href: "/cart" }, { label: "Оформление" }]} />
-        <h1 className="flat-section__title">Оформление заказа</h1>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "var(--flat-dark)", marginBottom: 32 }}>Оформление заказа</h1>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 320px", gap: 24, alignItems: "start" }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <div className="flat-card" style={{ padding: 20 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 16, margin: "0 0 16px" }}>Контактные данные</h3>
+        <div className="flat-cart">
+          <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+            <div style={{ background: "#fff", border: "1px solid var(--flat-border)", borderRadius: "var(--flat-radius-lg)", padding: 24 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, marginBottom: 16, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--flat-dark)" }}>Контактные данные</h3>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
                 <input className="flat-input" placeholder="Имя*" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
                 <input className="flat-input" placeholder="Телефон*" type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
@@ -87,26 +85,26 @@ export function FlatCheckout() {
               </div>
             </div>
 
-            <div className="flat-card" style={{ padding: 20 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 16, margin: "0 0 16px", display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ background: "#fff", border: "1px solid var(--flat-border)", borderRadius: "var(--flat-radius-lg)", padding: 24 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, marginBottom: 16, display: "flex", alignItems: "center", gap: 8, textTransform: "uppercase", letterSpacing: 0.5 }}>
                 <Truck size={18} style={{ color: "var(--flat-primary)" }} /> Доставка
               </h3>
               <input className="flat-input" placeholder="Адрес доставки" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
             </div>
 
-            <div className="flat-card" style={{ padding: 20 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 16, margin: "0 0 16px" }}>Способ оплаты</h3>
+            <div style={{ background: "#fff", border: "1px solid var(--flat-border)", borderRadius: "var(--flat-radius-lg)", padding: 24 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, marginBottom: 16, textTransform: "uppercase", letterSpacing: 0.5 }}>Способ оплаты</h3>
               <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12 }}>
                 {[
-                  { v: "card", icon: <CreditCard size={20} />, l: "Картой" },
-                  { v: "cash", icon: <Banknote size={20} />, l: "Наличными" },
-                  { v: "invoice", icon: <FileText size={20} />, l: "По счёту" },
+                  { v: "card", icon: <CreditCard size={22} />, l: "Картой" },
+                  { v: "cash", icon: <Banknote size={22} />, l: "Наличными" },
+                  { v: "invoice", icon: <FileText size={22} />, l: "По счёту" },
                 ].map((o) => (
                   <button key={o.v} className="flat-btn" style={{
                     border: `2px solid ${form.payment === o.v ? "var(--flat-primary)" : "var(--flat-border)"}`,
-                    background: form.payment === o.v ? "var(--flat-primary-light)" : "transparent",
+                    background: form.payment === o.v ? "var(--flat-primary-light)" : "#fff",
                     color: form.payment === o.v ? "var(--flat-primary)" : "var(--flat-gray-800)",
-                    flexDirection: "column", gap: 4, padding: "16px 12px",
+                    flexDirection: "column", gap: 6, padding: "20px 12px",
                   }} onClick={() => setForm({ ...form, payment: o.v })}>
                     {o.icon} {o.l}
                   </button>
@@ -114,27 +112,27 @@ export function FlatCheckout() {
               </div>
             </div>
 
-            <div className="flat-card" style={{ padding: 20 }}>
-              <h3 style={{ fontWeight: 700, fontSize: 16, margin: "0 0 16px" }}>Комментарий</h3>
+            <div style={{ background: "#fff", border: "1px solid var(--flat-border)", borderRadius: "var(--flat-radius-lg)", padding: 24 }}>
+              <h3 style={{ fontWeight: 700, fontSize: 16, marginBottom: 16, textTransform: "uppercase", letterSpacing: 0.5 }}>Комментарий</h3>
               <textarea className="flat-input" rows={3} placeholder="Дополнительные пожелания..." value={form.comment} onChange={(e) => setForm({ ...form, comment: e.target.value })} />
             </div>
           </div>
 
-          <div className="flat-card" style={{ padding: 20, position: "sticky", top: "calc(var(--flat-header-h) + 16px)" }}>
-            <h3 style={{ fontWeight: 700, fontSize: 18, margin: "0 0 16px" }}>Ваш заказ</h3>
-            <div style={{ maxHeight: 240, overflowY: "auto", marginBottom: 12 }}>
+          <div className="flat-summary">
+            <h3 className="flat-summary__title">Ваш заказ</h3>
+            <div style={{ maxHeight: 240, overflowY: "auto", marginBottom: 16 }}>
               {store.items.map((item) => (
-                <div key={item.productId} style={{ display: "flex", gap: 8, fontSize: 13, marginBottom: 8 }}>
+                <div key={item.productId} style={{ display: "flex", gap: 8, fontSize: 13, marginBottom: 10 }}>
                   <span style={{ flex: 1 }}>{item.name} × {item.qty}</span>
                   <span style={{ fontWeight: 600 }}>{formatRub(item.price * item.qty)} ₽</span>
                 </div>
               ))}
             </div>
-            <div style={{ borderTop: "1px solid var(--flat-border)", paddingTop: 12, display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-              <span style={{ fontWeight: 700 }}>Итого:</span>
-              <span style={{ fontSize: 22, fontWeight: 700, color: "var(--flat-primary)" }}>{formatRub(totals.subtotal)} ₽</span>
+            <div className="flat-summary__total">
+              <span className="flat-summary__total-label">Итого:</span>
+              <span className="flat-summary__total-val">{formatRub(totals.subtotal)} ₽</span>
             </div>
-            <button className="flat-btn flat-btn-primary flat-btn-block flat-btn-lg" onClick={submit} disabled={submitting || !form.name || !form.phone}>
+            <button className="flat-btn flat-btn-primary flat-btn-block flat-btn-lg" style={{ marginTop: 20 }} onClick={submit} disabled={submitting || !form.name || !form.phone}>
               {submitting ? "Оформляем..." : "Оформить заказ"}
             </button>
           </div>
