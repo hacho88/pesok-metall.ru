@@ -9,25 +9,10 @@ import { cn } from '@/lib/pm-utils'
 
 const items = [
   { href: '/', label: 'Главная', icon: Home },
-  { href: '/armatura', label: 'Каталог', icon: LayoutGrid, match: 'catalog' },
+  { href: '/shop', label: 'Каталог', icon: LayoutGrid, match: 'catalog' },
   { href: '/kalkulyator-metalla', label: 'Калькулятор', icon: Calculator, match: 'calc' },
   { href: '/izbrannoe', label: 'Избранное', icon: Heart },
   { href: '/korzina', label: 'Корзина', icon: ShoppingCart },
-]
-
-const catalogSlugs = [
-  '/armatura',
-  '/truba-profilnaya',
-  '/truby-kruglye',
-  '/fasonnyj-prokat',
-  '/listovoj-prokat',
-  '/polosa-metallicheskaya',
-  '/setka-metallicheskaya',
-  '/profnastil',
-  '/provoloka',
-  '/vintovye-svai',
-  '/metallicheskiy-shtaketnik',
-  '/dopolnitelnye-materialy',
 ]
 
 export function MobileNav() {
@@ -36,7 +21,7 @@ export function MobileNav() {
   const { count: favCount } = useFavorites()
 
   const isActive = (item: (typeof items)[number]) => {
-    if (item.match === 'catalog') return catalogSlugs.includes(pathname)
+    if (item.match === 'catalog') return pathname === '/shop' || pathname.startsWith('/shop/')
     if (item.match === 'calc') return pathname.startsWith('/kalkulyator')
     return pathname === item.href
   }

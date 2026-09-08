@@ -208,7 +208,7 @@ export function PmCart() {
           <Package className="mx-auto size-12 text-muted-foreground" />
           <h1 className="mt-4 text-xl font-bold text-slate-900">Корзина пуста</h1>
           <p className="mt-2 text-muted-foreground">Добавьте товары из каталога</p>
-          <Link href="/shop/арматура">
+          <Link href="/shop">
             <Button className="mt-6">В каталог</Button>
           </Link>
         </div>
