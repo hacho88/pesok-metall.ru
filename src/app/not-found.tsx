@@ -34,13 +34,13 @@ export default function NotFound() {
               <Search className="h-4 w-4" />
               Каталог
             </Link>
-            <Link
-              href="/contacts"
+            <a
+              href="tel:+74950000000"
               className="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3 text-sm font-bold text-slate-900 transition-colors hover:bg-slate-50"
             >
               <Phone className="h-4 w-4" />
-              Контакты
-            </Link>
+              Позвонить
+            </a>
           </div>
         </div>
       </main>

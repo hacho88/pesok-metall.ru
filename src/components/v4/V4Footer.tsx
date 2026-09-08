@@ -112,7 +112,6 @@ export function V4Footer() {
               <Link href="/blog" className="block transition-colors hover:text-[#FF6B00]">Блог и аналитика</Link>
               <Link href="/#certificates" className="block transition-colors hover:text-[#FF6B00]">Сертификаты / ГОСТ</Link>
               <Link href="/admin" className="block transition-colors hover:text-[#FF6B00]">Конструктор</Link>
-              <a href="/api/price-list" className="block transition-colors hover:text-[#FF6B00]">Прайс (Excel)</a>
             </nav>
           </div>
 

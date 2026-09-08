@@ -6,12 +6,9 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pesok-metall.ru";
 export const revalidate = 3600; // кэш на час — 900+ URL не пересчитываем на каждый запрос
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, products, posts, geoZones] = await Promise.all([
+  const [categories, posts, geoZones] = await Promise.all([
     prisma.category.findMany({
       select: { slug: true, descriptionGeneratedAt: true },
-    }),
-    prisma.product.findMany({
-      select: { slug: true },
     }),
     prisma.blogPost.findMany({
       select: { slug: true, updatedAt: true },
@@ -25,10 +22,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: SITE_URL, lastModified: now, changeFrequency: "daily", priority: 1.0 },
     { url: `${SITE_URL}/shop`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${SITE_URL}/checkout`, lastModified: now, changeFrequency: "monthly", priority: 0.3 },
-    { url: `${SITE_URL}/contacts`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${SITE_URL}/delivery`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/metall`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/pesok-scheben`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${SITE_URL}/kalkulyator-metalla`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${SITE_URL}/kalkulyator-dostavki`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE_URL}/blog`, lastModified: posts[0]?.updatedAt ?? now, changeFrequency: "daily", priority: 0.7 },
   ];
 
@@ -37,13 +34,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     lastModified: c.descriptionGeneratedAt ?? now,
     changeFrequency: "weekly",
     priority: 0.8,
-  }));
-
-  const productPages: MetadataRoute.Sitemap = products.map((p) => ({
-    url: `${SITE_URL}/product/${encodeURIComponent(p.slug)}`,
-    lastModified: now,
-    changeFrequency: "weekly",
-    priority: 0.7,
   }));
 
   const geoPages: MetadataRoute.Sitemap = geoZones.map((z) => ({
@@ -60,5 +50,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticPages, ...geoPages, ...categoryPages, ...productPages, ...blogPages];
+  return [...staticPages, ...geoPages, ...categoryPages, ...blogPages];
 }
