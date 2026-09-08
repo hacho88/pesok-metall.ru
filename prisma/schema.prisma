@@ -51,6 +51,18 @@ model GeoZone {
   atlasOrders           AtlasOrder[]
 }
 
+model CatalogSection {
+  id          String     @id @default(uuid())
+  name        String     // "Песок и щебень"
+  slug        String     @unique // "pesok-shcheben"
+  icon        String?    // emoji or icon name
+  sortOrder   Int        @default(0)
+  isVisible   Boolean    @default(true)
+  categories  Category[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
 model Category {
   id          String    @id @default(uuid())
   name        String    // Например: "Арматура", "Песок мытый"
@@ -59,6 +71,11 @@ model Category {
   parent      Category?  @relation("CategoryToCategory", fields: [parentId], references: [id])
   children    Category[] @relation("CategoryToCategory")
   products    Product[]
+
+  // Catalog section (Песок и щебень / Металлопрокат) + сортировка
+  sectionId   String?
+  section     CatalogSection? @relation(fields: [sectionId], references: [id], onDelete: SetNull)
+  sortOrder   Int       @default(0) // Порядок отображения внутри секции
 
   // Atlas: SEO и описания категорий
   description       String?  @db.Text // HTML-описание (генерируется DeepSeek или вручную)
@@ -111,8 +128,20 @@ model Product {
   competitorPrices CompetitorPrice[]
   blogPosts       BlogPost[]
   orderItems      OrderItem[]
+  heroBoxes       HeroBox[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
+}
+
+// Боксы на главной — товары, закреплённые вручную в админке (раздел «Боксы»)
+model HeroBox {
+  id        String   @id @default(uuid())
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@unique([productId])
 }
 
 model ProductAttribute {
@@ -167,6 +196,8 @@ model FleetVehicle {
   maxLengthMeters Decimal
   baseFare      Decimal  // Стоимость фиксированной подачи машины
   perKmCharge   Decimal  // Стоимость за каждый километр от МКАД
+  imageUrl      String?  // Фото машины
+  plateNumber   String?  // Гос. номер машины
   isActive      Boolean  @default(true)
 }
 
@@ -352,20 +383,102 @@ model AtlasOrder {
   email         String?
   company       String?
   inn           String?
+  paymentMethod String      @default("cash") // "cash" | "bank_wire"
   deliveryType  String      // "delivery" | "pickup"
   address       String?
+  lat           Decimal?    // Широта точки доставки
+  lng           Decimal?    // Долгота точки доставки
+  distanceKm    Float?      // Расстояние от склада в км
   comment       String?     @db.Text
   geoZoneId     String?
   geoZone       GeoZone?    @relation(fields: [geoZoneId], references: [id])
   subtotal      Float       // Сумма товаров
   deliveryCost  Float       @default(0) // Стоимость доставки
   total         Float       // Итого
+  invoiceSent   Boolean     @default(false) // Счёт отправлен
   items         OrderItem[]
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
   @@index([status])
   @@index([createdAt])
+  @@index([paymentMethod])
+}
+
+// Тарифы доставки — настраиваются в админке
+model DeliveryTariff {
+  id              String   @id @default(uuid())
+  name            String   // "По Москве", "МО", "Дальний МО"
+  basePrice       Float    // Базовая стоимость (за выезд)
+  perKmPrice      Float    // Цена за км от склада
+  minDistanceKm   Float?   // Применяется от этого расстояния (км)
+  maxDistanceKm   Float?   // До этого расстояния (км), null — без ограничения
+  freeFromSum     Float?   // Бесплатная доставка от суммы заказа (₽)
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Настройки магазина — контакты, склад, мессенджер, брендинг
+model ShopSettings {
+  id              String   @id @default(uuid())
+  // Склад — точка отсчёта для расчёта доставки
+  warehouseAddress String  @default("Москва, ул. Промышленная 1")
+  warehouseLat    Float    @default(55.7558)
+  warehouseLng    Float    @default(37.6173)
+  // Контакты (шапка и подвал)
+  phone           String   @default("+7 (495) 000-00-00")
+  email           String   @default("info@pesok-metall.ru")
+  workHours       String   @default("Пн–Пт 8:00–20:00, Сб 9:00–18:00")
+  // Брендинг
+  logoUrl         String?  // URL логотипа (загружается через медиа-загрузчик)
+  siteName        String   @default("Песок-Металл")
+  footerText      String   @default("© 2026 Песок-Металл. Металлопрокат и сыпучие материалы с доставкой по Москве и МО")
+  // Главный экран (Hero) и регион в шапке — раздел «Интерфейс»
+  heroBadge       String   @default("Доставка в день заказа")
+  heroTitle       String   @default("Металлопрокат, песок и щебень с доставкой в день заказа")
+  heroSubtitle    String   @default("Арматура, трубы, листы и сетка с нашего склада плюс сыпучие материалы.")
+  regionLabel     String   @default("Москва и МО")
+  // Соцсети / мессенджеры (для подвала)
+  whatsappUrl     String?
+  telegramUrl     String?
+  vkUrl           String?
+  // Мессенджер MAX (Telegram bot chat_id или WhatsApp) — для счетов
+  messengerType   String   @default("telegram") // "telegram" | "whatsapp" | "max"
+  messengerChatId String?  // chat_id для отправки счетов
+  messengerToken  String?  // Bot token
+  // Уведомления о новых заказах: мессенджер MAX + email
+  maxBotToken     String?  // Токен бота MAX (получить у @masterbot)
+  maxChatId       String?  // chat_id диалога с ботом MAX
+  notifyEmail     String?  // Email магазина для уведомлений о заказах
+  // SMTP для отправки писем (уведомления и счета)
+  smtpHost        String?
+  smtpPort        Int?
+  smtpUser        String?
+  smtpPass        String?
+  smtpFrom        String?  // Адрес отправителя (по умолчанию smtpUser)
+  // Email для счетов
+  invoiceEmail    String?  // Куда отправлять счета (если не указан — на email клиента)
+  updatedAt       DateTime @updatedAt
+}
+
+// Баннеры — маркетинговые баннеры на сайте
+model Banner {
+  id          String   @id @default(uuid())
+  title       String   // Заголовок баннера
+  subtitle    String?  // Подзаголовок
+  imageUrl    String?  // Фоновое изображение
+  linkUrl     String?  // Куда ведёт баннер
+  linkLabel   String?  // Текст кнопки
+  position    String   @default("home_top") // "home_top" | "home_middle" | "catalog_top" | "sidebar"
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  startAt     DateTime? // Когда показывать
+  endAt       DateTime? // До когда показывать
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([position, isActive])
 }
 
 // Atlas: позиция заказа

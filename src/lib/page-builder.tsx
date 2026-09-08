@@ -174,14 +174,14 @@ export async function PageBuilder({ config, geoZone }: PageBuilderProps) {
   const fleet = await getFleet();
 
   // Кастомная тема из БД (создана в админке «Темы») — переопределяет палитру CSS-переменными
+  // Также поддерживается override встроенных тем: если в БД есть запись с slug=theme и isCustom=false,
+  // её палитра применяется поверх встроенной
   let customPalette: Record<string, string | number> | null = null;
-  if (!THEME_CLASSES[config.theme]) {
-    try {
-      const theme = await prisma.theme.findUnique({ where: { slug: config.theme } });
-      if (theme) customPalette = theme.palette as Record<string, string | number>;
-    } catch {
-      // БД недоступна — используем встроенную тему
-    }
+  try {
+    const theme = await prisma.theme.findUnique({ where: { slug: config.theme } });
+    if (theme) customPalette = theme.palette as Record<string, string | number>;
+  } catch {
+    // БД недоступна — используем встроенную тему
   }
 
   const cssVars = customPalette

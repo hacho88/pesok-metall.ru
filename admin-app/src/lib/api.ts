@@ -38,6 +38,17 @@ export interface AdminCategory {
   slug: string;
   parentId: string | null;
   productCount: number;
+  sectionId: string | null;
+  sectionName: string | null;
+  sortOrder: number;
+}
+
+export interface AdminSection {
+  id: string;
+  name: string;
+  slug: string;
+  sortOrder: number;
+  isVisible: boolean;
 }
 
 export type LeadStatus = "NEW" | "CONTACTED" | "QUALIFIED" | "WON" | "LOST";
@@ -187,20 +198,22 @@ export function generateSeoDescription(data: {
 }
 
 // ---- Категории ----
-export function listCategories(): Promise<{ categories: AdminCategory[] }> {
+export function listCategories(): Promise<{ categories: AdminCategory[]; sections: AdminSection[] }> {
   return request("/api/admin/categories");
 }
 
 export function createCategory(data: {
   name: string;
   parentId?: string | null;
+  sectionId?: string | null;
+  sortOrder?: number;
 }): Promise<{ ok: boolean }> {
   return request("/api/admin/categories", { method: "POST", body: JSON.stringify(data) });
 }
 
 export function updateCategory(
   id: string,
-  data: { name: string; parentId?: string | null; slug?: string }
+  data: { name: string; parentId?: string | null; slug?: string; sectionId?: string | null; sortOrder?: number }
 ): Promise<{ ok: boolean }> {
   return request(`/api/admin/categories/${id}`, { method: "PUT", body: JSON.stringify(data) });
 }

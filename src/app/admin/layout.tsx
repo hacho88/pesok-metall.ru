@@ -3,12 +3,13 @@ import Link from "next/link";
 import { 
   LayoutDashboard, 
   Package, 
+  LayoutGrid,
+  PanelTop,
   Megaphone, 
   PenTool, 
   FileText, 
-  Settings,
   Palette,
-  Boxes
+  MapPin,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -20,12 +21,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const navItems = [
     { name: "Дашборд", href: "/admin", icon: LayoutDashboard },
     { name: "Каталог", href: "/admin/catalog", icon: Package },
+    { name: "Боксы на главной", href: "/admin/hero-boxes", icon: LayoutGrid },
+    { name: "Интерфейс", href: "/admin/interface", icon: PanelTop },
     { name: "Маркетинг", href: "/admin/marketing", icon: Megaphone },
     { name: "Блог", href: "/admin/blog", icon: PenTool },
     { name: "Страницы", href: "/admin/pages", icon: FileText },
     { name: "Темы", href: "/admin/themes", icon: Palette },
-    { name: "Конструктор тем", href: "/admin/striker-engine", icon: Boxes },
-    { name: "Настройки", href: "/admin/settings", icon: Settings },
+    { name: "Геозоны", href: "/admin/themes/geo", icon: MapPin },
   ];
 
   return (

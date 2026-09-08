@@ -30,7 +30,12 @@ export type ThemePreset =
   | "city-met"
   | "aurora-forge"
   | "ideal"
-  | "arena";
+  | "arena"
+  | "atlas"
+  | "flat"
+  | "open"
+  | "vinsovkhoz"
+  | "uchunchu";
 
 export interface GeoZoneInfo {
   id: string;

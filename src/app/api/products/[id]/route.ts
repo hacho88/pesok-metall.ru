@@ -32,7 +32,19 @@ export async function PATCH(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { name, priceRetailBase, stock, isOnOrder, categoryId } = body;
+    const {
+      name,
+      priceRetailBase,
+      stock,
+      isOnOrder,
+      categoryId,
+      unit,
+      weightKg,
+      description,
+      shortDescription,
+      seoTitle,
+      seoDescription,
+    } = body;
 
     const product = await prisma.product.update({
       where: { id },
@@ -42,6 +54,14 @@ export async function PATCH(
         stock: stock !== undefined ? Number(stock) : undefined,
         isOnOrder,
         categoryId,
+        unit,
+        weightKg: weightKg !== undefined ? Number(weightKg) : undefined,
+        description,
+        shortDescription,
+        seoTitle,
+        seoDescription,
+        // Ручная правка описания перекрывает ИИ-статус
+        ...(description !== undefined ? { descriptionStatus: "manual" } : {}),
       }
     });
 

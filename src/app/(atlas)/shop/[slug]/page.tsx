@@ -1,13 +1,9 @@
 import type { Metadata } from "next";
-import { getPublishedConfig, getDraftConfig } from "@/lib/atlas/config-store";
-import { getAtlasCategoryTree, getCatalogProducts, findNodeBySlug, collectCategoryIds } from "@/lib/atlas/catalog";
-import { getAtlasZones, getCurrentZone, isPreviewMode } from "@/lib/atlas/server";
-import { AtlasTokensProvider } from "@/components/atlas/tokens/AtlasTokensProvider";
-import { AtlasChrome } from "@/components/atlas/chrome/AtlasChrome";
-import { AtlasCatalogPage } from "@/components/atlas/catalog/AtlasCatalogPage";
-import { resolvePrice } from "@/lib/atlas/pricing";
+import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { sanitizeDescription } from "@/lib/atlas/sanitize";
+import { getCatalog } from "@/lib/pm-catalog";
+import { getPublicSettings } from "@/lib/shop-settings";
+import { PmCategoryPage } from "@/components/pm-theme/PmCategoryPage";
 
 export const dynamic = "force-dynamic";
 
@@ -25,72 +21,30 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 export default async function ShopCategoryPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const decoded = decodeURIComponent(slug);
-  const preview = await isPreviewMode();
-  const config = preview ? await getDraftConfig() : await getPublishedConfig();
-  const [tree, zones, currentZone] = await Promise.all([
-    getAtlasCategoryTree(),
-    getAtlasZones(),
-    getCurrentZone(),
-  ]);
+  const [catalog, settings] = await Promise.all([getCatalog(), getPublicSettings()]);
 
-  const node = findNodeBySlug(tree, decoded);
-  if (!node) {
-    return (
-      <AtlasTokensProvider tokens={config.tokens}>
-        <AtlasChrome config={config} tree={tree} zones={zones} currentZone={currentZone} isPreview={preview} sidebar={config.pages.category.sidebar}>
-          <div className="text-center py-20">
-            <h1 className="text-2xl font-bold mb-2">Категория не найдена</h1>
-            <a href="/shop" className="atlas-btn atlas-btn-primary mt-4">Вернуться в каталог</a>
-          </div>
-        </AtlasChrome>
-      </AtlasTokensProvider>
-    );
+  const pmCategory = catalog.find((c) => c.slug === decoded);
+  if (pmCategory) {
+    return <PmCategoryPage category={pmCategory} catalog={catalog} settings={settings} />;
   }
 
-  const result = await getCatalogProducts({
-    categorySlug: decoded,
-    perPage: config.pages.category.perPage,
-    sort: config.pages.category.defaultSort,
-  });
+  // Дочерняя категория — собираем вид категории из родительского корня
+  for (const root of catalog) {
+    const ref = root.subcategoryRefs.find((r) => r.slug === decoded);
+    if (ref) {
+      const childCategory = {
+        ...root,
+        slug: ref.slug,
+        title: ref.name,
+        intro: `${ref.name} — доставка в день заказа по Москве и МО.`,
+        subcategories: [] as string[],
+        subcategoryRefs: [ref],
+        products: root.products.filter((p) => p.subcategory === ref.name),
+      };
+      return <PmCategoryPage category={childCategory} catalog={catalog} settings={settings} />;
+    }
+  }
 
-  const category = await prisma.category.findUnique({ where: { slug: decoded } });
-
-  const productsWithPrice = result.products.map((p) => ({
-    product: p,
-    price: resolvePrice({
-      priceRetailBase: p.price,
-      isOnOrder: p.isOnOrder,
-      unit: p.unit,
-      weightKg: p.weightKg as any,
-      type: p.type,
-      geoData: [],
-    } as any, currentZone?.slug ?? null),
-  }));
-
-  return (
-    <AtlasTokensProvider tokens={config.tokens}>
-      <AtlasChrome
-        config={config}
-        tree={tree}
-        zones={zones}
-        currentZone={currentZone}
-        isPreview={preview}
-        sidebar={config.pages.category.sidebar}
-      >
-        <AtlasCatalogPage
-          category={node}
-          categoryDescription={category?.description ? sanitizeDescription(category.description) : null}
-          tree={tree}
-          products={productsWithPrice}
-          total={result.total}
-          page={result.page}
-          perPage={result.perPage}
-          totalPages={result.totalPages}
-          facets={result.facets}
-          config={config.pages.category}
-          currentZoneSlug={currentZone?.slug ?? null}
-        />
-      </AtlasChrome>
-    </AtlasTokensProvider>
-  );
+  notFound();
 }
+

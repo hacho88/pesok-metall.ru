@@ -148,7 +148,7 @@ export default function ProductCard({
         <div className="w-full shrink-0 sm:w-64">
           <UnitSelector
             product={product}
-            variant={unitConfig.selectVariant}
+            variant={unitConfig.selectVariant ?? "default"}
             value={quantity}
             unit={unit}
             onChange={(v, u) => {
@@ -255,7 +255,7 @@ export default function ProductCard({
         {/* Matrix Select */}
         <UnitSelector
           product={product}
-          variant={unitConfig.selectVariant}
+          variant={unitConfig.selectVariant ?? "default"}
           value={quantity}
           unit={unit}
           onChange={(v, u) => {

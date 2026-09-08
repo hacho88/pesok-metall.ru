@@ -39,8 +39,12 @@ export async function generateMetadata({ params }: GeoPageProps): Promise<Metada
 }
 
 export async function generateStaticParams() {
-  const zones = await prisma.geoZone.findMany({ select: { slug: true } });
-  return zones.map((z) => ({ slug: z.slug }));
+  try {
+    const zones = await prisma.geoZone.findMany({ select: { slug: true } });
+    return zones.map((z) => ({ slug: z.slug }));
+  } catch {
+    return [];
+  }
 }
 
 export default async function GeoPage({ params }: GeoPageProps) {

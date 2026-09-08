@@ -1,10 +1,51 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
+import { Search } from "lucide-react";
 import { CatalogTree } from "@/components/admin/CatalogTree";
+import { Input } from "@/components/ui/input";
+import { NewProductDialog } from "./NewProductDialog";
+import { CategoryDialog, type EditableCategory } from "./CategoryDialog";
 
-export function CatalogTreeWrapper({ initialItems }: { initialItems: any[] }) {
+interface TreeItem {
+  id: string;
+  name: string;
+  type: "category" | "product";
+  children?: TreeItem[];
+}
+
+/** Фильтр дерева: категория остаётся, если совпадает сама или любой потомок */
+function filterTree(items: TreeItem[], q: string): TreeItem[] {
+  const query = q.trim().toLowerCase();
+  if (!query) return items;
+  const result: TreeItem[] = [];
+  for (const item of items) {
+    if (item.type === "product") {
+      if (item.name.toLowerCase().includes(query)) result.push(item);
+    } else {
+      const matchedChildren = item.children ? filterTree(item.children, query) : [];
+      if (item.name.toLowerCase().includes(query) || matchedChildren.length > 0) {
+        result.push({ ...item, children: matchedChildren });
+      }
+    }
+  }
+  return result;
+}
+
+export function CatalogTreeWrapper({
+  initialItems,
+  categories,
+}: {
+  initialItems: any[];
+  categories: EditableCategory[];
+}) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [addCategoryId, setAddCategoryId] = useState<string | null>(null);
+  const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
+
+  const items = useMemo(() => filterTree(initialItems, query), [initialItems, query]);
+  const editCategory = categories.find((c) => c.id === editCategoryId) ?? null;
 
   const handleMove = async (itemId: string, newCategoryId: string) => {
     try {
@@ -31,11 +72,55 @@ export function CatalogTreeWrapper({ initialItems }: { initialItems: any[] }) {
   };
 
   return (
-    <CatalogTree 
-      items={initialItems} 
-      selectedId={selectedId} 
-      onSelect={handleSelect} 
-      onMove={handleMove}
-    />
+    <div className="flex h-full flex-col gap-3">
+      <div className="relative shrink-0">
+        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+        <Input
+          placeholder="Поиск в каталоге..."
+          className="pl-9 h-11 rounded-xl border-2"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+      </div>
+      <div className="flex-1 overflow-y-auto">
+        {items.length > 0 ? (
+          <CatalogTree
+            items={items}
+            selectedId={selectedId}
+            onSelect={handleSelect}
+            onMove={handleMove}
+            onAddProduct={(categoryId) => setAddCategoryId(categoryId)}
+            onEditCategory={(categoryId) => setEditCategoryId(categoryId)}
+          />
+        ) : (
+          <p className="py-10 text-center text-sm font-bold uppercase tracking-widest text-muted-foreground/40">
+            Ничего не найдено
+          </p>
+        )}
+      </div>
+
+      {/* Диалог добавления товара в категорию (с быстрым «+ Добавить ещё») */}
+      <NewProductDialog
+        categories={categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          parentName: c.parentName,
+        }))}
+        open={addCategoryId !== null}
+        onOpenChange={(v) => {
+          if (!v) setAddCategoryId(null);
+        }}
+        presetCategoryId={addCategoryId ?? undefined}
+      />
+
+      {/* Диалог редактирования категории: фото, описание, SEO */}
+      <CategoryDialog
+        category={editCategory}
+        open={editCategoryId !== null}
+        onOpenChange={(v) => {
+          if (!v) setEditCategoryId(null);
+        }}
+      />
+    </div>
   );
 }

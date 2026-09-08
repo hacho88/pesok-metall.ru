@@ -414,6 +414,24 @@ export const THEME_OPTIONS: ThemeOption[] = [
     description: "Торговая арена снабжения: тёмный графит, прожекторы, electric-orange CTA, steel-cyan данные, lime-статусы, scoreboard и brutal bento",
     swatch: ["#080b10", "#ff6a00", "#00c2ff"],
   },
+  {
+    value: "atlas",
+    label: "Atlas",
+    description: "Премиальная дизайн-система: токены, секции, зоны, конструктор страниц",
+    swatch: ["#f8fafc", "#0ea5e9", "#0f172a"],
+  },
+  {
+    value: "flat",
+    label: "Flat",
+    description: "Минималистичный flat-дизайн: Montserrat, тёплый коричневый акцент, чистая типографика",
+    swatch: ["#fafafa", "#bd744c", "#1a1a1a"],
+  },
+  {
+    value: "open",
+    label: "Open",
+    description: "Light Luxury / Glassmorphism: Jost, красный акцент #e74c3c, blur-эффекты, мягкие скругления",
+    swatch: ["#f5f6f8", "#e74c3c", "#1a1d24"],
+  },
 ];
 
 export function getBlockSchema(type: PageBlock["type"]): BlockTypeSchema | undefined {

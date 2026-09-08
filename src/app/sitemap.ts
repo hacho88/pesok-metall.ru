@@ -3,16 +3,21 @@ import { prisma } from "@/lib/prisma";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pesok-metall.ru";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 3600; // кэш на час — 900+ URL не пересчитываем на каждый запрос
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [categories, products] = await Promise.all([
+  const [categories, products, posts, geoZones] = await Promise.all([
     prisma.category.findMany({
       select: { slug: true, descriptionGeneratedAt: true },
     }),
     prisma.product.findMany({
       select: { slug: true },
     }),
+    prisma.blogPost.findMany({
+      select: { slug: true, updatedAt: true },
+      orderBy: { updatedAt: "desc" },
+    }),
+    prisma.geoZone.findMany({ select: { slug: true, aiDescription: true } }),
   ]);
 
   const now = new Date();
@@ -24,7 +29,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${SITE_URL}/contacts`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${SITE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
     { url: `${SITE_URL}/delivery`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${SITE_URL}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.6 },
+    { url: `${SITE_URL}/blog`, lastModified: posts[0]?.updatedAt ?? now, changeFrequency: "daily", priority: 0.7 },
   ];
 
   const categoryPages: MetadataRoute.Sitemap = categories.map((c) => ({
@@ -41,5 +46,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...categoryPages, ...productPages];
+  const geoPages: MetadataRoute.Sitemap = geoZones.map((z) => ({
+    url: `${SITE_URL}/geo/${encodeURIComponent(z.slug)}`,
+    lastModified: now,
+    changeFrequency: "weekly",
+    priority: 0.8,
+  }));
+
+  const blogPages: MetadataRoute.Sitemap = posts.map((p) => ({
+    url: `${SITE_URL}/blog/${encodeURIComponent(p.slug)}`,
+    lastModified: p.updatedAt,
+    changeFrequency: "weekly",
+    priority: 0.6,
+  }));
+
+  return [...staticPages, ...geoPages, ...categoryPages, ...productPages, ...blogPages];
 }

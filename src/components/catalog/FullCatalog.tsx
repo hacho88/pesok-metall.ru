@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   ArrowRight,
   Check,
@@ -10,6 +11,7 @@ import {
   ChevronDown,
   ChevronRight,
   Grid3X3,
+  Home,
   Layers,
   List,
   Minus,
@@ -22,7 +24,7 @@ import {
 } from "lucide-react";
 import { productImageSrc } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
-import { getUnitInfo } from "@/lib/product-units";
+import { calcLineWeightKg, getUnitInfo, kgToTons } from "@/lib/product-units";
 import { categoryIcon } from "@/lib/category-icons";
 import type { CategoryNode } from "@/components/catalog/CategorySidebar";
 import type { UnifiedProduct } from "@/lib/unified-catalog";
@@ -78,7 +80,7 @@ function unifiedToCartItem(p: UnifiedProduct, quantity = 1): CheckoutCartItem {
     unit,
     quantity,
     weightKg: p.weightKg,
-    weightTons: Math.round(((p.weightKg * quantity) / 1000) * 1000) / 1000,
+    weightTons: kgToTons(calcLineWeightKg(unit, p.weightKg, quantity, p.type)),
     pricePerUnit: p.price,
     lineTotal: p.price != null ? p.price * quantity : null,
   };
@@ -102,6 +104,7 @@ export function FullCatalog({
   totalProducts?: number;
 }) {
   const { addItem, setOpen } = useCart();
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("ALL");
   const [unitFilter, setUnitFilter] = useState<UnitFilter>("ALL");
@@ -262,12 +265,30 @@ export function FullCatalog({
   return (
     <section id="catalog" className="block-section py-12">
       <div className="mx-auto max-w-[1440px]">
+        {/* Breadcrumb */}
+        <nav className="mb-6 flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+          <Link href="/" className="flex items-center gap-1 transition-colors hover:text-primary">
+            <Home className="h-3.5 w-3.5" />
+            Главная
+          </Link>
+          <ChevronRight className="h-3 w-3 opacity-50" />
+          <Link href="/catalog" className="transition-colors hover:text-primary">Каталог</Link>
+          {categorySlug && (
+            <>
+              <ChevronRight className="h-3 w-3 opacity-50" />
+              <span className="text-foreground">
+                {flatCategories.find((c) => c.slug === categorySlug)?.name ?? categorySlug}
+              </span>
+            </>
+          )}
+        </nav>
+
         {/* Заголовок */}
         <div className="mb-8 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <span className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/15 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary">
               <Layers className="h-3.5 w-3.5" />
-              Весь ассортимент
+              {categorySlug ? flatCategories.find((c) => c.slug === categorySlug)?.name ?? "Категория" : "Весь ассортимент"}
             </span>
             <h2 className="font-jakarta text-3xl font-extrabold tracking-tight sm:text-4xl">{title}</h2>
             {subtitle && <p className="mt-3 max-w-2xl text-base leading-relaxed text-muted-foreground">{subtitle}</p>}
@@ -320,6 +341,16 @@ export function FullCatalog({
                 <List className="h-4 w-4" />
               </button>
             </div>
+            <select
+              value={sort}
+              onChange={(e) => setSort(e.target.value as SortMode)}
+              className="h-11 rounded-full border border-border bg-card px-4 text-sm font-bold outline-none transition-colors focus:border-primary"
+            >
+              <option value="popular">Сначала популярные</option>
+              <option value="price-asc">Цена ↑</option>
+              <option value="price-desc">Цена ↓</option>
+              <option value="name">По названию</option>
+            </select>
           </div>
         </div>
 
@@ -333,10 +364,10 @@ export function FullCatalog({
               const cat = flatCategories.find((c) => c.name.toLowerCase().includes(name.toLowerCase()));
               const isActive = categorySlug === cat?.slug;
               return (
-                <button
+                <Link
                   key={name}
-                  type="button"
-                  onClick={() => setCategorySlug(isActive ? null : (cat?.slug ?? null))}
+                  href={cat ? `/catalog/${cat.slug}` : "#"}
+                  onClick={(e) => { if (!cat) e.preventDefault(); }}
                   className={cn(
                     "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-all active:scale-95",
                     isActive
@@ -346,7 +377,7 @@ export function FullCatalog({
                 >
                   {name}
                   {cat ? ` · ${categoryCounts.get(cat.id) ?? 0}` : ""}
-                </button>
+                </Link>
               );
             })}
           </div>
@@ -359,9 +390,8 @@ export function FullCatalog({
             {/* Мобильная панель: чипы категорий + кнопка «Фильтры» */}
             <div className="lg:hidden">
               <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <button
-                  type="button"
-                  onClick={() => setCategorySlug(null)}
+                <Link
+                  href="/catalog"
                   className={cn(
                     "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-all",
                     categorySlug === null
@@ -370,12 +400,11 @@ export function FullCatalog({
                   )}
                 >
                   Все товары
-                </button>
+                </Link>
                 {categories.map((c) => (
-                  <button
+                  <Link
                     key={c.id}
-                    type="button"
-                    onClick={() => setCategorySlug(categorySlug === c.slug ? null : c.slug)}
+                    href={`/catalog/${c.slug}`}
                     className={cn(
                       "shrink-0 rounded-full border px-3.5 py-1.5 text-xs font-bold transition-all",
                       categorySlug === c.slug
@@ -384,7 +413,7 @@ export function FullCatalog({
                     )}
                   >
                     {c.name} · {categoryCounts.get(c.id) ?? 0}
-                  </button>
+                  </Link>
                 ))}
               </div>
               <button
@@ -435,9 +464,8 @@ export function FullCatalog({
                 />
               </div>
               <nav className="mt-3 max-h-[calc(100vh-320px)] space-y-0.5 overflow-y-auto pr-1">
-                <button
-                  type="button"
-                  onClick={() => setCategorySlug(null)}
+                <Link
+                  href="/catalog"
                   className={cn(
                     "flex w-full items-center justify-between rounded-lg px-3 py-2 text-[13px] font-bold transition-all",
                     categorySlug === null
@@ -450,7 +478,7 @@ export function FullCatalog({
                     <span>Все товары</span>
                   </span>
                   <span className="text-[11px] opacity-70">{products.length}</span>
-                </button>
+                </Link>
                 {filteredTree.map((c) => (
                   <CategoryTreeItem
                     key={c.id}
@@ -715,13 +743,13 @@ function CategoryTreeItem({
         ) : (
           <span className="w-3.5 shrink-0" />
         )}
-        <button type="button" onClick={() => onSelect(category.slug)} className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left">
+        <Link href={`/catalog/${category.slug}`} className="flex min-w-0 flex-1 items-center justify-between gap-2 text-left">
           <span className="flex min-w-0 items-center gap-1.5">
             <Icon className="h-3.5 w-3.5 shrink-0 opacity-60" />
             <span className="truncate">{category.name}</span>
           </span>
           <span className="shrink-0 text-[11px] opacity-60">{counts.get(category.id) ?? 0}</span>
-        </button>
+        </Link>
       </div>
       {hasChildren && isOpen && (
         <div className="mt-0.5 space-y-0.5">
@@ -958,11 +986,54 @@ function ProductCard({
         <Link href={`/metall/${p.slug}`} className="mt-1.5 line-clamp-2 font-bold leading-snug transition-colors hover:text-primary">
           {p.groupName || p.name}
         </Link>
-        {(p.length || info.weightLabel) && (
-          <p className="mt-1.5 text-xs font-medium text-muted-foreground">
-            {[p.length, info.weightLabel].filter(Boolean).join(" · ")}
-          </p>
-        )}
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {(() => {
+            const dia = p.attributes.find((a) => /диаметр/i.test(a.key));
+            if (dia) return (
+              <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                ⌀ {dia.value}
+              </span>
+            );
+            return null;
+          })()}
+          {(() => {
+            const thick = p.attributes.find((a) => /толщ/i.test(a.key));
+            if (thick) return (
+              <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                {thick.value}
+              </span>
+            );
+            return null;
+          })()}
+          {p.length && (
+            <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+              {p.length}
+            </span>
+          )}
+          {info.weightLabel && (
+            <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+              {info.weightLabel}
+            </span>
+          )}
+          {(() => {
+            const gost = p.attributes.find((a) => /гост/i.test(a.key));
+            if (gost) return (
+              <span className="rounded-md bg-muted px-2 py-0.5 text-[10px] font-bold text-muted-foreground">
+                {gost.value}
+              </span>
+            );
+            return null;
+          })()}
+          {(() => {
+            const grade = p.attributes.find((a) => /марка/i.test(a.key));
+            if (grade) return (
+              <span className="rounded-md bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
+                {grade.value}
+              </span>
+            );
+            return null;
+          })()}
+        </div>
 
         <div className="mt-auto pt-5">
           {available ? (

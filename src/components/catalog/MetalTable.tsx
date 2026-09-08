@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { 
@@ -66,6 +66,8 @@ const fmt = (n: number) =>
 const fmtDetailed = (n: number) =>
   n.toLocaleString("ru-RU", { maximumFractionDigits: 2 });
 
+const PAGE_SIZE = 30;
+
 // Цена за тонну: для «м» — из веса метра, для «т» — та же, иначе нет переключателя
 function pricePerTon(p: MetalProductData): number | null {
   if (p.price == null) return null;
@@ -96,6 +98,7 @@ export function MetalTable({
   const [checkoutStep, setCheckoutStep] = useState(1); // 1=cart, 2=contacts, 3=delivery, 4=confirm
   const [form, setForm] = useState({ name: "", phone: "", address: "", deliveryType: "delivery", comment: "" });
   const [formError, setFormError] = useState<string | null>(null);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   // Состояние выбранных вариантов для каждой группы
   const [selectedVariants, setSelectedVariants] = useState<Record<string, string>>({});
@@ -139,6 +142,11 @@ export function MetalTable({
       (p) => p.name.toLowerCase().includes(q) || p.categoryName.toLowerCase().includes(q)
     );
   }, [groupedProducts, query]);
+
+  // Reset pagination on filter change
+  useEffect(() => setVisibleCount(PAGE_SIZE), [query]);
+
+  const visibleProducts = useMemo(() => filtered.slice(0, visibleCount), [filtered, visibleCount]);
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const cartSum = cart.reduce((s, i) => s + i.qty * i.price, 0);
@@ -264,7 +272,7 @@ export function MetalTable({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {filtered.map((p) => {
+                  {visibleProducts.map((p) => {
                     const price = p.price;
                     const perTon = pricePerTon(p);
                     const n = qty[p.id] ?? 1;
@@ -394,7 +402,7 @@ export function MetalTable({
 
             {/* Mobile Cards */}
             <div className="grid gap-4 md:hidden">
-              {filtered.map((p) => {
+              {visibleProducts.map((p) => {
                 const price = p.price;
                 const perTon = pricePerTon(p);
                 const n = qty[p.id] ?? 1;
@@ -469,6 +477,21 @@ export function MetalTable({
                 );
               })}
             </div>
+
+            {visibleCount < filtered.length && (
+              <div className="mt-8 flex flex-col items-center gap-3">
+                <p className="text-xs font-bold text-slate-400">
+                  Показано {visibleProducts.length} из {filtered.length} поз.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((v) => v + PAGE_SIZE)}
+                  className="rounded-full border-2 border-slate-200 bg-white px-8 py-3 text-sm font-black uppercase tracking-widest text-slate-700 transition-all hover:border-slate-900 hover:bg-slate-900 hover:text-white active:scale-95"
+                >
+                  Показать ещё
+                </button>
+              </div>
+            )}
 
             {filtered.length === 0 && (
               <div className="flex flex-col items-center justify-center rounded-[3rem] border-4 border-dashed border-slate-100 py-24 text-center">

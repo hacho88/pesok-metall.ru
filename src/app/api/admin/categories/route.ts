@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { invalidateCatalogCache } from "@/lib/pm-catalog";
 
 function slugify(text: string): string {
   return text
@@ -11,13 +12,19 @@ function slugify(text: string): string {
     .slice(0, 80);
 }
 
-// GET /api/admin/categories — дерево категорий с количеством товаров
+// GET /api/admin/categories — дерево категорий с количеством товаров и секциями
 export async function GET() {
   try {
-    const categories = await prisma.category.findMany({
-      include: { _count: { select: { products: true } } },
-      orderBy: { name: "asc" },
-    });
+    const [categories, sections] = await Promise.all([
+      prisma.category.findMany({
+        include: {
+          _count: { select: { products: true } },
+          section: { select: { id: true, name: true, slug: true } },
+        },
+        orderBy: [{ section: { sortOrder: "asc" } }, { sortOrder: "asc" }, { name: "asc" }],
+      }),
+      prisma.catalogSection.findMany({ orderBy: { sortOrder: "asc" } }),
+    ]);
     return NextResponse.json({
       categories: categories.map((c) => ({
         id: c.id,
@@ -25,6 +32,16 @@ export async function GET() {
         slug: c.slug,
         parentId: c.parentId,
         productCount: c._count.products,
+        sectionId: c.sectionId,
+        sectionName: c.section?.name ?? null,
+        sortOrder: c.sortOrder,
+      })),
+      sections: sections.map((s) => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        sortOrder: s.sortOrder,
+        isVisible: s.isVisible,
       })),
     });
   } catch (error) {
@@ -41,6 +58,8 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const name: string | undefined = body.name;
     const parentId: string | undefined = body.parentId;
+    const sectionId: string | undefined = body.sectionId;
+    const sortOrder: number | undefined = body.sortOrder;
 
     if (!name || !name.trim()) {
       return NextResponse.json({ error: "Поле name обязательно" }, { status: 400 });
@@ -54,8 +73,15 @@ export async function POST(request: NextRequest) {
     }
 
     const category = await prisma.category.create({
-      data: { name: name.trim(), slug, parentId: parentId || null },
+      data: {
+        name: name.trim(),
+        slug,
+        parentId: parentId || null,
+        sectionId: sectionId || null,
+        sortOrder: typeof sortOrder === "number" ? sortOrder : 0,
+      },
     });
+    invalidateCatalogCache();
     return NextResponse.json({ ok: true, category }, { status: 201 });
   } catch (error) {
     return NextResponse.json(

@@ -8,6 +8,7 @@ import {
   updateCategory,
   deleteCategory,
   type AdminCategory,
+  type AdminSection,
 } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -55,12 +56,15 @@ function flattenTree(nodes: TreeNode[]): TreeNode[] {
 
 export default function CategoriesPage() {
   const [categories, setCategories] = useState<AdminCategory[] | null>(null);
+  const [sections, setSections] = useState<AdminSection[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [editing, setEditing] = useState<AdminCategory | null>(null);
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [parentId, setParentId] = useState("");
+  const [sectionId, setSectionId] = useState("");
+  const [sortOrder, setSortOrder] = useState(0);
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
@@ -100,6 +104,7 @@ export default function CategoriesPage() {
     try {
       const data = await listCategories();
       setCategories(data.categories);
+      setSections(data.sections ?? []);
       setError(null);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -114,6 +119,8 @@ export default function CategoriesPage() {
     setEditing(null);
     setName("");
     setParentId("");
+    setSectionId("");
+    setSortOrder(0);
     setFormError(null);
     setModalOpen(true);
   }
@@ -123,6 +130,8 @@ export default function CategoriesPage() {
     setName(c.name);
     setSlug(c.slug);
     setParentId(c.parentId || "");
+    setSectionId(c.sectionId || "");
+    setSortOrder(c.sortOrder);
     setFormError(null);
     setModalOpen(true);
   }
@@ -140,9 +149,16 @@ export default function CategoriesPage() {
           name: name.trim(),
           parentId: parentId || null,
           slug: slug.trim() || undefined,
+          sectionId: sectionId || null,
+          sortOrder: typeof sortOrder === "number" ? sortOrder : 0,
         });
       } else {
-        await createCategory({ name: name.trim(), parentId: parentId || null });
+        await createCategory({
+          name: name.trim(),
+          parentId: parentId || null,
+          sectionId: sectionId || null,
+          sortOrder: typeof sortOrder === "number" ? sortOrder : 0,
+        });
       }
       setModalOpen(false);
       await load();
@@ -196,10 +212,12 @@ export default function CategoriesPage() {
 
       {categories && (
         <div className="overflow-x-auto rounded-xl border bg-card">
-          <table className="w-full min-w-[560px] text-sm">
+          <table className="w-full min-w-[680px] text-sm">
             <thead>
               <tr className="border-b bg-muted/40 text-left text-xs text-muted-foreground">
                 <th className="px-4 py-3 font-medium">Название</th>
+                <th className="px-4 py-3 font-medium">Секция</th>
+                <th className="px-4 py-3 font-medium">Сорт.</th>
                 <th className="px-4 py-3 font-medium">Slug</th>
                 <th className="px-4 py-3 text-right font-medium">Товаров</th>
                 <th className="px-4 py-3 text-right font-medium">Действия</th>
@@ -232,6 +250,10 @@ export default function CategoriesPage() {
                         {c.name}
                       </div>
                     </td>
+                    <td className="px-4 py-3 text-muted-foreground">
+                      {c.sectionName ?? <span className="text-muted-foreground/50">—</span>}
+                    </td>
+                    <td className="px-4 py-3 text-muted-foreground">{c.sortOrder}</td>
                     <td className="px-4 py-3 text-muted-foreground">/{c.slug}</td>
                     <td className="px-4 py-3 text-right">{c.productCount}</td>
                     <td className="px-4 py-3">
@@ -303,6 +325,27 @@ export default function CategoriesPage() {
                     </option>
                   ))}
                 </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Секция каталога</Label>
+                <Select value={sectionId} onChange={(e) => setSectionId(e.target.value)}>
+                  <option value="">— без секции —</option>
+                  {sections.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Порядок сортировки</Label>
+                <Input
+                  type="number"
+                  value={sortOrder}
+                  onChange={(e) => setSortOrder(parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                />
+                <p className="text-xs text-muted-foreground">Чем меньше число — тем выше в списке</p>
               </div>
               {formError && (
                 <div className="rounded-lg border border-red-300 bg-red-50 p-3 text-sm text-red-800">

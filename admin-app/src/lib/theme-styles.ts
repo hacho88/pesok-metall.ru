@@ -89,6 +89,10 @@ export const THEME_STYLE_OF: Record<ThemePreset, ThemeStyle> = {
   ideal: "minimal",
   // Arena — тёмная «торговая арена» (brutal bento, scoreboard, прожекторы)
   arena: "bento",
+  // Винсовхоз — v0-тема pesok-metall (commerce, electric blue, сайдбар-каталог)
+  vinsovkhoz: "commerce",
+  // Учунчу — stal-market B2B (commerce, брендовый шапка/футер)
+  uchunchu: "commerce",
 };
 
 export function getThemeStyle(theme: ThemePreset): ThemeStyle {

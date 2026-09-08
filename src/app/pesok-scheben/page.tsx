@@ -5,6 +5,8 @@ import { DefaultLayout } from "@/components/layout/DefaultLayout";
 import { SandProductCard } from "@/components/catalog/SandProductCard";
 import { getSandTree, toSandProduct } from "@/lib/sand-catalog";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Песок и щебень в мешках и биг-бегах — купить с доставкой",
   description:

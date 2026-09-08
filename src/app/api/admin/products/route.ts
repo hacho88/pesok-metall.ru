@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { ProductType } from "@prisma/client";
+import { invalidateCatalogCache } from "@/lib/pm-catalog";
 
 const PRODUCT_TYPES = Object.values(ProductType);
 
@@ -121,6 +122,7 @@ export async function POST(request: NextRequest) {
       include: { attributes: true },
     });
 
+    invalidateCatalogCache();
     return NextResponse.json({ ok: true, product }, { status: 201 });
   } catch (error) {
     return NextResponse.json(

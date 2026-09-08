@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 // GET /api/admin/fleet — автопарк
 export async function GET() {
   try {
-    const fleet = await prisma.fleetVehicle.findMany({ orderBy: { baseFare: "asc" } });
+    const fleet = await prisma.fleetVehicle.findMany({ orderBy: { maxWeightKg: "asc" } });
     return NextResponse.json({
       fleet: fleet.map((v) => ({
         id: v.id,
@@ -13,6 +13,8 @@ export async function GET() {
         maxLengthMeters: v.maxLengthMeters.toString(),
         baseFare: v.baseFare.toString(),
         perKmCharge: v.perKmCharge.toString(),
+        imageUrl: v.imageUrl,
+        plateNumber: v.plateNumber,
         isActive: v.isActive,
       })),
     });
@@ -39,6 +41,8 @@ export async function POST(request: NextRequest) {
         maxLengthMeters: Number(body.maxLengthMeters ?? 3),
         baseFare: Number(body.baseFare ?? 0),
         perKmCharge: Number(body.perKmCharge ?? 0),
+        imageUrl: body.imageUrl ?? null,
+        plateNumber: body.plateNumber ?? null,
         isActive: body.isActive !== false,
       },
     });

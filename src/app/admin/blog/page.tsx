@@ -3,14 +3,12 @@ import {
   PenTool, 
   Sparkles, 
   Trash2, 
-  ExternalLink,
-  Plus
+  ExternalLink
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
-import { GeneratePostButton } from "./GeneratePostButton";
 import { DeletePostButton } from "./DeletePostButton";
 import { EditPostModal } from "./EditPostModal";
 
@@ -28,14 +26,11 @@ export default async function BlogAdminPage() {
         <div>
           <h1 className="flex items-center gap-3 text-3xl font-black tracking-tight">
             <PenTool className="h-8 w-8 text-primary" />
-            AI Блог и SEO
+            Блог и SEO
           </h1>
           <p className="mt-1 text-muted-foreground font-bold uppercase tracking-widest text-[10px]">
-            Автоматическая генерация экспертного контента
+            Статьи пишутся автоматически каждый день: 3/день первые 2 недели, затем 5/день
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-           <GeneratePostButton />
         </div>
       </div>
 

@@ -12,6 +12,8 @@ import {
   Sparkles,
   Trash2,
   Wand2,
+  RotateCcw,
+  Eye,
 } from "lucide-react";
 import { THEME_OPTIONS } from "@/lib/block-schemas";
 import { cn } from "@/lib/utils";
@@ -51,6 +53,13 @@ export default function ThemesAdminPage() {
   const [creatorOpen, setCreatorOpen] = useState(false);
   const [themeName, setThemeName] = useState("");
   const [palette, setPalette] = useState(DEFAULT_PALETTE);
+
+  // Редактор текущей темы
+  const [editorOpen, setEditorOpen] = useState(false);
+  const [editorPalette, setEditorPalette] = useState<Record<string, string | number> | null>(null);
+  const [editorLoading, setEditorLoading] = useState(false);
+  const [editorSaving, setEditorSaving] = useState(false);
+  const [hasOverride, setHasOverride] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -137,6 +146,77 @@ export default function ThemesAdminPage() {
     }
   }
 
+  // ─── Редактор текущей темы ───
+  async function loadEditor() {
+    if (!activeTheme) return;
+    setEditorOpen(true);
+    setEditorLoading(true);
+    try {
+      const res = await fetch(`/api/themes/override?slug=${activeTheme}`);
+      const data = await res.json();
+      if (data.theme) {
+        setEditorPalette(data.theme.palette);
+        setHasOverride(true);
+      } else {
+        const builtin = BUILTIN_THEMES.find((t) => t.value === activeTheme);
+        setEditorPalette({
+          background: builtin?.swatch[0] ?? "#f5f8fc",
+          foreground: builtin?.swatch[2] ?? "#0f172a",
+          card: "#ffffff",
+          primary: builtin?.swatch[1] ?? "#3b82f6",
+          secondary: "#e2e8f0",
+          muted: "#f1f5f9",
+          mutedForeground: "#64748b",
+          border: "#e2e8f0",
+          radius: 12,
+        });
+        setHasOverride(false);
+      }
+    } catch {
+      setError("Не удалось загрузить тему");
+    } finally {
+      setEditorLoading(false);
+    }
+  }
+
+  async function saveOverride() {
+    if (!activeTheme || !editorPalette) return;
+    setEditorSaving(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/themes/override", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ slug: activeTheme, palette: editorPalette }),
+      });
+      if (!res.ok) throw new Error("Ошибка сохранения");
+      setHasOverride(true);
+      setMessage(`Тема «${activeTheme}» обновлена. Откройте / чтобы увидеть.`);
+    } catch (e: any) {
+      setError(e.message ?? "Не удалось сохранить");
+    } finally {
+      setEditorSaving(false);
+    }
+  }
+
+  async function resetOverride() {
+    if (!activeTheme) return;
+    setEditorSaving(true);
+    setError(null);
+    setMessage(null);
+    try {
+      await fetch(`/api/themes/override?slug=${activeTheme}`, { method: "DELETE" });
+      setHasOverride(false);
+      setMessage(`Тема «${activeTheme}» сброшена к дефолту.`);
+      loadEditor();
+    } catch {
+      setError("Не удалось сбросить");
+    } finally {
+      setEditorSaving(false);
+    }
+  }
+
   const paletteFields: { key: keyof typeof DEFAULT_PALETTE; label: string }[] = [
     { key: "background", label: "Фон страницы" },
     { key: "foreground", label: "Текст" },
@@ -181,6 +261,154 @@ export default function ThemesAdminPage() {
           {error}
         </div>
       )}
+
+      {/* Редактор текущей темы */}
+      <section>
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <h2 className="flex items-center gap-2 text-xl font-black uppercase tracking-tight">
+              <Palette className="h-5 w-5 text-primary" />
+              Редактировать текущую тему
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Активная тема: <span className="font-black text-foreground">{activeTheme}</span>
+              {hasOverride && <span className="ml-2 rounded-full bg-green-100 px-2 py-0.5 text-[10px] font-black uppercase text-green-700">изменена</span>}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => (editorOpen ? setEditorOpen(false) : loadEditor())}
+              className="inline-flex items-center gap-2 rounded-2xl bg-primary px-5 py-3 text-sm font-black uppercase tracking-widest text-primary-foreground transition-all hover:brightness-110 active:scale-95"
+            >
+              <Eye className="h-4 w-4" />
+              {editorOpen ? "Скрыть" : "Редактировать"}
+            </button>
+          </div>
+        </div>
+
+        {editorOpen && (
+          <div className="rounded-3xl border-2 border-primary/30 bg-card p-8">
+            {editorLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+              </div>
+            ) : editorPalette ? (
+              <>
+                <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                  {paletteFields.map((field) => (
+                    <div key={field.key}>
+                      <label className="mb-2 block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                        {field.label}
+                      </label>
+                      <div className="flex items-center gap-3 rounded-2xl border-2 border-border bg-background p-2">
+                        <input
+                          type="color"
+                          value={String(editorPalette[field.key] ?? "#000000")}
+                          onChange={(e) => setEditorPalette((p) => ({ ...p!, [field.key]: e.target.value }))}
+                          className="h-10 w-10 cursor-pointer rounded-xl border-0 bg-transparent"
+                        />
+                        <input
+                          value={String(editorPalette[field.key] ?? "")}
+                          onChange={(e) => setEditorPalette((p) => ({ ...p!, [field.key]: e.target.value }))}
+                          className="w-full bg-transparent font-mono text-xs font-bold outline-none"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <div>
+                    <label className="mb-2 block text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                      Радиус скругления
+                    </label>
+                    <input
+                      type="range"
+                      min={0}
+                      max={24}
+                      value={Number(editorPalette.radius ?? 12)}
+                      onChange={(e) => setEditorPalette((p) => ({ ...p!, radius: Number(e.target.value) }))}
+                      className="w-full accent-primary"
+                    />
+                    <span className="text-xs font-bold text-muted-foreground">{editorPalette.radius}px</span>
+                  </div>
+                </div>
+
+                {/* Превью */}
+                <div className="mt-8">
+                  <p className="mb-3 text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                    Предпросмотр
+                  </p>
+                  <div
+                    className="overflow-hidden rounded-3xl border-2 p-8"
+                    style={{
+                      background: String(editorPalette.background ?? "#fff"),
+                      color: String(editorPalette.foreground ?? "#000"),
+                      borderRadius: `${editorPalette.radius ?? 12}px`,
+                      borderColor: String(editorPalette.border ?? "#ccc"),
+                    }}
+                  >
+                    <div
+                      className="mb-4 inline-flex rounded-full px-4 py-1.5 text-xs font-black uppercase tracking-widest"
+                      style={{ background: String(editorPalette.primary ?? "#3b82f6"), color: String(editorPalette.background ?? "#fff") }}
+                    >
+                      {activeTheme}
+                    </div>
+                    <h4 className="text-2xl font-black tracking-tight">Заголовок блока</h4>
+                    <p className="mt-2 text-sm" style={{ color: String(editorPalette.mutedForeground ?? "#666") }}>
+                      Текст описания с приглушённым цветом для читаемости.
+                    </p>
+                    <div className="mt-5 flex gap-3">
+                      <span
+                        className="rounded-full px-6 py-2.5 text-sm font-black"
+                        style={{ background: String(editorPalette.primary ?? "#3b82f6"), color: String(editorPalette.background ?? "#fff") }}
+                      >
+                        Кнопка
+                      </span>
+                      <span
+                        className="rounded-full border-2 px-6 py-2.5 text-sm font-black"
+                        style={{ borderColor: String(editorPalette.border ?? "#ccc") }}
+                      >
+                        Вторая
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-8 flex gap-3">
+                  <button
+                    type="button"
+                    onClick={saveOverride}
+                    disabled={editorSaving}
+                    className="flex h-13 flex-1 items-center justify-center gap-2 rounded-2xl bg-primary px-6 py-4 text-sm font-black uppercase tracking-widest text-primary-foreground transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-60"
+                  >
+                    {editorSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                    Сохранить изменения
+                  </button>
+                  {hasOverride && (
+                    <button
+                      type="button"
+                      onClick={resetOverride}
+                      disabled={editorSaving}
+                      className="flex items-center justify-center gap-2 rounded-2xl border-2 border-red-200 px-6 py-4 text-sm font-black uppercase tracking-widest text-red-500 transition-colors hover:bg-red-50 disabled:opacity-60"
+                    >
+                      <RotateCcw className="h-4 w-4" />
+                      Сбросить к дефолту
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setEditorOpen(false)}
+                    className="rounded-2xl border-2 border-border px-6 py-4 text-sm font-black uppercase tracking-widest transition-colors hover:bg-muted"
+                  >
+                    Закрыть
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="py-8 text-center text-muted-foreground">Не удалось загрузить палитру</div>
+            )}
+          </div>
+        )}
+      </section>
 
       {/* Готовые темы */}
       <section>

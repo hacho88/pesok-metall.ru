@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Check, CheckCircle2, Minus, Plus, Ruler, Scale, ShoppingCart, Truck } from "lucide-react";
 import { productImageSrc } from "@/lib/product-image";
-import { getUnitInfo } from "@/lib/product-units";
+import { calcLineWeightKg, getUnitInfo, kgToTons } from "@/lib/product-units";
 import { useCart } from "@/components/checkout/CartContext";
 import { cn } from "@/lib/utils";
 
@@ -40,10 +40,23 @@ export function ProductDetail({
 }) {
   const { addItem, setOpen } = useCart();
   const [qty, setQty] = useState(1);
+  const [qtyMode, setQtyMode] = useState<"unit" | "ton">("unit");
   const [added, setAdded] = useState(false);
   const img = productImageSrc(p.imageLocal, p.imageUrl);
-  const info = getUnitInfo(p.unit, p.weightKg, p.price, p.type);
+  const info = getUnitInfo(p.unit, p.weightKg, p.price, p.type, p.name);
   const available = !p.isOnOrder && p.price != null;
+
+  // Количество в основных единицах (м/шт/кг) — при вводе в тоннах пересчитываем
+  const qtyUnits = qtyMode === "ton" && info.isLinear && p.weightKg > 0
+    ? Math.max(1, Math.round(((qty * 1000) / p.weightKg) * 10) / 10)
+    : qty;
+  const qtyTons = info.isLinear && p.weightKg > 0
+    ? Math.round(((p.weightKg * qtyUnits) / 1000) * 1000) / 1000
+    : null;
+
+  // Точный вес строки и сумма
+  const lineWeightKg = calcLineWeightKg(p.unit, p.weightKg, qtyUnits, p.type);
+  const lineTotal = p.price != null ? Math.round(p.price * qtyUnits * 100) / 100 : null;
 
   function addToCart() {
     if (!available) return;
@@ -51,13 +64,13 @@ export function ProductDetail({
       productId: p.id,
       sku: p.slug,
       name: p.groupName || p.name,
-      gost: null,
-      unit: p.unit ?? "ед.",
-      quantity: qty,
+      gost: p.attributes.find((a) => /гост|gost/i.test(a.key))?.value ?? null,
+      unit: info.unit,
+      quantity: qtyUnits,
       weightKg: p.weightKg,
-      weightTons: Math.round(((p.weightKg * qty) / 1000) * 1000) / 1000,
+      weightTons: kgToTons(lineWeightKg),
       pricePerUnit: p.price,
-      lineTotal: p.price != null ? p.price * qty : null,
+      lineTotal,
     });
     setAdded(true);
     setTimeout(() => setOpen(true), 350);
@@ -95,6 +108,9 @@ export function ProductDetail({
         <div className="flex flex-col">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">{p.categoryName}</p>
           <h1 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">{p.groupName || p.name}</h1>
+          <p className="mt-2 text-xs font-bold text-muted-foreground">
+            Код товара: <span className="font-black text-foreground">{p.id.slice(-8).toUpperCase()}</span>
+          </p>
 
           <div className="mt-6 flex flex-wrap gap-3">
             {info.weightLabel && (
@@ -125,44 +141,91 @@ export function ProductDetail({
           {/* Цена и покупка */}
           <div className="mt-8 rounded-[2rem] border border-border bg-card p-6">
             {available ? (
-              <div className="flex flex-wrap items-end justify-between gap-6">
-                <div>
-                  <p className="text-4xl font-black tracking-tight">{fmt(p.price!)} ₽</p>
-                  <p className="mt-1 text-sm font-bold text-muted-foreground">{info.priceLabel}</p>
-                  {info.isLinear && info.pricePerTon != null && (
-                    <p className="mt-2 text-sm font-black text-primary">
-                      {fmt(info.pricePerTon)} ₽ <span className="text-xs font-bold text-muted-foreground">за тонну</span>
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center overflow-hidden rounded-2xl border-2 border-border bg-background">
-                    <button type="button" onClick={() => setQty(Math.max(1, qty - 1))} className="p-3 transition-colors hover:bg-muted">
-                      <Minus className="h-4 w-4" />
-                    </button>
-                    <input
-                      type="number"
-                      value={qty}
-                      onChange={(e) => setQty(Math.max(1, parseInt(e.target.value) || 1))}
-                      className="w-14 border-x-2 border-border bg-transparent text-center text-lg font-black outline-none"
-                    />
-                    <button type="button" onClick={() => setQty(qty + 1)} className="p-3 transition-colors hover:bg-muted">
-                      <Plus className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={addToCart}
-                    className={cn(
-                      "flex h-14 items-center gap-2 rounded-2xl px-6 text-sm font-black uppercase tracking-widest transition-all active:scale-95",
-                      added ? "bg-green-500 text-white shadow-lg shadow-green-500/25" : "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:brightness-110"
+              <>
+                <div className="flex flex-wrap items-end justify-between gap-6">
+                  <div>
+                    <p className="text-4xl font-black tracking-tight">{fmt(p.price!)} ₽</p>
+                    <p className="mt-1 text-sm font-bold text-muted-foreground">{info.priceLabel}</p>
+                    {info.isLinear && info.pricePerTon != null && (
+                      <p className="mt-2 text-sm font-black text-primary">
+                        {fmt(info.pricePerTon)} ₽ <span className="text-xs font-bold text-muted-foreground">за тонну</span>
+                      </p>
                     )}
-                  >
-                    {added ? <CheckCircle2 className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
-                    {added ? "В корзине" : "В корзину"}
-                  </button>
+                  </div>
+                  <div className="flex flex-col items-end gap-3">
+                    {/* Переключатель единиц ввода для линейного проката: м / т */}
+                    {info.isLinear && (
+                      <div className="flex overflow-hidden rounded-xl border-2 border-border bg-background text-xs font-black uppercase">
+                        <button
+                          type="button"
+                          onClick={() => { setQtyMode("unit"); }}
+                          className={cn("px-4 py-2 transition-colors", qtyMode === "unit" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}
+                        >
+                          метры
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => { setQtyMode("ton"); }}
+                          className={cn("px-4 py-2 transition-colors", qtyMode === "ton" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:bg-muted")}
+                        >
+                          тонны
+                        </button>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3">
+                      <div className="flex items-center overflow-hidden rounded-2xl border-2 border-border bg-background">
+                        <button
+                          type="button"
+                          onClick={() => setQty((v) => Math.max(qtyMode === "ton" ? 0.1 : 1, Math.round((v - (qtyMode === "ton" ? 0.1 : 1)) * 10) / 10))}
+                          className="p-3 transition-colors hover:bg-muted"
+                        >
+                          <Minus className="h-4 w-4" />
+                        </button>
+                        <input
+                          type="number"
+                          min={qtyMode === "ton" ? 0.1 : 1}
+                          step={qtyMode === "ton" ? 0.1 : 1}
+                          value={qty}
+                          onChange={(e) => {
+                            const v = parseFloat(e.target.value);
+                            setQty(isNaN(v) ? 1 : Math.max(qtyMode === "ton" ? 0.1 : 1, v));
+                          }}
+                          className="w-20 border-x-2 border-border bg-transparent text-center text-lg font-black outline-none"
+                        />
+                        <button type="button" onClick={() => setQty((v) => Math.round((v + (qtyMode === "ton" ? 0.1 : 1)) * 10) / 10)} className="p-3 transition-colors hover:bg-muted">
+                          <Plus className="h-4 w-4" />
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={addToCart}
+                        className={cn(
+                          "flex h-14 items-center gap-2 rounded-2xl px-6 text-sm font-black uppercase tracking-widest transition-all active:scale-95",
+                          added ? "bg-green-500 text-white shadow-lg shadow-green-500/25" : "bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:brightness-110"
+                        )}
+                      >
+                        {added ? <CheckCircle2 className="h-5 w-5" /> : <ShoppingCart className="h-5 w-5" />}
+                        {added ? "В корзине" : "В корзину"}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+
+                {/* Итог строки: точный вес и сумма — как швейцарские часы */}
+                <div className="mt-5 grid grid-cols-2 gap-3 rounded-2xl bg-muted/60 p-4">
+                  <div>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Вес заказа</p>
+                    <p className="mt-0.5 text-lg font-black tabular-nums">
+                      {lineWeightKg.toLocaleString("ru-RU", { maximumFractionDigits: 1 })} кг
+                      {qtyTons != null && <span className="ml-1.5 text-xs font-bold text-muted-foreground">({qtyTons.toLocaleString("ru-RU", { maximumFractionDigits: 3 })} т)</span>}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Сумма</p>
+                    <p className="mt-0.5 text-lg font-black tabular-nums">{lineTotal != null ? `${fmt(lineTotal)} ₽` : "—"}</p>
+                  </div>
+                </div>
+              </>
             ) : (
               <div className="flex items-center justify-between">
                 <p className="text-xl font-black uppercase tracking-widest text-muted-foreground">Под заказ</p>
@@ -183,7 +246,7 @@ export function ProductDetail({
           <h2 className="text-2xl font-black tracking-tight">Похожие товары</h2>
           <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             {related.map((r) => {
-              const rInfo = getUnitInfo(r.unit, r.weightKg, r.price, r.type);
+              const rInfo = getUnitInfo(r.unit, r.weightKg, r.price, r.type, r.name);
               const rImg = productImageSrc(r.imageLocal, r.imageUrl);
               return (
                 <Link

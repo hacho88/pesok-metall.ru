@@ -128,11 +128,18 @@ export async function runGeoContentPipeline(productId: string): Promise<number> 
   return generated;
 }
 
-// Автопилот: генерирует гео-контент для всех товаров, у которых его ещё нет
+// Автопилот: генерирует гео-контент для товаров без geo-данных
+// и для товаров, у которых geo-тексты — шаблонные (пустой aiDescription после бэкфилла)
 export async function runGeoContentPipelineForAll(): Promise<number> {
   const products = await prisma.product.findMany({
-    where: { geoData: { none: {} } },
+    where: {
+      OR: [
+        { geoData: { none: {} } },
+        { geoData: { some: { aiDescription: "" } } },
+      ],
+    },
     select: { id: true },
+    take: 20, // порция за один запуск крона — не перегружаем DeepSeek
   });
 
   let total = 0;

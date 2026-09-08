@@ -4,6 +4,8 @@ import { DefaultLayout } from "@/components/layout/DefaultLayout";
 import { MetalTable } from "@/components/catalog/MetalTable";
 import { getFullTree, toMetalProduct, totalInTree } from "@/lib/metall-catalog";
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "Металлопрокат — арматура, трубы, уголок, лист",
   description:
@@ -14,7 +16,7 @@ export default async function MetallPage() {
   const tree = await getFullTree();
   const products = await prisma.product.findMany({
     where: { type: "METALL" },
-    take: 500, // Увеличиваем лимит для полного каталога
+    take: 200, // Лимит для производительности (всего 835 METALL товаров)
     orderBy: { updatedAt: "desc" },
     include: { category: true, attributes: true },
   });

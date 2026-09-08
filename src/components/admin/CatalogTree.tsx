@@ -6,7 +6,7 @@ import {
   ChevronDown, 
   Folder, 
   Package, 
-  MoreVertical,
+  Pencil,
   PlusCircle,
   GripVertical
 } from "lucide-react";
@@ -24,9 +24,11 @@ interface CatalogTreeProps {
   selectedId: string | null;
   onSelect: (item: TreeItem) => void;
   onMove?: (itemId: string, newCategoryId: string) => void;
+  onAddProduct?: (categoryId: string, categoryName: string) => void;
+  onEditCategory?: (categoryId: string) => void;
 }
 
-export function CatalogTree({ items, selectedId, onSelect, onMove }: CatalogTreeProps) {
+export function CatalogTree({ items, selectedId, onSelect, onMove, onAddProduct, onEditCategory }: CatalogTreeProps) {
   return (
     <div className="space-y-1">
       {items.map((item) => (
@@ -36,6 +38,8 @@ export function CatalogTree({ items, selectedId, onSelect, onMove }: CatalogTree
           selectedId={selectedId} 
           onSelect={onSelect} 
           onMove={onMove}
+          onAddProduct={onAddProduct}
+          onEditCategory={onEditCategory}
           level={0}
         />
       ))}
@@ -48,12 +52,16 @@ function TreeNode({
   selectedId, 
   onSelect, 
   onMove,
+  onAddProduct,
+  onEditCategory,
   level 
 }: { 
   item: TreeItem; 
   selectedId: string | null; 
   onSelect: (item: TreeItem) => void;
   onMove?: (itemId: string, newCategoryId: string) => void;
+  onAddProduct?: (categoryId: string, categoryName: string) => void;
+  onEditCategory?: (categoryId: string) => void;
   level: number;
 }) {
   const [isOpen, setIsOpen] = useState(true);
@@ -132,9 +140,28 @@ function TreeNode({
         </span>
 
         {isCategory && (
-          <button className="hidden h-6 w-6 items-center justify-center rounded-md hover:bg-accent group-hover:flex">
-             <PlusCircle className="h-4 w-4 text-muted-foreground" />
-          </button>
+          <div className="flex shrink-0 items-center gap-0.5">
+            <button
+              title="Добавить товар в категорию"
+              className="hidden h-6 w-6 items-center justify-center rounded-md hover:bg-primary hover:text-white group-hover:flex"
+              onClick={(e) => {
+                e.stopPropagation();
+                onAddProduct?.(item.id, item.name);
+              }}
+            >
+              <PlusCircle className="h-4 w-4 text-muted-foreground group-hover:text-white" />
+            </button>
+            <button
+              title="Редактировать категорию: фото, описание, SEO"
+              className="hidden h-6 w-6 items-center justify-center rounded-md hover:bg-primary hover:text-white group-hover:flex"
+              onClick={(e) => {
+                e.stopPropagation();
+                onEditCategory?.(item.id);
+              }}
+            >
+              <Pencil className="h-3.5 w-3.5 text-muted-foreground group-hover:text-white" />
+            </button>
+          </div>
         )}
       </div>
 
@@ -147,6 +174,8 @@ function TreeNode({
               selectedId={selectedId} 
               onSelect={onSelect} 
               onMove={onMove}
+              onAddProduct={onAddProduct}
+              onEditCategory={onEditCategory}
               level={level + 1}
             />
           ))}

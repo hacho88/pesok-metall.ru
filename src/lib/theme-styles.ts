@@ -92,6 +92,14 @@ export const THEME_STYLE_OF: Record<ThemePreset, ThemeStyle> = {
   ideal: "minimal",
   // Arena — тёмная «торговая арена» (brutal bento, scoreboard, прожекторы)
   arena: "bento",
+  // Atlas — премиальная дизайн-система (commerce)
+  atlas: "commerce",
+  // Flat — минималистичный flat (commerce)
+  flat: "commerce",
+  // Open — light luxury / glassmorphism (commerce)
+  open: "commerce",
+  // Учунчу — stal-market B2B (commerce)
+  uchunchu: "commerce",
 };
 
 export function getThemeStyle(theme: ThemePreset): ThemeStyle {

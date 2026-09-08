@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { invalidateCatalogCache } from "@/lib/pm-catalog";
 import { ProductType } from "@prisma/client";
 
 const PRODUCT_TYPES = Object.values(ProductType);
@@ -70,6 +71,7 @@ export async function PUT(
       return updated;
     });
 
+    invalidateCatalogCache();
     return NextResponse.json({ ok: true, product });
   } catch (error) {
     return NextResponse.json(
@@ -87,6 +89,7 @@ export async function DELETE(
   try {
     const { id } = await params;
     await prisma.product.delete({ where: { id } });
+    invalidateCatalogCache();
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json(

@@ -14,8 +14,13 @@ function extensionFromUrl(url: string): string {
 
 // Преобразует URL миниатюры в URL оригинала:
 // /upload/resize_cache/iblock/c1f/110_110_1/xxx.jpg -> /upload/iblock/c1f/xxx.jpg
+// /upload/resize_cache/upload/iblock/c1f/110_110_1/xxx.jpg -> /upload/iblock/c1f/xxx.jpg
+// /upload/resize_cache/upload/iblock/c1f/xxx.jpg -> /upload/iblock/c1f/xxx.jpg
 export function originalImageUrl(url: string): string {
-  return url.replace(/\/upload\/resize_cache\/(iblock\/[^/]+)\/\d+_\d+_\d+\//, "/upload/$1/");
+  return url.replace(
+    /\/upload\/resize_cache\/(?:upload\/)?(iblock\/[^/]+)(?:\/\d+_\d+_\d+)?\//,
+    "/upload/$1/"
+  );
 }
 
 export interface ImageDownloader {

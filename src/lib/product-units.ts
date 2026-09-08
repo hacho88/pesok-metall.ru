@@ -22,7 +22,8 @@ export function getUnitInfo(
   unit: string | null | undefined,
   weightKg: number,
   price: number | null,
-  type?: string
+  type?: string,
+  name?: string
 ): UnitInfo {
   const u = (unit ?? "ед.").toLowerCase().trim();
   const isBag = type === "BAG_30KG";
@@ -30,6 +31,8 @@ export function getUnitInfo(
   const isLinear = u === "м" || u === "метр" || u === "п.м" || u === "пог.м" || u === "п/м";
   const isPiece = u === "шт" || u === "лист" || u === "рулон" || u === "уп" || u === "уп." || u === "карта";
   const isKg = u === "кг" || u === "кг.";
+  // Стеклопластик/композит продаётся только метрами — тонн не существует
+  const isComposite = !!name && /стеклопластик|композит/i.test(name);
 
   const priceLabel = isBag
     ? "за мешок"
@@ -59,7 +62,9 @@ export function getUnitInfo(
   }
 
   const pricePerTon =
-    isLinear && price != null && weightKg > 0 ? Math.round((price / weightKg) * 1000) : null;
+    isLinear && !isComposite && price != null && weightKg > 0
+      ? Math.round((price / weightKg) * 1000)
+      : null;
 
   return {
     unit: isLinear ? "м" : isKg ? "кг" : isPiece ? "шт" : u,
@@ -69,4 +74,30 @@ export function getUnitInfo(
     weightLabel,
     pricePerTon,
   };
+}
+
+/**
+ * Точный вес строки заказа в килограммах.
+ *  - мешок 30 кг / биг-бег 1 т — фиксированный вес фасовки × количество
+ *  - цена за кг — количество УЖЕ в килограммах (weightKg здесь справочный кг/м, не множитель!)
+ *  - цена за тонну — количество в тоннах
+ *  - м / шт / лист / рулон / уп — weightKg = вес одной единицы
+ */
+export function calcLineWeightKg(
+  unit: string | null | undefined,
+  weightKg: number,
+  qty: number,
+  type?: string
+): number {
+  if (type === "BAG_30KG") return 30 * qty;
+  if (type === "BIG_BAG_1TON") return 1000 * qty;
+  const u = (unit ?? "").toLowerCase().trim();
+  if (u === "кг" || u === "кг.") return qty;
+  if (u === "т" || u === "тонн" || u === "тонна") return qty * 1000;
+  return weightKg * qty;
+}
+
+/** кг → тонны с округлением до 3 знаков */
+export function kgToTons(kg: number): number {
+  return Math.round((kg / 1000) * 1000) / 1000;
 }

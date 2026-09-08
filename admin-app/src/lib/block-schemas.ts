@@ -390,6 +390,18 @@ export const THEME_OPTIONS: ThemeOption[] = [
     description: "Торговая арена снабжения: тёмный графит, прожекторы, electric-orange CTA, steel-cyan данные, lime-статусы, scoreboard и brutal bento",
     swatch: ["#080b10", "#ff6a00", "#00c2ff"],
   },
+  {
+    value: "vinsovkhoz",
+    label: "Винсовхоз",
+    description: "v0-тема pesok-metall: electric blue, скруглённые карточки, сайдбар-каталог, ИИ-калькуляторы",
+    swatch: ["#f5f7fb", "#0040ff", "#1c2540"],
+  },
+  {
+    value: "uchunchu",
+    label: "Учунчу",
+    description: "stal-market B2B-магазин: брендовый шапка-футер, каталог-сетка, промо-карточки, FAQ-аккордеон",
+    swatch: ["#ffffff", "#3b82f6", "#171717"],
+  },
 ];
 
 export function getBlockSchema(type: PageBlock["type"]): BlockTypeSchema | undefined {

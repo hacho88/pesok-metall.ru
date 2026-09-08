@@ -2,10 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { generateDailyArticles } from "@/lib/ai/seo-generator";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // 5 minutes for 20 articles
+export const maxDuration = 900; // 5 статей × ~90 сек генерации + запас
 
 // Cron job endpoint: /api/cron/seo-generator
-// Scheduled to run daily to generate 20+ long-read articles (5000+ chars each)
+// Daily generation of long-read articles (5000+ chars each). Default 5/day — safe pace for SEO.
 // Example cron: 0 2 * * * curl -H "x-cron-secret: <CRON_SECRET>" https://pesok-metall.ru/api/cron/seo-generator
 export async function GET(request: NextRequest) {
   const secret = request.headers.get("x-cron-secret");
@@ -15,7 +15,8 @@ export async function GET(request: NextRequest) {
 
   try {
     const countParam = new URL(request.url).searchParams.get("count");
-    const count = countParam ? Math.min(Math.max(Number(countParam), 1), 50) : 20;
+    // Безопасный темп: 5 статей/день. Больше — риск фильтра Google «scaled content abuse» на молодом сайте.
+    const count = countParam ? Math.min(Math.max(Number(countParam), 1), 20) : 5;
 
     const result = await generateDailyArticles(count);
 

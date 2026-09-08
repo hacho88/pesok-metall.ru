@@ -1,29 +1,25 @@
 import { prisma } from "@/lib/prisma";
 import { 
   Megaphone, 
-  Layout, 
   BarChart3, 
-  Zap,
+  Send,
   ArrowUp,
   ArrowDown,
   Minus
 } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BannerForm } from "./BannerForm";
+import { Card, CardContent } from "@/components/ui/card";
 import { AdvertisingForm } from "./AdvertisingForm";
+import { ChannelsConnect } from "./ChannelsConnect";
 
 export const dynamic = "force-dynamic";
 
 export default async function MarketingPage() {
-  const homeConfig = await prisma.pageConfig.findUnique({
-    where: { slug: "home" }
-  });
-
   const leads = await prisma.lead.findMany({
     orderBy: { createdAt: "desc" },
     take: 100
   });
+
+  const settings = await prisma.shopSettings.findFirst();
 
   // Calculate conversion rate trend (mocked for demo)
   const stats = [
@@ -75,37 +71,51 @@ export default async function MarketingPage() {
         ))}
       </div>
 
-      <div className="grid gap-10 lg:grid-cols-2">
-        {/* Banner Control */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-                <Layout className="h-5 w-5" />
-             </div>
-             <h2 className="text-xl font-black tracking-tight uppercase">Главный баннер</h2>
-          </div>
-          <Card className="rounded-[2.5rem] border-2 shadow-sm">
-            <CardContent className="p-10">
-              <BannerForm config={homeConfig} />
-            </CardContent>
-          </Card>
-        </section>
+      {/* Ad Control */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+              <BarChart3 className="h-5 w-5" />
+           </div>
+           <h2 className="text-xl font-black tracking-tight uppercase">Рекламный Автопилот</h2>
+        </div>
+        <Card className="rounded-[2.5rem] border-2 shadow-sm">
+          <CardContent className="p-10">
+            <AdvertisingForm />
+          </CardContent>
+        </Card>
+      </section>
 
-        {/* Ad Control */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
-                <BarChart3 className="h-5 w-5" />
-             </div>
-             <h2 className="text-xl font-black tracking-tight uppercase">Рекламный Автопилот</h2>
-          </div>
-          <Card className="rounded-[2.5rem] border-2 shadow-sm">
-            <CardContent className="p-10">
-              <AdvertisingForm />
-            </CardContent>
-          </Card>
-        </section>
-      </div>
+      {/* Подключение каналов: MAX + Email */}
+      <section className="space-y-6">
+        <div className="flex items-center gap-3">
+           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-white">
+              <Send className="h-5 w-5" />
+           </div>
+           <div>
+             <h2 className="text-xl font-black tracking-tight uppercase">Подключение каналов</h2>
+             <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+               Заказы приходят в мессенджер MAX и на электронную почту
+             </p>
+           </div>
+        </div>
+        <Card className="rounded-[2.5rem] border-2 shadow-sm">
+          <CardContent className="p-10">
+            <ChannelsConnect
+              initial={{
+                maxBotToken: settings?.maxBotToken ?? null,
+                maxChatId: settings?.maxChatId ?? null,
+                notifyEmail: settings?.notifyEmail ?? null,
+                smtpHost: settings?.smtpHost ?? null,
+                smtpPort: settings?.smtpPort?.toString() ?? "",
+                smtpUser: settings?.smtpUser ?? null,
+                smtpPass: settings?.smtpPass ?? null,
+                smtpFrom: settings?.smtpFrom ?? null,
+              }}
+            />
+          </CardContent>
+        </Card>
+      </section>
     </div>
   );
 }

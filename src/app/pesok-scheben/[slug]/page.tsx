@@ -6,6 +6,8 @@ import { DefaultLayout } from "@/components/layout/DefaultLayout";
 import { SandProductCard } from "@/components/catalog/SandProductCard";
 import { toSandProduct } from "@/lib/sand-catalog";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

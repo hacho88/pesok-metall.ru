@@ -27,6 +27,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select } from "@/components/ui/select";
 import { Sparkles } from "lucide-react";
+import { API_BASE } from "@/lib/api";
 
 const TYPE_LABELS: Record<ProductType, string> = {
   METALL: "Металлопрокат",
@@ -34,6 +35,34 @@ const TYPE_LABELS: Record<ProductType, string> = {
   BIG_BAG_1TON: "Биг-бэг 1 т",
   GENERAL_CONSTRUCTION: "Общестрой",
 };
+
+/** Превью фото товара: локальный файл приоритетнее внешнего URL */
+function ProductThumb({ product }: { product: AdminProduct }) {
+  const src = product.imageLocal
+    ? `${API_BASE}${product.imageLocal}`
+    : product.imageUrl;
+  if (!src) {
+    return (
+      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+        <Package className="h-5 w-5" />
+      </div>
+    );
+  }
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={src}
+      alt={product.name}
+      className="size-12 shrink-0 rounded-lg object-cover ring-1 ring-border"
+      loading="lazy"
+      onError={(e) => {
+        (e.currentTarget as HTMLImageElement).style.display = "none";
+        const fallback = (e.currentTarget as HTMLImageElement).nextElementSibling;
+        if (fallback) fallback.classList.remove("hidden");
+      }}
+    />
+  );
+}
 
 interface ProductForm {
   name: string;
@@ -376,8 +405,13 @@ export default function ProductsPage() {
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <p className="font-medium">{p.name}</p>
-                    <p className="text-xs text-muted-foreground">/{p.slug}</p>
+                    <div className="flex items-center gap-3">
+                      <ProductThumb product={p} />
+                      <div className="min-w-0">
+                        <p className="font-medium">{p.name}</p>
+                        <p className="text-xs text-muted-foreground">/{p.slug}</p>
+                      </div>
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{p.categoryName}</td>
                   <td className="px-4 py-3">

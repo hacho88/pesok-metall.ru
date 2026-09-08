@@ -1,15 +1,22 @@
 import { prisma } from "@/lib/prisma";
-import type { ThemePreset } from "@/types/page-builder";
-import { getBlueprintBySlug } from "@/lib/striker-blueprints";
-import type { ThemeConfigBlueprint } from "@/types/striker-engine";
 
 /** Активная тема главной страницы из админки (PageConfig.home.theme) */
-export type StorefrontTheme = "city" | "vi" | "city-met" | "ideal" | "atlas" | "flat";
+export type StorefrontTheme = "atlas" | "modern-blue" | "vinsovkhoz" | "uchunchu";
 
-export const STOREFRONT_THEMES: StorefrontTheme[] = ["city", "vi", "city-met", "ideal", "atlas", "flat"];
+export const STOREFRONT_THEMES: StorefrontTheme[] = ["atlas", "modern-blue", "vinsovkhoz", "uchunchu"];
 
 export function isStorefrontTheme(theme: string | undefined | null): theme is StorefrontTheme {
-  return theme === "city" || theme === "vi" || theme === "city-met" || theme === "ideal" || theme === "atlas" || theme === "flat";
+  return theme === "atlas" || theme === "modern-blue" || theme === "vinsovkhoz" || theme === "uchunchu";
+}
+
+/** Raw theme string from PageConfig */
+export async function getRawTheme(): Promise<string | null> {
+  try {
+    const config = await prisma.pageConfig.findUnique({ where: { slug: "home" } });
+    return config?.theme ?? null;
+  } catch {
+    return null;
+  }
 }
 
 /** Товар для витрины: металл + сыпучие, с ГОСТ/атрибутами */
@@ -45,28 +52,10 @@ export async function getActiveStorefrontTheme(): Promise<StorefrontTheme | null
   return null;
 }
 
-/**
- * Активный STRIKER.Engine чертёж: если PageConfig.home.theme = "striker:*",
- * витрина рендерится динамическим рендерером StrikerStorefront.
- */
-export async function getActiveStrikerBlueprint(): Promise<ThemeConfigBlueprint | null> {
-  try {
-    const config = await prisma.pageConfig.findUnique({ where: { slug: "home" } });
-    if (config && config.theme.startsWith("striker:")) {
-      return await getBlueprintBySlug(config.theme);
-    }
-  } catch {
-    // БД недоступна — классическая витрина
-  }
-  return null;
-}
-
 /** Выборка товаров для витрины (металл + сыпучие) */
 export async function getStorefrontProducts(limit = 60): Promise<StorefrontProduct[]> {
   const rows = await prisma.product.findMany({
     take: limit,
-    // Сначала товары с ценами (не «под заказ»), затем свежие — иначе витрина
-    // рискует заполниться позициями без цен
     orderBy: [{ isOnOrder: "asc" }, { updatedAt: "desc" }],
     include: { category: true, attributes: true },
   });
@@ -104,6 +93,3 @@ export function pricePerTon(p: StorefrontProduct): number | null {
   if (p.unit === "м" && p.weightKg > 0) return (p.price / p.weightKg) * 1000;
   return null;
 }
-
-/** Тип темы для переключения в админке */
-export type { ThemePreset };

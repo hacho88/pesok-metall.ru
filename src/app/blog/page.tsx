@@ -25,7 +25,7 @@ export default async function BlogIndexPage() {
           <div className="mb-16">
             <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary">
               <Sparkles className="h-3 w-3" />
-              AI Инсайты
+              Экспертные статьи
             </div>
             <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl">
               Блог о стройматериалах
@@ -38,7 +38,7 @@ export default async function BlogIndexPage() {
           {posts.length === 0 ? (
             <div className="flex flex-col items-center justify-center rounded-[2.5rem] border-4 border-dashed border-slate-100 py-24 text-center">
               <p className="text-xl font-black text-slate-900">Статьи скоро появятся</p>
-              <p className="mt-2 text-slate-500">ИИ-редакция готовит материалы</p>
+              <p className="mt-2 text-slate-500">Новые материалы уже в работе</p>
             </div>
           ) : (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -73,7 +73,7 @@ export default async function BlogIndexPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <User className="h-3.5 w-3.5 text-primary" />
-                        ИИ-Аналитик
+                        Редакция
                       </div>
                     </div>
 

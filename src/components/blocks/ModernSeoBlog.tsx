@@ -24,7 +24,7 @@ export async function ModernSeoBlog({ title = "Блог и аналитика", 
         <div>
           <div className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-primary">
             <Sparkles className="h-3 w-3" />
-            AI Инсайты
+            Экспертные статьи
           </div>
           <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl">{title}</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl leading-relaxed">
@@ -64,7 +64,7 @@ export async function ModernSeoBlog({ title = "Блог и аналитика", 
                 </div>
                 <div className="flex items-center gap-2">
                   <User className="h-3.5 w-3.5 text-primary" />
-                  ИИ-Аналитик
+                  Редакция
                 </div>
               </div>
               

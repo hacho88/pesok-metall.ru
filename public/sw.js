@@ -1,4 +1,4 @@
-const CACHE_NAME = "pesok-metall-v1";
+const CACHE_NAME = "pesok-metall-v3";
 const STATIC_ASSETS = ["/", "/manifest.json", "/metall", "/pesok-scheben", "/blog"];
 
 self.addEventListener("install", (event) => {
@@ -24,13 +24,18 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
+  // Skip admin and API routes entirely
+  if (url.pathname.startsWith("/admin") || url.pathname.startsWith("/api")) return;
+
   // Network-first for pages, cache-first for static assets
   if (request.mode === "navigate") {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          if (response.ok) {
+            const clone = response.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(request, clone));
+          }
           return response;
         })
         .catch(() => caches.match(request).then((r) => r || caches.match("/")))

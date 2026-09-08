@@ -6,6 +6,7 @@ import { Package, Scale } from "lucide-react";
 import FastCheckout, { type CheckoutVariant } from "./FastCheckout";
 import type { CheckoutCartItem } from "@/types/checkout";
 import type { ProductCardData } from "@/components/blocks/ProductGridCards";
+import { calcLineWeightKg, kgToTons } from "@/lib/product-units";
 
 /** Нормализация единицы измерения классической витрины → SKU-единица */
 function normalizeUnit(unit: string): string {
@@ -30,7 +31,7 @@ export function productCardToCartItem(p: ProductCardData): CheckoutCartItem {
     unit: normalizeUnit(p.unit),
     quantity: 1,
     weightKg,
-    weightTons: Math.round((weightKg / 1000) * 1000) / 1000,
+    weightTons: kgToTons(calcLineWeightKg(p.unit, weightKg, 1, p.type)),
     pricePerUnit: p.price,
     lineTotal: p.price,
   };

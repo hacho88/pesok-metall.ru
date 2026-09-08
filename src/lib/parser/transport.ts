@@ -25,16 +25,53 @@ function isKillBotPage(html: string): boolean {
 }
 
 // HTTP-транспорт: простой fetch с браузерными заголовками
+// С fallback на node:https если native fetch не работает (SSL/TLS на Windows)
 export async function httpFetchHtml(url: string): Promise<string> {
-  const response = await fetch(url, { headers: BROWSER_HEADERS, redirect: "follow" });
-  if (!response.ok) {
-    throw new Error(`HTTP ${response.status} для ${url}`);
+  try {
+    const response = await fetch(url, { headers: BROWSER_HEADERS, redirect: "follow" });
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} для ${url}`);
+    }
+    const html = await response.text();
+    if (isKillBotPage(html)) {
+      throw new KillBotDetectedError(url);
+    }
+    return html;
+  } catch (e) {
+    // Fallback на node:https
+    if (e instanceof KillBotDetectedError) throw e;
+    const https = await import("node:https");
+    return new Promise<string>((resolve, reject) => {
+      const req = https.request(
+        url,
+        { headers: BROWSER_HEADERS, method: "GET" },
+        (res) => {
+          if (res.statusCode && res.statusCode >= 300 && res.statusCode < 400 && res.headers.location) {
+            // Редирект
+            const newUrl = new URL(res.headers.location, url).toString();
+            httpFetchHtml(newUrl).then(resolve).catch(reject);
+            return;
+          }
+          if (res.statusCode && res.statusCode >= 400) {
+            reject(new Error(`HTTP ${res.statusCode} для ${url}`));
+            return;
+          }
+          let data = "";
+          res.setEncoding("utf-8");
+          res.on("data", (chunk) => (data += chunk));
+          res.on("end", () => {
+            if (isKillBotPage(data)) {
+              reject(new KillBotDetectedError(url));
+              return;
+            }
+            resolve(data);
+          });
+        },
+      );
+      req.on("error", reject);
+      req.end();
+    });
   }
-  const html = await response.text();
-  if (isKillBotPage(html)) {
-    throw new KillBotDetectedError(url);
-  }
-  return html;
 }
 
 // ─── Shared Playwright browser pool ──────────────────────────────────────

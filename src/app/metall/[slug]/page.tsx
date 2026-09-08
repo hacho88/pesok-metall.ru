@@ -6,6 +6,8 @@ import { MetalTable } from "@/components/catalog/MetalTable";
 import { ProductDetail, type ProductDetailData } from "@/components/catalog/ProductDetail";
 import { getFullTree, toMetalProduct } from "@/lib/metall-catalog";
 
+export const dynamic = "force-dynamic";
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

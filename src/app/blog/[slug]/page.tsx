@@ -5,7 +5,23 @@ import { ArrowLeft, Calendar, Sparkles, User } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { DefaultLayout } from "@/components/layout/DefaultLayout";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://pesok-metall.ru";
+
 export const dynamic = "force-dynamic";
+
+/** FAQ из HTML статьи: заголовки h2/h3 со знаком «?» + следующий за ними абзац */
+function extractFaq(html: string): Array<{ q: string; a: string }> {
+  const faq: Array<{ q: string; a: string }> = [];
+  const re = /<h[23][^>]*>([\s\S]*?)<\/h[23]>\s*<p[^>]*>([\s\S]*?)<\/p>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) {
+    const q = m[1].replace(/<[^>]+>/g, "").trim();
+    const a = m[2].replace(/<[^>]+>/g, "").trim();
+    if (q.endsWith("?") && a.length > 20) faq.push({ q, a });
+    if (faq.length >= 10) break;
+  }
+  return faq;
+}
 
 export async function generateMetadata({
   params,
@@ -13,11 +29,34 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await prisma.blogPost.findUnique({ where: { slug } });
+  const post = await prisma.blogPost.findUnique({
+    where: { slug },
+    include: { product: { select: { name: true, imageLocal: true, imageUrl: true } } },
+  });
   if (!post) return { title: "Статья не найдена" };
+
+  const title = post.seoTitle || post.title;
+  const description = post.seoDescription || post.title;
+  const url = `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`;
+  const image = post.product?.imageLocal || post.product?.imageUrl || undefined;
+
   return {
-    title: post.seoTitle || post.title,
-    description: post.seoDescription || undefined,
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: "pesok-metall.ru",
+      type: "article",
+      publishedTime: post.createdAt.toISOString(),
+      modifiedTime: post.updatedAt.toISOString(),
+      images: image ? [{ url: image }] : undefined,
+    },
+    keywords: post.product
+      ? [post.product.name, "купить", "цена", "доставка", "Москва", "Московская область"]
+      : undefined,
   };
 }
 
@@ -34,8 +73,64 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
+  // JSON-LD: Article — для Google AI Overviews, Яндекс.Алисы и классической выдачи
+  const articleJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: post.title,
+    description: post.seoDescription || post.title,
+    datePublished: post.createdAt.toISOString(),
+    dateModified: post.updatedAt.toISOString(),
+    author: { "@type": "Organization", name: "pesok-metall.ru", url: SITE_URL },
+    publisher: { "@type": "Organization", name: "pesok-metall.ru", url: SITE_URL },
+    mainEntityOfPage: `${SITE_URL}/blog/${encodeURIComponent(post.slug)}`,
+    ...(post.product?.imageLocal || post.product?.imageUrl
+      ? { image: [post.product.imageLocal || post.product.imageUrl] }
+      : {}),
+    ...(post.product ? { about: { "@type": "Product", name: post.product.name } } : {}),
+  };
+
+  // FAQPage — вопросы из статьи (заголовки H2/H3 со знаком «?») — подхват ИИ-поиском
+  const faq = extractFaq(post.content);
+  const faqJsonLd =
+    faq.length > 0
+      ? {
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          mainEntity: faq.map((f) => ({
+            "@type": "Question",
+            name: f.q,
+            acceptedAnswer: { "@type": "Answer", text: f.a },
+          })),
+        }
+      : null;
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Главная", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: "Блог", item: `${SITE_URL}/blog` },
+      { "@type": "ListItem", position: 3, name: post.title },
+    ],
+  };
+
   return (
     <DefaultLayout>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      {faqJsonLd && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="min-h-screen bg-slate-50/40 font-jakarta">
         <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
           <Link
@@ -61,7 +156,7 @@ export default async function BlogPostPage({
             </div>
             <div className="flex items-center gap-2">
               <User className="h-3.5 w-3.5 text-primary" />
-              ИИ-Аналитик
+              Редакция pesok-metall.ru
             </div>
           </div>
 

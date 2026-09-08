@@ -54,8 +54,21 @@ export function PageEditor({ initialConfig }: PageEditorProps) {
   const [dragType, setDragType] = useState<PageBlock["type"] | null>(null);
   const [promptOpen, setPromptOpen] = useState(false);
 
-  // Если БД недоступна, редактор сохраняет конфиг в localStorage — восстанавливаем его
+  // Серверный конфиг приоритетен. localStorage — только fallback (если БД была недоступна).
   useEffect(() => {
+    // Если серверный конфиг пустой (нет блоков и тема дефолтная) — пробуем localStorage
+    const hasServerData =
+      initialConfig.blocks.length > 0 ||
+      initialConfig.theme !== "industrial-orange";
+    if (hasServerData) {
+      setConfig(initialConfig);
+      // Очищаем устаревший localStorage
+      try {
+        localStorage.removeItem(`page-config:${initialConfig.slug}`);
+      } catch {}
+      return;
+    }
+    // Серверного конфига нет — пробуем localStorage
     try {
       const saved = localStorage.getItem(`page-config:${initialConfig.slug}`);
       if (saved) {
@@ -67,7 +80,7 @@ export function PageEditor({ initialConfig }: PageEditorProps) {
     } catch {
       // localStorage недоступен — работаем с серверным конфигом
     }
-  }, [initialConfig.slug]);
+  }, [initialConfig.slug, initialConfig]);
 
   const themeClass = THEME_CLASSES[config.theme] ?? THEME_CLASSES["industrial-orange"];
 
@@ -148,8 +161,9 @@ export function PageEditor({ initialConfig }: PageEditorProps) {
     try {
       await savePageConfig(config);
       setSaveState("saved");
-    } catch {
+    } catch (err) {
       // БД недоступна — сохраняем локально, чтобы работа не пропала
+      console.warn("[PageEditor] Сохранение в БД не удалось, сохраняем локально:", err);
       try {
         localStorage.setItem(
           `page-config:${config.slug}`,

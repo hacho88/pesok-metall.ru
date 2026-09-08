@@ -1,27 +1,13 @@
 import { NextResponse } from "next/server";
-import { listBlueprints } from "@/lib/striker-blueprints";
 
 export const dynamic = "force-dynamic";
 
-/**
- * GET /api/themes/list — все активные темы-чертежи из БД (STRIKER.Engine).
- * Каждая тема отдаётся вместе с полным JSON-чертежом (layout, палитра,
- * типографика, конфигурация блоков) для мгновенной загрузки в редактор.
- */
+/** GET /api/themes/list — список доступных тем */
 export async function GET() {
-  try {
-    const blueprints = await listBlueprints();
-    return NextResponse.json({
-      themes: blueprints.map((bp) => ({
-        id: bp.id,
-        slug: bp.slug,
-        name: bp.name,
-        description: bp.description ?? "",
-        updatedAt: bp.updatedAt,
-        blueprint: bp,
-      })),
-    });
-  } catch {
-    return NextResponse.json({ themes: [] });
-  }
+  return NextResponse.json({
+    themes: [
+      { id: "modern-blue", slug: "modern-blue", name: "Modern Blue", description: "Современная синяя тема", blueprint: null },
+      { id: "atlas", slug: "atlas", name: "Atlas", description: "Базовая тема Atlas", blueprint: null },
+    ],
+  });
 }

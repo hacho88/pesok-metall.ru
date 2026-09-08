@@ -16,6 +16,8 @@ export async function PUT(
     if (body.maxLengthMeters !== undefined) data.maxLengthMeters = Number(body.maxLengthMeters);
     if (body.baseFare !== undefined) data.baseFare = Number(body.baseFare);
     if (body.perKmCharge !== undefined) data.perKmCharge = Number(body.perKmCharge);
+    if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl;
+    if (body.plateNumber !== undefined) data.plateNumber = body.plateNumber;
     if (typeof body.isActive === "boolean") data.isActive = body.isActive;
 
     const vehicle = await prisma.fleetVehicle.update({ where: { id }, data });
