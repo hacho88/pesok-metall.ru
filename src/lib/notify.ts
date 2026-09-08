@@ -48,17 +48,24 @@ ${itemsText}
 ${delivery}${order.comment ? `\nКомментарий: ${order.comment}` : ""}`;
 }
 
-/** Отправка в мессенджер MAX (Bot API: https://botapi.max.ru) */
+/** Отправка в мессенджер MAX (Bot API: https://platform-api2.max.ru, токен в заголовке Authorization) */
 export async function sendMaxMessage(token: string, chatId: string, text: string): Promise<boolean> {
   try {
     const resp = await fetch(
-      `https://botapi.max.ru/messages?access_token=${encodeURIComponent(token)}&chat_id=${encodeURIComponent(chatId)}`,
+      `https://platform-api2.max.ru/messages?chat_id=${encodeURIComponent(chatId)}`,
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
         body: JSON.stringify({ text }),
       }
     );
+    if (!resp.ok) {
+      const body = await resp.text().catch(() => "");
+      console.error(`[notify] MAX send failed: ${resp.status} ${body.slice(0, 300)}`);
+    }
     return resp.ok;
   } catch (e) {
     console.error("[notify] MAX send error:", e);

@@ -204,6 +204,9 @@ export function ChannelsConnect({ initial }: { initial: ChannelsSettings }) {
             <StatusRow label="MAX" value={testResult.max} />
             <StatusRow label="Telegram" value={testResult.telegram} />
             <StatusRow label="Email" value={testResult.email} error={testResult.emailError} />
+            {testResult.maxError && (
+              <p className="pt-1 text-xs font-bold text-red-600">{testResult.maxError}</p>
+            )}
             {testResult.foundChatIds && (
               <p className="pt-1 text-xs font-bold text-primary">
                 Найдены Chat ID в MAX: {testResult.foundChatIds.join(", ")} — скопируйте в поле выше и сохраните

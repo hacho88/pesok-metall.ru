@@ -24,20 +24,35 @@ ${new Date().toLocaleString("ru-RU")}
   // MAX: если токен есть, а chat_id нет — пытаемся найти его в обновлениях
   if (settings.maxBotToken && !settings.maxChatId) {
     try {
-      const upd = await fetch(
-        `https://botapi.max.ru/updates?access_token=${encodeURIComponent(settings.maxBotToken)}`
-      );
+      const upd = await fetch("https://platform-api2.max.ru/updates", {
+        headers: { Authorization: settings.maxBotToken },
+      });
       if (upd.ok) {
         const data = await upd.json();
         const ids = new Set<string>();
-        for (const u of data.updates ?? []) {
-          const chatId = u?.message?.recipient?.chat_id;
-          if (chatId) ids.add(String(chatId));
+        // chat_id может лежать на разной глубине (message.recipient.chat_id, bot_started.chat_id и т.д.)
+        const scan = (obj: unknown) => {
+          if (!obj || typeof obj !== "object") return;
+          for (const [key, value] of Object.entries(obj as Record<string, unknown>)) {
+            if (key === "chat_id" && (typeof value === "number" || typeof value === "string")) {
+              ids.add(String(value));
+            } else if (value && typeof value === "object") {
+              scan(value);
+            }
+          }
+        };
+        for (const u of (data as { updates?: unknown[] }).updates ?? []) scan(u);
+        if (ids.size > 0) {
+          result.foundChatIds = [...ids];
+        } else {
+          result.maxError = "Токен верный, но диалог с ботом не найден. Напишите боту любое сообщение в MAX и нажмите «Проверить» ещё раз.";
         }
-        if (ids.size > 0) result.foundChatIds = [...ids];
+      } else {
+        const body = await upd.text().catch(() => "");
+        result.maxError = `MAX API ${upd.status}: ${body.slice(0, 200)}`;
       }
-    } catch {
-      // ignore
+    } catch (e) {
+      result.maxError = `MAX API недоступен: ${String(e).slice(0, 200)}`;
     }
   }
 
