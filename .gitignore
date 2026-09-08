@@ -27,6 +27,7 @@ yarn-error.log*
 .tmp-*
 catalog-export/
 export-data.json
+data-export.json
 .ai_development_log.md
 .devin/
 .qa/
