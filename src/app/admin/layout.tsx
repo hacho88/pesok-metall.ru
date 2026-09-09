@@ -10,6 +10,7 @@ import {
   FileText, 
   Palette,
   MapPin,
+  Receipt,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,6 +25,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { name: "Боксы на главной", href: "/admin/hero-boxes", icon: LayoutGrid },
     { name: "Интерфейс", href: "/admin/interface", icon: PanelTop },
     { name: "Маркетинг", href: "/admin/marketing", icon: Megaphone },
+    { name: "Чеки", href: "/admin/receipts", icon: Receipt },
     { name: "Блог", href: "/admin/blog", icon: PenTool },
     { name: "Страницы", href: "/admin/pages", icon: FileText },
     { name: "Темы", href: "/admin/themes", icon: Palette },

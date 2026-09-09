@@ -496,3 +496,19 @@ model OrderItem {
 
   @@index([orderId])
 }
+
+// Товарный чек — создаётся вручную в админке
+model Receipt {
+  id            String   @id @default(uuid())
+  number        String   @unique // ЧК-2026-0001
+  customerName  String   // Покупатель (ФИО или компания)
+  customerPhone String?  // Телефон покупателя
+  customerInn   String?  // ИНН (для юрлиц)
+  items         Json     // [{ name, unit, qty, price, total }]
+  total         Float    // Итоговая сумма
+  note          String?  @db.Text // Примечание
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([createdAt])
+}
