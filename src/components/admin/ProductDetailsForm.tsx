@@ -37,6 +37,8 @@ export function ProductDetailsForm({ product, onSave, onDelete }: ProductDetails
   const [saved, setSaved] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [imgUploading, setImgUploading] = useState(false);
+  const [imgError, setImgError] = useState<string | null>(null);
 
   // Сброс формы при выборе другого товара
   useEffect(() => {
@@ -330,9 +332,41 @@ export function ProductDetailsForm({ product, onSave, onDelete }: ProductDetails
                   <p className="mt-4 text-xs font-black uppercase tracking-widest text-muted-foreground/60">Перетащите фото сюда</p>
                 </div>
               )}
-              <input type="file" className="absolute inset-0 cursor-pointer opacity-0" />
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif"
+                className="absolute inset-0 cursor-pointer opacity-0"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (!file) return;
+                  setImgUploading(true);
+                  setImgError(null);
+                  try {
+                    const fd = new FormData();
+                    fd.append("file", file);
+                    const res = await fetch("/api/atlas/media", { method: "POST", body: fd });
+                    const data = await res.json();
+                    if (res.ok && data.url) {
+                      set({ imageLocal: data.url });
+                    } else {
+                      setImgError(data.error || "Ошибка загрузки");
+                    }
+                  } catch {
+                    setImgError("Ошибка сети");
+                  } finally {
+                    setImgUploading(false);
+                  }
+                }}
+              />
+              {imgUploading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                  <Loader2 className="h-6 w-6 animate-spin text-white" />
+                </div>
+              )}
             </div>
-            <p className="text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Поддержка JPG, PNG, WebP · Макс 5MB</p>
+            {imgError && <p className="text-xs font-bold text-red-600">{imgError}</p>}
+            <p className="text-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40">Поддержка JPG, PNG, WebP · Макс 10MB</p>
           </div>
 
           {/* Характеристики (только просмотр) */}
