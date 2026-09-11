@@ -1,18 +1,7 @@
 import { ReactNode } from "react";
 import Link from "next/link";
-import { 
-  LayoutDashboard, 
-  Package, 
-  LayoutGrid,
-  PanelTop,
-  Megaphone, 
-  PenTool, 
-  FileText, 
-  Palette,
-  MapPin,
-  Receipt,
-  Wand2,
-} from "lucide-react";
+import { adminNavItems } from "./nav-items";
+import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { cn } from "@/lib/utils";
 
 interface AdminLayoutProps {
@@ -20,19 +9,7 @@ interface AdminLayoutProps {
 }
 
 export default function AdminLayout({ children }: AdminLayoutProps) {
-  const navItems = [
-    { name: "Дашборд", href: "/admin", icon: LayoutDashboard },
-    { name: "Каталог", href: "/admin/catalog", icon: Package },
-    { name: "Боксы на главной", href: "/admin/hero-boxes", icon: LayoutGrid },
-    { name: "Hero-конструктор", href: "/admin/hero-builder", icon: Wand2 },
-    { name: "Интерфейс", href: "/admin/interface", icon: PanelTop },
-    { name: "Маркетинг", href: "/admin/marketing", icon: Megaphone },
-    { name: "Чеки", href: "/admin/receipts", icon: Receipt },
-    { name: "Блог", href: "/admin/blog", icon: PenTool },
-    { name: "Страницы", href: "/admin/pages", icon: FileText },
-    { name: "Темы", href: "/admin/themes", icon: Palette },
-    { name: "Геозоны", href: "/admin/themes/geo", icon: MapPin },
-  ];
+  const navItems = adminNavItems;
 
   return (
     <div className="flex min-h-screen bg-muted/20">
@@ -64,9 +41,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* Main Content */}
       <main className="flex min-h-screen flex-1 flex-col lg:pl-64">
         {/* Header (Mobile) */}
-        <header className="sticky top-0 z-30 flex h-16 items-center border-b bg-card/80 px-6 backdrop-blur-md lg:hidden">
-           <Link href="/admin" className="font-jakarta text-xl font-black text-primary">P</Link>
-        </header>
+        <div className="lg:hidden">
+          <AdminMobileNav />
+        </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto p-4 lg:p-6">
           {children}
