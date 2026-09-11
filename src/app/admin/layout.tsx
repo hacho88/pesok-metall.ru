@@ -1,8 +1,14 @@
+import type { Metadata } from "next";
 import { ReactNode } from "react";
 import Link from "next/link";
 import { adminNavItems } from "./nav-items";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: { absolute: "Админ-панель | pesok-metall.ru" },
+  manifest: "/admin-manifest.json",
+};
 
 interface AdminLayoutProps {
   children: ReactNode;

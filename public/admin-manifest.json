@@ -1,0 +1,22 @@
+{
+  "name": "ПМ Админ — pesok-metall.ru",
+  "short_name": "ПМ Админ",
+  "description": "Панель управления магазином pesok-metall.ru: заказы, товары, категории, чеки",
+  "start_url": "/admin",
+  "scope": "/admin",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "lang": "ru",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/admin-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
