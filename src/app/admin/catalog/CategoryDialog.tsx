@@ -38,17 +38,21 @@ export interface EditableCategory {
 
 export function CategoryDialog({
   category,
+  categories = [],
   open,
   onOpenChange,
   onSaved,
 }: {
   category: EditableCategory | null;
+  categories?: { id: string; name: string; parentName: string | null }[];
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSaved?: () => void;
 }) {
+  const isEdit = !!category;
   const [form, setForm] = useState<{
     name: string;
+    parentId: string;
     imageUrl: string | null;
     description: string | null;
     shortDescription: string | null;
@@ -58,6 +62,7 @@ export function CategoryDialog({
     descriptionGeneratedAt: string | null;
   }>({
     name: "",
+    parentId: "",
     imageUrl: null,
     description: "",
     shortDescription: "",
@@ -68,21 +73,23 @@ export function CategoryDialog({
   });
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [aiLoading, setAiLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
-    if (category) {
+    if (open) {
       setForm({
-        name: category.name,
-        imageUrl: category.imageUrl,
-        description: category.description,
-        shortDescription: category.shortDescription,
-        seoTitle: category.seoTitle,
-        seoDescription: category.seoDescription,
-        descriptionStatus: category.descriptionStatus,
-        descriptionGeneratedAt: category.descriptionGeneratedAt,
+        name: category?.name ?? "",
+        parentId: "",
+        imageUrl: category?.imageUrl ?? null,
+        description: category?.description ?? null,
+        shortDescription: category?.shortDescription ?? null,
+        seoTitle: category?.seoTitle ?? null,
+        seoDescription: category?.seoDescription ?? null,
+        descriptionStatus: category?.descriptionStatus ?? "none",
+        descriptionGeneratedAt: category?.descriptionGeneratedAt ?? null,
       });
       setError(null);
       setSaved(false);
@@ -142,19 +149,32 @@ export function CategoryDialog({
   };
 
   const handleSave = async () => {
-    if (!category) return;
+    if (!form.name.trim()) {
+      setError("Введите название категории");
+      return;
+    }
     setSaving(true);
     setError(null);
     try {
-      const res = await fetch(`/api/admin/categories/${category.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
+      const res = category
+        ? await fetch(`/api/admin/categories/${category.id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(form),
+          })
+        : await fetch("/api/admin/categories", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: form.name,
+              parentId: form.parentId || undefined,
+            }),
+          });
       if (res.ok) {
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
         onSaved?.();
+        if (!category) onOpenChange(false);
       } else {
         const data = await res.json();
         setError(data.error || "Не удалось сохранить");
@@ -163,6 +183,27 @@ export function CategoryDialog({
       setError("Ошибка сети");
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!category) return;
+    if (!window.confirm(`Удалить категорию «${category.name}»? Действие необратимо.`)) return;
+    setDeleting(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/categories/${category.id}`, { method: "DELETE" });
+      if (res.ok) {
+        onOpenChange(false);
+        onSaved?.();
+      } else {
+        const data = await res.json();
+        setError(data.error || "Не удалось удалить");
+      }
+    } catch {
+      setError("Ошибка сети");
+    } finally {
+      setDeleting(false);
     }
   };
 
@@ -180,13 +221,46 @@ export function CategoryDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="flex max-h-[92dvh] max-w-2xl flex-col gap-0 overflow-hidden rounded-3xl border-2 p-0">
         <DialogHeader className="shrink-0 border-b px-6 pb-4 pr-12 pt-6">
-          <DialogTitle className="text-lg font-black tracking-tight">Категория: {category?.name}</DialogTitle>
+          <DialogTitle className="text-lg font-black tracking-tight">
+            {category ? `Категория: ${category.name}` : "Новая категория"}
+          </DialogTitle>
           <p className="text-xs font-medium leading-snug text-muted-foreground">
-            Фото для плитки каталога, описание и SEO-мета для продвижения pesok-metall.ru
+            {category
+              ? "Фото для плитки каталога, описание и SEO-мета для продвижения pesok-metall.ru"
+              : "Введите название и при необходимости выберите родительскую категорию"}
           </p>
         </DialogHeader>
 
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-6 py-4">
+          {!isEdit && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Название категории</Label>
+                <Input
+                  className="h-12 rounded-xl border-2 font-bold"
+                  placeholder="Например: Профнастил"
+                  value={form.name}
+                  onChange={(e) => set({ name: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Родительская категория</Label>
+                <select
+                  className="h-12 w-full rounded-xl border-2 bg-card px-3 font-bold"
+                  value={form.parentId}
+                  onChange={(e) => set({ parentId: e.target.value })}
+                >
+                  <option value="">— верхний уровень —</option>
+                  {categories.map((c) => (
+                    <option key={c.id} value={c.id}>
+                      {c.parentName ? `${c.parentName} → ${c.name}` : c.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+          {isEdit && (
           <div className="grid gap-5 sm:grid-cols-[180px_1fr]">
             {/* Фото категории */}
             <div className="space-y-2">
@@ -250,6 +324,7 @@ export function CategoryDialog({
               </div>
             </div>
           </div>
+          )}
 
           {/* Описание + ИИ */}
           <div className="rounded-2xl border-2 bg-muted/30 p-5">
@@ -314,18 +389,33 @@ export function CategoryDialog({
           )}
         </div>
 
-        <div className="flex shrink-0 justify-end gap-3 border-t bg-card px-6 py-4">
-          <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={() => onOpenChange(false)}>
-            ЗАКРЫТЬ
-          </Button>
-          <Button
-            className="h-11 rounded-xl bg-primary px-8 font-black shadow-xl shadow-primary/20"
-            onClick={handleSave}
-            disabled={saving}
-          >
-            {saved ? <CheckCircle2 className="mr-2 h-5 w-5" /> : saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-            {saved ? "СОХРАНЕНО" : saving ? "СОХРАНЕНИЕ…" : "СОХРАНИТЬ"}
-          </Button>
+        <div className="flex shrink-0 items-center justify-between gap-3 border-t bg-card px-6 py-4">
+          {isEdit ? (
+            <Button
+              variant="outline"
+              className="h-11 rounded-xl border-2 border-red-200 font-black text-red-600 hover:bg-red-50 hover:text-red-700"
+              onClick={handleDelete}
+              disabled={deleting}
+            >
+              {deleting ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Trash2 className="mr-2 h-5 w-5" />}
+              {deleting ? "УДАЛЕНИЕ…" : "УДАЛИТЬ"}
+            </Button>
+          ) : (
+            <span />
+          )}
+          <div className="flex gap-3">
+            <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={() => onOpenChange(false)}>
+              ЗАКРЫТЬ
+            </Button>
+            <Button
+              className="h-11 rounded-xl bg-primary px-8 font-black shadow-xl shadow-primary/20"
+              onClick={handleSave}
+              disabled={saving}
+            >
+              {saved ? <CheckCircle2 className="mr-2 h-5 w-5" /> : saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+              {saved ? "СОХРАНЕНО" : saving ? "СОХРАНЕНИЕ…" : "СОХРАНИТЬ"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

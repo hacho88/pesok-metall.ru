@@ -1,8 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Search } from "lucide-react";
+import { FolderPlus, Search } from "lucide-react";
 import { CatalogTree } from "@/components/admin/CatalogTree";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { NewProductDialog } from "./NewProductDialog";
 import { CategoryDialog, type EditableCategory } from "./CategoryDialog";
@@ -43,6 +44,7 @@ export function CatalogTreeWrapper({
   const [query, setQuery] = useState("");
   const [addCategoryId, setAddCategoryId] = useState<string | null>(null);
   const [editCategoryId, setEditCategoryId] = useState<string | null>(null);
+  const [createCategoryOpen, setCreateCategoryOpen] = useState(false);
 
   const items = useMemo(() => filterTree(initialItems, query), [initialItems, query]);
   const editCategory = categories.find((c) => c.id === editCategoryId) ?? null;
@@ -73,14 +75,23 @@ export function CatalogTreeWrapper({
 
   return (
     <div className="flex h-full flex-col gap-3">
-      <div className="relative shrink-0">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          placeholder="Поиск в каталоге..."
-          className="pl-9 h-11 rounded-xl border-2"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-        />
+      <div className="flex shrink-0 gap-2">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Поиск в каталоге..."
+            className="pl-9 h-11 rounded-xl border-2"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+          />
+        </div>
+        <Button
+          className="h-11 shrink-0 rounded-xl bg-primary font-black shadow-lg shadow-primary/20"
+          onClick={() => setCreateCategoryOpen(true)}
+        >
+          <FolderPlus className="mr-2 h-4 w-4" />
+          Категория
+        </Button>
       </div>
       <div className="flex-1 overflow-y-auto">
         {items.length > 0 ? (
@@ -113,13 +124,22 @@ export function CatalogTreeWrapper({
         presetCategoryId={addCategoryId ?? undefined}
       />
 
-      {/* Диалог редактирования категории: фото, описание, SEO */}
+      {/* Диалог создания/редактирования категории */}
       <CategoryDialog
-        category={editCategory}
-        open={editCategoryId !== null}
+        category={createCategoryOpen ? null : editCategory}
+        categories={categories.map((c) => ({
+          id: c.id,
+          name: c.name,
+          parentName: c.parentName,
+        }))}
+        open={createCategoryOpen || editCategoryId !== null}
         onOpenChange={(v) => {
-          if (!v) setEditCategoryId(null);
+          if (!v) {
+            setCreateCategoryOpen(false);
+            setEditCategoryId(null);
+          }
         }}
+        onSaved={() => window.location.reload()}
       />
     </div>
   );
