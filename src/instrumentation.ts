@@ -6,5 +6,7 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { startSeoScheduler } = await import("@/lib/ai/seo-scheduler");
     startSeoScheduler();
+    const { seedHeroConfig } = await import("@/lib/hero-config-seed");
+    seedHeroConfig();
   }
 }
