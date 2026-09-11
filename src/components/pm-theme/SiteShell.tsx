@@ -19,7 +19,7 @@ export function SiteShell({
     <FavoritesProvider>
       <div className="min-h-screen pm-theme vinsovkhoz">
         <SiteHeader settings={settings} />
-        <div className="mx-auto flex w-full max-w-[1600px] gap-6 px-4 pb-24 pt-8 md:px-6 lg:px-8 lg:pb-10">
+        <div className="mx-auto flex w-full max-w-[1600px] gap-5 px-4 pb-24 pt-8 md:px-6 lg:px-8 lg:pb-10">
           <SiteSidebar catalog={catalog} />
           <main className="min-w-0 flex-1">{children}</main>
         </div>

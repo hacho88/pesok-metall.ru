@@ -1,9 +1,10 @@
 import { getCatalog, getCatalogNav, getHeroBoxProducts } from "@/lib/pm-catalog";
-import { getPublicSettings, getActiveBanners } from "@/lib/shop-settings";
+import { getPublicSettings, getActiveBanners, getHeroConfig } from "@/lib/shop-settings";
 import { prisma } from "@/lib/prisma";
 import { CartProvider } from "@/components/pm-theme/cart-context";
 import { SiteShell } from "@/components/pm-theme/SiteShell";
 import { Hero } from "@/components/pm-theme/home/Hero";
+import { HeroSection } from "@/components/hero-builder/HeroSection";
 import { CatalogGrid } from "@/components/pm-theme/home/CatalogGrid";
 import { PopularProducts } from "@/components/pm-theme/home/PopularProducts";
 import { ParamPicker } from "@/components/pm-theme/home/ParamPicker";
@@ -15,12 +16,13 @@ import { Reviews } from "@/components/pm-theme/home/Reviews";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const [catalog, nav, settings, geoZones, banners] = await Promise.all([
+  const [catalog, nav, settings, geoZones, banners, heroConfig] = await Promise.all([
       getCatalog(),
       getCatalogNav(),
       getPublicSettings(),
       prisma.geoZone.findMany({ select: { name: true, slug: true }, orderBy: { name: "asc" } }),
       getActiveBanners("home_top"),
+      getHeroConfig(),
     ]);
 
     // Популярные товары: с фото и ценой, из наличия, вперемешку из категорий
@@ -41,11 +43,15 @@ export default async function HomePage() {
     <CartProvider>
       <SiteShell catalog={nav} settings={settings}>
         <div className="flex flex-col gap-12">
-          <Hero
-            bulkProducts={bulkProducts}
-            banners={banners}
-            texts={{ badge: settings.heroBadge, title: settings.heroTitle, subtitle: settings.heroSubtitle }}
-          />
+          {heroConfig ? (
+            <HeroSection data={heroConfig} />
+          ) : (
+            <Hero
+              bulkProducts={bulkProducts}
+              banners={banners}
+              texts={{ badge: settings.heroBadge, title: settings.heroTitle, subtitle: settings.heroSubtitle }}
+            />
+          )}
           <CatalogGrid catalog={catalog} />
           <ParamPicker products={catalog.flatMap((c) => c.products)} />
           <PopularProducts products={popular} />

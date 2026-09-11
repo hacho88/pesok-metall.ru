@@ -459,6 +459,8 @@ model ShopSettings {
   smtpFrom        String?  // Адрес отправителя (по умолчанию smtpUser)
   // Email для счетов
   invoiceEmail    String?  // Куда отправлять счета (если не указан — на email клиента)
+  // Hero-конструктор: JSON-конфиг главного экрана
+  heroConfig      Json?
   updatedAt       DateTime @updatedAt
 }
 

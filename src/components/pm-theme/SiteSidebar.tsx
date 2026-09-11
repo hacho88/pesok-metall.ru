@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { Calculator, ChevronRight, Layers, Truck } from 'lucide-react'
+import { ArrowRight, Calculator, ChevronRight, Layers, Truck } from 'lucide-react'
 import type { CatalogNav } from '@/lib/pm-catalog'
 import { categoryIcon } from '@/lib/category-icons'
 import { cn } from '@/lib/pm-utils'
@@ -24,16 +24,29 @@ export function SiteSidebar({ catalog }: { catalog: CatalogNav[] }) {
     <aside className="hidden w-72 shrink-0 lg:block">
       <div className="pm-sidebar-scroll sticky top-32 flex max-h-[calc(100vh-9rem)] flex-col gap-4 overflow-y-auto pb-8 pr-1">
         <nav className="rounded-3xl border border-border/70 bg-card p-2 shadow-sm shadow-slate-200/50">
-          <p className="flex items-center gap-1.5 px-3 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-            <Layers className="size-3.5" />
-            Каталог
-          </p>
+          <div className="flex items-center justify-between px-3 pb-1 pt-2">
+            <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              <Layers className="size-3.5" />
+              Каталог
+            </p>
+            <Link
+              href="/shop"
+              className={cn(
+                'group inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[11px] font-bold uppercase tracking-wider transition-colors',
+                pathname === '/shop' ? 'text-primary' : 'text-muted-foreground hover:text-primary',
+              )}
+            >
+              Весь каталог
+              <ArrowRight className="size-3 transition-transform group-hover:translate-x-0.5" />
+            </Link>
+          </div>
 
           <ul className="flex flex-col gap-0.5">
             {catalog.map((cat) => {
               const href = `/shop/${cat.slug}`
               const active = pathname === href
               const subs = cat.subcategoryRefs.filter((s) => s.count > 0)
+              const totalCount = cat.subcategoryRefs.reduce((sum, s) => sum + s.count, 0)
               const isOpen = expanded[cat.slug] ?? false
               const Icon = categoryIcon(cat.title)
 
@@ -47,6 +60,14 @@ export function SiteSidebar({ catalog }: { catalog: CatalogNav[] }) {
                         : 'text-foreground hover:bg-accent',
                     )}
                   >
+                    {/* Активный индикатор слева */}
+                    <span
+                      aria-hidden
+                      className={cn(
+                        'absolute -left-2 top-1/2 h-6 w-1 -translate-y-1/2 rounded-full bg-primary transition-all duration-300',
+                        active ? 'opacity-100' : 'opacity-0',
+                      )}
+                    />
                     <Link
                       href={href}
                       className="flex min-w-0 flex-1 items-center gap-2.5 px-3 py-2.5"
@@ -60,6 +81,18 @@ export function SiteSidebar({ catalog }: { catalog: CatalogNav[] }) {
                         <Icon className="size-4" />
                       </span>
                       <span className="min-w-0 flex-1 truncate text-sm font-medium">{cat.title}</span>
+                      {totalCount > 0 && (
+                        <span
+                          className={cn(
+                            'mr-1 shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-bold tabular-nums transition-colors',
+                            active
+                              ? 'bg-white/15 text-primary-foreground'
+                              : 'bg-muted text-muted-foreground group-hover:bg-primary/10 group-hover:text-primary',
+                          )}
+                        >
+                          {totalCount}
+                        </span>
+                      )}
                     </Link>
                     {subs.length > 0 && (
                       <button

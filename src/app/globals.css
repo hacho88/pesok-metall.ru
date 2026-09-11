@@ -1013,23 +1013,13 @@
   background: hsl(var(--muted-foreground) / 0.5);
 }
 
-/* Сайдбар каталога (pm-тема): тонкий скроллбар */
+/* Сайдбар каталога (pm-тема): скроллбар скрыт, прокрутка колесом работает */
 .pm-sidebar-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: hsl(var(--border)) transparent;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 .pm-sidebar-scroll::-webkit-scrollbar {
-  width: 5px;
-}
-.pm-sidebar-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
-.pm-sidebar-scroll::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 9999px;
-}
-.pm-sidebar-scroll::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--muted-foreground) / 0.5);
+  display: none;
 }
 
 /* Сетка-паттерн для hero */

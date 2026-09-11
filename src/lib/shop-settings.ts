@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { normalizeHeroConfig, type HeroConfig } from "@/components/hero-builder/types";
 
 export type PublicSettings = {
   siteName: string;
@@ -36,6 +37,14 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     heroSubtitle: s.heroSubtitle,
     regionLabel: s.regionLabel,
   };
+}
+
+export async function getHeroConfig(): Promise<HeroConfig | null> {
+  const s = await prisma.shopSettings.findFirst({
+    select: { heroConfig: true },
+  });
+  if (!s?.heroConfig) return null;
+  return normalizeHeroConfig(s.heroConfig);
 }
 
 export type BannerData = {
