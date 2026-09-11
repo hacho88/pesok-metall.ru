@@ -72,7 +72,25 @@ export function ChannelsConnect({ initial }: { initial: ChannelsSettings }) {
     setTestResult(null);
     try {
       const res = await fetch("/api/admin/notify-test", { method: "POST" });
-      setTestResult(await res.json());
+      const data = await res.json();
+      setTestResult(data);
+      // Автоподстановка найденного Chat ID
+      if (Array.isArray(data?.foundChatIds) && data.foundChatIds.length > 0 && !form.maxChatId) {
+        const chatId = String(data.foundChatIds[0]);
+        setForm((f) => ({ ...f, maxChatId: chatId }));
+        try {
+          await fetch("/api/admin/settings", {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ ...form, maxChatId: chatId, smtpPort: form.smtpPort ? Number(form.smtpPort) : null }),
+          });
+          // Сразу отправляем тестовое сообщение в найденный чат
+          const retry = await fetch("/api/admin/notify-test", { method: "POST" });
+          setTestResult(await retry.json());
+        } catch {
+          /* не критично — chat_id уже подставлен в форму */
+        }
+      }
     } catch {
       setTestResult({ error: "Ошибка сети" });
     } finally {
