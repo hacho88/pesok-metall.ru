@@ -129,6 +129,7 @@ model Product {
   blogPosts       BlogPost[]
   orderItems      OrderItem[]
   heroBoxes       HeroBox[]
+  warehouseSales  WarehouseSale[]
   createdAt       DateTime         @default(now())
   updatedAt       DateTime         @updatedAt
 }
@@ -497,6 +498,25 @@ model OrderItem {
   total     Float       // Сумма позиции
 
   @@index([orderId])
+}
+
+// Продажа со склада (фасовка: песок, керамзит, щебень)
+model WarehouseSale {
+  id          String   @id @default(uuid())
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  qty         Float    // Количество проданного
+  unit        String   // Единица: мешок, м³, т
+  costPrice   Float    // Себестоимость за единицу (фасовка + сырьё)
+  sellPrice   Float    // Цена продажи за единицу
+  totalCost   Float    // qty * costPrice
+  totalSell   Float    // qty * sellPrice
+  profit      Float    // totalSell - totalCost
+  note        String?  // Примечание
+  createdAt   DateTime @default(now())
+
+  @@index([productId])
+  @@index([createdAt])
 }
 
 // Товарный чек — создаётся вручную в админке
