@@ -161,26 +161,18 @@ function buildReceiptHtml(data: {
 </div>`;
 }
 
-// PDF через скрытый iframe — html2canvas не видит Tailwind oklch-стили основного документа
+// PDF: html2canvas клонирует весь документ и падает на oklch-цветах Tailwind v4.
+// Поэтому на время генерации убираем все <style>/<link> узлы, потом возвращаем.
 async function downloadReceiptPdf(html: string, filename: string) {
-  const iframe = document.createElement("iframe");
-  iframe.style.position = "fixed";
-  iframe.style.right = "0";
-  iframe.style.bottom = "0";
-  iframe.style.width = "800px";
-  iframe.style.height = "600px";
-  iframe.style.border = "none";
-  iframe.style.opacity = "0";
-  iframe.style.pointerEvents = "none";
-  document.body.appendChild(iframe);
-  const doc = iframe.contentDocument!;
-  doc.open();
-  doc.write(`<html><head></head><body>${html}</body></html>`);
-  doc.close();
-  await new Promise<void>((resolve) => {
-    if (doc.readyState === "complete") resolve();
-    else iframe.onload = () => resolve();
-  });
+  const styleNodes = Array.from(document.querySelectorAll<HTMLElement>("style, link[rel=stylesheet]"));
+  const restore = styleNodes.map((n) => ({ n, parent: n.parentNode as Node, next: n.nextSibling }));
+  styleNodes.forEach((n) => n.parentNode!.removeChild(n));
+
+  const el = document.createElement("div");
+  el.innerHTML = html;
+  el.style.cssText = "position:absolute;left:-9999px;top:0;width:700px;background:#fff";
+  document.body.appendChild(el);
+
   try {
     const html2pdf = (await import("html2pdf.js")).default;
     await html2pdf().set({
@@ -189,13 +181,13 @@ async function downloadReceiptPdf(html: string, filename: string) {
       image: { type: "jpeg" as const, quality: 0.98 },
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
-    }).from(doc.body).save();
-    document.body.removeChild(iframe);
+    }).from(el).save();
   } catch (e) {
-    // Fallback: открываем печать — там можно выбрать «Сохранить как PDF»
     console.error("PDF generation failed, falling back to print:", e);
-    document.body.removeChild(iframe);
     printHtml(html);
+  } finally {
+    document.body.removeChild(el);
+    restore.forEach(({ n, parent, next }) => parent.insertBefore(n, next));
   }
 }
 
