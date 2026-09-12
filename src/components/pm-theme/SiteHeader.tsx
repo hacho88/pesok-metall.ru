@@ -152,9 +152,13 @@ export function SiteHeader({ settings }: { settings?: HeaderSettings }) {
         </div>
       </div>
 
-      {/* Мобильная строка: поиск на всю ширину */}
+      {/* Мобильная строка: поиск на всю ширину + время работы */}
       <div className="px-4 pb-4 lg:hidden">
         <LiveSearch variant="header" placeholder="Поиск по каталогу…" />
+        <p className="mt-2 flex items-center gap-1.5 text-xs text-muted-foreground">
+          <Clock className="size-3.5" />
+          {workHours}
+        </p>
       </div>
     </header>
   )
