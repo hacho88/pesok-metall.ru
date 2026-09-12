@@ -125,7 +125,8 @@ export function LiveSearch({
       {showDropdown && (
         <div
           className={cn(
-            'absolute left-0 right-0 top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border/70 bg-card shadow-xl shadow-slate-300/40',
+            'absolute top-full z-50 mt-2 overflow-hidden rounded-2xl border border-border/70 bg-card shadow-xl shadow-slate-300/40',
+            isHero ? 'left-0 right-0' : 'left-0 w-[min(680px,calc(100vw-2rem))]',
           )}
         >
           {items.length === 0 && !loading ? (
