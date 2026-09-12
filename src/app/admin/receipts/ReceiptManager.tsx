@@ -161,41 +161,9 @@ function buildReceiptHtml(data: {
 </div>`;
 }
 
-// PDF: html2canvas клонирует весь документ и падает на oklch-цветах Tailwind v4.
-// Поэтому на время генерации убираем все <style>/<link> узлы, потом возвращаем.
-async function downloadReceiptPdf(html: string, filename: string) {
-  const styleNodes = Array.from(document.querySelectorAll<HTMLElement>("style, link[rel=stylesheet]"));
-  const restore = styleNodes.map((n) => ({ n, parent: n.parentNode as Node, next: n.nextSibling }));
-  styleNodes.forEach((n) => n.parentNode!.removeChild(n));
-
-  const el = document.createElement("div");
-  el.innerHTML = html;
-  // Нельзя уводить за экран (left:-9999px) — html2canvas захватит пустую область.
-  // Ставим поверх страницы на время генерации (стили всё равно сняты).
-  el.style.cssText = "position:fixed;left:0;top:0;width:700px;background:#fff;z-index:2147483647";
-  document.body.appendChild(el);
-
-  try {
-    const html2pdf = (await import("html2pdf.js")).default;
-    await html2pdf().set({
-      margin: 10,
-      filename,
-      image: { type: "jpeg" as const, quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true },
-      jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
-    }).from(el).save();
-  } catch (e) {
-    console.error("PDF generation failed, falling back to print:", e);
-    printHtml(html);
-  } finally {
-    document.body.removeChild(el);
-    // Восстанавливаем в обратном порядке — nextSibling уже может быть на месте
-    for (let i = restore.length - 1; i >= 0; i--) {
-      const { n, parent, next } = restore[i];
-      if (next && next.parentNode === parent) parent.insertBefore(n, next);
-      else parent.appendChild(n);
-    }
-  }
+// PDF через диалог печати браузера — пользователь выбирает «Сохранить как PDF»
+function downloadReceiptPdf(html: string) {
+  printHtml(html);
 }
 
 // Печать через скрытый iframe — не блокируется браузером
@@ -491,12 +459,12 @@ export function ReceiptManager() {
               className="h-12 rounded-xl font-bold"
               onClick={async () => {
                 if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
-                await downloadReceiptPdf(buildReceiptHtml({
+                downloadReceiptPdf(buildReceiptHtml({
                   number: editId ? current?.number || "ЧК-____-____" : "ЧК-____-____",
                   date: new Date(),
                   customerName, customerInn, customerPhone,
                   items, total: totalSum, note,
-                }), `чек-${current?.number || "новый"}.pdf`);
+                }));
               }}
             >
               <Download className="mr-2 h-5 w-5" />
@@ -812,7 +780,6 @@ export function ReceiptManager() {
 // === PRINT COMPONENT ===
 function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: () => void; onEdit: () => void }) {
   const settingsRef = useRef<HTMLDivElement>(null);
-  const [generating, setGenerating] = useState(false);
 
   const handlePrint = () => {
     printHtml(buildReceiptHtml({
@@ -827,22 +794,17 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
     }));
   };
 
-  const handleDownloadPdf = async () => {
-    setGenerating(true);
-    try {
-      await downloadReceiptPdf(buildReceiptHtml({
-        number: receipt.number,
-        date: new Date(receipt.createdAt),
-        customerName: receipt.customerName || "",
-        customerInn: receipt.customerInn || "",
-        customerPhone: receipt.customerPhone || "",
-        items: receipt.items,
-        total: receipt.total,
-        note: receipt.note || "",
-      }), `чек-${receipt.number}.pdf`);
-    } finally {
-      setGenerating(false);
-    }
+  const handleDownloadPdf = () => {
+    downloadReceiptPdf(buildReceiptHtml({
+      number: receipt.number,
+      date: new Date(receipt.createdAt),
+      customerName: receipt.customerName || "",
+      customerInn: receipt.customerInn || "",
+      customerPhone: receipt.customerPhone || "",
+      items: receipt.items,
+      total: receipt.total,
+      note: receipt.note || "",
+    }));
   };
 
   return (
@@ -861,9 +823,9 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
           <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={onEdit}>
             Изменить
           </Button>
-          <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={handleDownloadPdf} disabled={generating}>
-            {generating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Download className="mr-2 h-5 w-5" />}
-            {generating ? "ГЕНЕРАЦИЯ…" : "Скачать PDF"}
+          <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={handleDownloadPdf}>
+            <Download className="mr-2 h-5 w-5" />
+            Скачать PDF
           </Button>
           <Button className="h-11 rounded-xl bg-primary px-6 font-black" onClick={handlePrint}>
             <Printer className="mr-2 h-5 w-5" />
