@@ -47,6 +47,59 @@ interface ProductSearchResult {
   priceRetailBase: string | null;
 }
 
+// Сумма прописью (рубли)
+function sumToWords(n: number): string {
+  const ones = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять",
+    "десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать", "пятнадцать",
+    "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"];
+  const tens = ["", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"];
+  const hundreds = ["", "сто", "двести", "триста", "четыреста", "пятьсот", "шестьсот", "семьсот", "восемьсот", "девятьсот"];
+  const rub = ["рубль", "рубля", "рублей"];
+  const ths = ["тысяча", "тысячи", "тысяч"];
+  const mln = ["миллион", "миллиона", "миллионов"];
+
+  const morph = (n: number, forms: string[]) => {
+    const m = n % 100;
+    if (m > 10 && m < 20) return forms[2];
+    const d = m % 10;
+    if (d === 1) return forms[0];
+    if (d >= 2 && d <= 4) return forms[1];
+    return forms[2];
+  };
+
+  const tri = (n: number, feminine: boolean): string => {
+    const parts: string[] = [];
+    const h = Math.floor(n / 100);
+    const rest = n % 100;
+    if (h) parts.push(hundreds[h]);
+    if (rest >= 20) {
+      parts.push(tens[Math.floor(rest / 10)]);
+      const o = rest % 10;
+      if (o) parts.push(feminine && o === 1 ? "одна" : feminine && o === 2 ? "две" : ones[o]);
+    } else if (rest > 0) {
+      if (feminine && rest === 1) parts.push("одна");
+      else if (feminine && rest === 2) parts.push("две");
+      else parts.push(ones[rest]);
+    }
+    return parts.join(" ");
+  };
+
+  const rubles = Math.floor(Math.abs(n));
+  const kopecks = Math.round((Math.abs(n) - rubles) * 100);
+  if (rubles === 0) return `Ноль ${rub[2]} ${String(kopecks).padStart(2, "0")} коп.`;
+
+  const parts: string[] = [];
+  const m = Math.floor(rubles / 1_000_000);
+  const t = Math.floor((rubles % 1_000_000) / 1000);
+  const r = rubles % 1000;
+  if (m) parts.push(`${tri(m, false)} ${morph(m, mln)}`);
+  if (t) parts.push(`${tri(t, true)} ${morph(t, ths)}`);
+  if (r) parts.push(tri(r, false));
+  const words = parts.join(" ");
+  const cap = words.charAt(0).toUpperCase() + words.slice(1);
+  return `${cap} ${morph(rubles, rub)} ${String(kopecks).padStart(2, "0")} коп.`;
+}
+
 export function ReceiptManager() {
   const [view, setView] = useState<"list" | "edit" | "print">("list");
   const [receipts, setReceipts] = useState<Receipt[]>([]);
@@ -480,23 +533,9 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
         <title>Товарный чек ${receipt.number}</title>
         <style>
           * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Segoe UI', Arial, sans-serif; color: #1a1a1a; padding: 40px; max-width: 800px; margin: 0 auto; }
-          h1 { font-size: 24px; text-align: center; margin-bottom: 5px; }
-          .sub { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
-          .info { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; }
-          .info div { line-height: 1.8; }
-          .info b { font-weight: 700; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-          th { background: #f5f5f5; padding: 10px 8px; text-align: left; font-size: 12px; border-bottom: 2px solid #ddd; }
-          td { padding: 10px 8px; border-bottom: 1px solid #eee; font-size: 13px; }
-          .right { text-align: right; }
-          .center { text-align: center; }
-          .total-row { background: #f9f9f9; font-weight: 700; font-size: 16px; }
-          .total-row td { padding: 14px 8px; border-top: 2px solid #ddd; border-bottom: none; }
-          .sign { margin-top: 50px; display: flex; justify-content: space-between; font-size: 13px; }
-          .sign-line { border-top: 1px solid #333; width: 200px; text-align: center; padding-top: 5px; }
-          .note { margin-top: 20px; font-size: 13px; color: #666; }
-          @media print { body { padding: 20px; } }
+          body { font-family: 'Times New Roman', serif; color: #000; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
+          table { border-collapse: collapse; }
+          @media print { body { padding: 15px; } }
         </style>
       </head>
       <body>${content}</body>
@@ -552,74 +591,108 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
         </div>
       </div>
 
-      <div ref={settingsRef} className="rounded-3xl border-2 bg-white p-10">
-        <h1 style={{ fontSize: "24px", textAlign: "center", marginBottom: "5px" }}>ТОВАРНЫЙ ЧЕК № {receipt.number}</h1>
-        <div style={{ textAlign: "center", color: "#666", fontSize: "14px", marginBottom: "30px" }}>
-          от {new Date(receipt.createdAt).toLocaleDateString("ru-RU", { day: "2-digit", month: "long", year: "numeric" })}
-        </div>
+      <div ref={settingsRef} className="rounded-3xl border-2 bg-white p-10" style={{ fontFamily: "'Times New Roman', serif" }}>
+        {/* Шапка */}
+        <table style={{ width: "100%", marginBottom: "4px" }}>
+          <tbody>
+            <tr>
+              <td style={{ fontSize: "13px", verticalAlign: "bottom" }}>
+                ТОВАРНЫЙ ЧЕК № <b>{receipt.number}</b>
+              </td>
+              <td style={{ fontSize: "13px", textAlign: "right", verticalAlign: "bottom" }}>
+                от «{new Date(receipt.createdAt).getDate()}» {new Date(receipt.createdAt).toLocaleDateString("ru-RU", { month: "long", year: "numeric" })}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ borderBottom: "2px solid #000", marginBottom: "16px" }} />
 
-        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px", fontSize: "14px" }}>
-          <div style={{ lineHeight: "1.8" }}>
-            <b>Покупатель:</b> {receipt.customerName}<br />
-            {receipt.customerPhone && <><b>Телефон:</b> {receipt.customerPhone}<br /></>}
-            {receipt.customerInn && <><b>ИНН:</b> {receipt.customerInn}<br /></>}
-          </div>
-          <div style={{ lineHeight: "1.8", textAlign: "right" }}>
-            <b>Песок-Металл</b><br />
-            г. Москва<br />
-            +7 (495) 000-00-00
-          </div>
-        </div>
+        {/* Продавец / Покупатель */}
+        <table style={{ width: "100%", fontSize: "13px", marginBottom: "16px", lineHeight: "1.6" }}>
+          <tbody>
+            <tr>
+              <td style={{ width: "90px", fontWeight: 700, verticalAlign: "top" }}>Продавец:</td>
+              <td style={{ borderBottom: "1px solid #999" }}>
+                ИП / ООО «Песок-Металл», г. Москва, тел. +7 (495) 000-00-00
+              </td>
+            </tr>
+            <tr>
+              <td style={{ fontWeight: 700, verticalAlign: "top" }}>Покупатель:</td>
+              <td style={{ borderBottom: "1px solid #999" }}>
+                {receipt.customerName}
+                {receipt.customerInn ? `, ИНН ${receipt.customerInn}` : ""}
+                {receipt.customerPhone ? `, тел. ${receipt.customerPhone}` : ""}
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "20px" }}>
+        {/* Таблица позиций */}
+        <table style={{ width: "100%", borderCollapse: "collapse", marginBottom: "8px", fontSize: "13px" }}>
           <thead>
-            <tr style={{ background: "#f5f5f5", borderBottom: "2px solid #ddd" }}>
-              <th style={{ padding: "10px 8px", textAlign: "left", fontSize: "12px" }}>№</th>
-              <th style={{ padding: "10px 8px", textAlign: "left", fontSize: "12px" }}>Наименование</th>
-              <th style={{ padding: "10px 8px", textAlign: "center", fontSize: "12px" }}>Ед.</th>
-              <th style={{ padding: "10px 8px", textAlign: "right", fontSize: "12px" }}>Кол-во</th>
-              <th style={{ padding: "10px 8px", textAlign: "right", fontSize: "12px" }}>Цена, ₽</th>
-              <th style={{ padding: "10px 8px", textAlign: "right", fontSize: "12px" }}>Сумма, ₽</th>
+            <tr>
+              <th style={{ border: "1px solid #000", padding: "6px 8px", fontSize: "12px", width: "36px" }}>№</th>
+              <th style={{ border: "1px solid #000", padding: "6px 8px", fontSize: "12px", textAlign: "left" }}>Наименование товара</th>
+              <th style={{ border: "1px solid #000", padding: "6px 8px", fontSize: "12px", width: "56px" }}>Ед. изм.</th>
+              <th style={{ border: "1px solid #000", padding: "6px 8px", fontSize: "12px", width: "70px" }}>Кол-во</th>
+              <th style={{ border: "1px solid #000", padding: "6px 8px", fontSize: "12px", width: "90px" }}>Цена, руб.</th>
+              <th style={{ border: "1px solid #000", padding: "6px 8px", fontSize: "12px", width: "100px" }}>Сумма, руб.</th>
             </tr>
           </thead>
           <tbody>
             {receipt.items.map((it, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid #eee" }}>
-                <td style={{ padding: "10px 8px", fontSize: "13px" }}>{i + 1}</td>
-                <td style={{ padding: "10px 8px", fontSize: "13px" }}>{it.name}</td>
-                <td style={{ padding: "10px 8px", fontSize: "13px", textAlign: "center" }}>{it.unit}</td>
-                <td style={{ padding: "10px 8px", fontSize: "13px", textAlign: "right" }}>{it.qty}</td>
-                <td style={{ padding: "10px 8px", fontSize: "13px", textAlign: "right" }}>{Number(it.price).toLocaleString("ru-RU")}</td>
-                <td style={{ padding: "10px 8px", fontSize: "13px", textAlign: "right", fontWeight: 700 }}>{Number(it.total).toLocaleString("ru-RU")}</td>
+              <tr key={i}>
+                <td style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "center" }}>{i + 1}</td>
+                <td style={{ border: "1px solid #000", padding: "6px 8px" }}>{it.name}</td>
+                <td style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "center" }}>{it.unit}</td>
+                <td style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "right" }}>{it.qty}</td>
+                <td style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "right" }}>{Number(it.price).toLocaleString("ru-RU", { minimumFractionDigits: 2 })}</td>
+                <td style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "right" }}>{Number(it.total).toLocaleString("ru-RU", { minimumFractionDigits: 2 })}</td>
               </tr>
             ))}
-          </tbody>
-          <tfoot>
-            <tr style={{ background: "#f9f9f9", borderTop: "2px solid #ddd" }}>
-              <td colSpan={5} style={{ padding: "14px 8px", fontSize: "16px", textAlign: "right", fontWeight: 700 }}>Итого:</td>
-              <td style={{ padding: "14px 8px", fontSize: "16px", textAlign: "right", fontWeight: 700 }}>{receipt.total.toLocaleString("ru-RU")} ₽</td>
+            <tr>
+              <td colSpan={5} style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "right", fontWeight: 700 }}>Итого:</td>
+              <td style={{ border: "1px solid #000", padding: "6px 8px", textAlign: "right", fontWeight: 700 }}>
+                {receipt.total.toLocaleString("ru-RU", { minimumFractionDigits: 2 })}
+              </td>
             </tr>
-          </tfoot>
+          </tbody>
         </table>
 
+        {/* Сумма прописью */}
+        <div style={{ fontSize: "13px", marginBottom: "6px" }}>
+          Всего наименований {receipt.items.length}, на сумму {receipt.total.toLocaleString("ru-RU", { minimumFractionDigits: 2 })} руб.
+        </div>
+        <div style={{ fontSize: "13px", fontWeight: 700, borderBottom: "1px solid #999", paddingBottom: "2px", marginBottom: "24px" }}>
+          {sumToWords(receipt.total)}
+        </div>
+
         {receipt.note && (
-          <div style={{ marginTop: "20px", fontSize: "13px", color: "#666" }}>
+          <div style={{ fontSize: "12px", color: "#444", marginBottom: "16px" }}>
             <b>Примечание:</b> {receipt.note}
           </div>
         )}
 
-        <div style={{ marginTop: "50px", display: "flex", justifyContent: "space-between", fontSize: "13px" }}>
-          <div>
-            <div style={{ borderTop: "1px solid #333", width: "200px", textAlign: "center", paddingTop: "5px" }}>
-              Подпись продавца
-            </div>
-          </div>
-          <div>
-            <div style={{ borderTop: "1px solid #333", width: "200px", textAlign: "center", paddingTop: "5px" }}>
-              Подпись покупателя
-            </div>
-          </div>
-        </div>
+        {/* Подписи */}
+        <table style={{ width: "100%", fontSize: "13px", marginTop: "30px" }}>
+          <tbody>
+            <tr>
+              <td style={{ width: "50%" }}>
+                Отпустил _________________ / _________________ /
+                <div style={{ fontSize: "10px", color: "#666", marginTop: "2px", paddingLeft: "80px" }}>
+                  подпись&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;расшифровка
+                </div>
+              </td>
+              <td style={{ width: "50%", paddingLeft: "40px" }}>
+                Получил _________________ / _________________ /
+                <div style={{ fontSize: "10px", color: "#666", marginTop: "2px", paddingLeft: "80px" }}>
+                  подпись&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;расшифровка
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div style={{ fontSize: "13px", marginTop: "20px" }}>М.П.</div>
       </div>
     </div>
   );
