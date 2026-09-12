@@ -611,7 +611,7 @@ export function ReceiptManager() {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
+          <div>
             <table className="w-full">
               <thead>
                 <tr className="border-b-2 text-left">
