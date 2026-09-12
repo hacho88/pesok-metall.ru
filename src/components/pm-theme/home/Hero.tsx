@@ -67,6 +67,19 @@ function DefaultPromoBanner() {
   )
 }
 
+/** Сетка товарных боксов — используется и в Hero, и отдельно под HeroSection */
+export function HeroBoxes({ products }: { products: Product[] }) {
+  const items = products.slice(0, 15)
+  if (items.length === 0) return null
+  return (
+    <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 xl:grid-cols-4">
+      {items.map((p) => (
+        <HeroProductCard key={p.id} product={p} />
+      ))}
+    </div>
+  )
+}
+
 export function Hero({
   bulkProducts = [],
   banners = [],
@@ -134,11 +147,7 @@ export function Hero({
         ))}
       </div>
 
-      <div className="grid grid-cols-2 gap-5 sm:grid-cols-3 xl:grid-cols-4">
-        {products.map((p) => (
-          <HeroProductCard key={p.id} product={p} />
-        ))}
-      </div>
+      <HeroBoxes products={products} />
 
       {banners.length > 0 ? <BannerCarousel banners={banners} /> : <DefaultPromoBanner />}
     </section>

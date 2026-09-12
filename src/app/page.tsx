@@ -3,7 +3,7 @@ import { getPublicSettings, getActiveBanners, getHeroConfig } from "@/lib/shop-s
 import { prisma } from "@/lib/prisma";
 import { CartProvider } from "@/components/pm-theme/cart-context";
 import { SiteShell } from "@/components/pm-theme/SiteShell";
-import { Hero } from "@/components/pm-theme/home/Hero";
+import { Hero, HeroBoxes } from "@/components/pm-theme/home/Hero";
 import { HeroSection } from "@/components/hero-builder/HeroSection";
 import { CatalogGrid } from "@/components/pm-theme/home/CatalogGrid";
 import { PopularProducts } from "@/components/pm-theme/home/PopularProducts";
@@ -44,7 +44,10 @@ export default async function HomePage() {
       <SiteShell catalog={nav} settings={settings}>
         <div className="flex flex-col gap-12">
           {heroConfig ? (
-            <HeroSection data={heroConfig} />
+            <>
+              <HeroSection data={heroConfig} />
+              <HeroBoxes products={bulkProducts} />
+            </>
           ) : (
             <Hero
               bulkProducts={bulkProducts}
