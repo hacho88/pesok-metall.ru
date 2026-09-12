@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import html2pdf from "html2pdf.js";
 import {
   Plus,
   Trash2,
@@ -12,6 +13,7 @@ import {
   Loader2,
   CheckCircle2,
   X,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -464,6 +466,7 @@ export function ReceiptManager() {
 // === PRINT COMPONENT ===
 function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: () => void; onEdit: () => void }) {
   const settingsRef = useRef<HTMLDivElement>(null);
+  const [generating, setGenerating] = useState(false);
 
   const handlePrint = () => {
     const content = settingsRef.current?.innerHTML;
@@ -504,6 +507,24 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
     setTimeout(() => w.print(), 300);
   };
 
+  const handleDownloadPdf = async () => {
+    if (!settingsRef.current) return;
+    setGenerating(true);
+    try {
+      const element = settingsRef.current;
+      const opt = {
+        margin: 10,
+        filename: `чек-${receipt.number}.pdf`,
+        image: { type: "jpeg" as const, quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
+      };
+      await html2pdf().set(opt).from(element).save();
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   return (
     <div className="space-y-6 font-jakarta">
       <div className="flex items-center justify-between print:hidden">
@@ -520,9 +541,13 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
           <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={onEdit}>
             Изменить
           </Button>
+          <Button variant="outline" className="h-11 rounded-xl font-bold" onClick={handleDownloadPdf} disabled={generating}>
+            {generating ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Download className="mr-2 h-5 w-5" />}
+            {generating ? "ГЕНЕРАЦИЯ…" : "Скачать PDF"}
+          </Button>
           <Button className="h-11 rounded-xl bg-primary px-6 font-black" onClick={handlePrint}>
             <Printer className="mr-2 h-5 w-5" />
-            Печать / PDF
+            Печать
           </Button>
         </div>
       </div>
