@@ -187,7 +187,12 @@ async function downloadReceiptPdf(html: string, filename: string) {
     printHtml(html);
   } finally {
     document.body.removeChild(el);
-    restore.forEach(({ n, parent, next }) => parent.insertBefore(n, next));
+    // Восстанавливаем в обратном порядке — nextSibling уже может быть на месте
+    for (let i = restore.length - 1; i >= 0; i--) {
+      const { n, parent, next } = restore[i];
+      if (next && next.parentNode === parent) parent.insertBefore(n, next);
+      else parent.appendChild(n);
+    }
   }
 }
 
