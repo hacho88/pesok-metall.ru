@@ -481,82 +481,103 @@ export function ReceiptManager() {
               </div>
             )}
           </div>
-          <button
-            className="mt-3 text-xs font-black uppercase tracking-widest text-primary hover:underline"
-            onClick={addManualItem}
-          >
-            + Добавить произвольную позицию
-          </button>
         </div>
 
         {/* Items table */}
-        {items.length > 0 && (
-          <div className="rounded-3xl border-2 bg-card p-5">
-            <h2 className="mb-4 text-sm font-black uppercase tracking-widest">Позиции чека</h2>
-            <div className="space-y-3">
-              {items.map((it, i) => (
-                <div key={i} className="rounded-2xl border-2 bg-muted/20 p-3">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-black text-primary">{i + 1}</span>
-                    <Input
-                      className="h-10 flex-1 rounded-lg border-2 text-sm font-bold"
-                      value={it.name}
-                      onChange={(e) => updateItem(i, { name: e.target.value })}
-                      placeholder="Наименование товара"
-                    />
-                    <button
-                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
-                      onClick={() => removeItem(i)}
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  </div>
-                  <div className="mt-2 grid grid-cols-4 gap-2">
-                    <div>
-                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Ед.</p>
+        <div className="rounded-3xl border-2 bg-card p-5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-sm font-black uppercase tracking-widest">Позиции чека</h2>
+            <button
+              className="flex items-center gap-1.5 rounded-xl bg-primary/10 px-4 py-2 text-xs font-black uppercase tracking-widest text-primary hover:bg-primary/20"
+              onClick={addManualItem}
+            >
+              <Plus className="h-4 w-4" />
+              Добавить
+            </button>
+          </div>
+
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[500px]">
+              <thead>
+                <tr className="border-b-2 text-left">
+                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-8">№</th>
+                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Наименование</th>
+                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-16 text-center">Ед.</th>
+                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-20 text-center">Кол-во</th>
+                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-24 text-center">Цена ₽</th>
+                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-24 text-right">Сумма ₽</th>
+                  <th className="pb-2 w-10" />
+                </tr>
+              </thead>
+              <tbody>
+                {items.length === 0 && (
+                  <tr>
+                    <td colSpan={7} className="py-8 text-center text-sm text-muted-foreground/50">
+                      Нажмите «Добавить» или найдите товар выше
+                    </td>
+                  </tr>
+                )}
+                {items.map((it, i) => (
+                  <tr key={i} className="border-b last:border-0">
+                    <td className="py-1.5 pr-1 text-center text-xs font-black text-muted-foreground/40">{i + 1}</td>
+                    <td className="py-1.5 pr-2">
                       <Input
-                        className="h-10 rounded-lg border-2 text-center text-sm"
+                        className="h-9 rounded-lg border-2 text-sm font-bold"
+                        value={it.name}
+                        onChange={(e) => updateItem(i, { name: e.target.value })}
+                        placeholder="Наименование"
+                      />
+                    </td>
+                    <td className="py-1.5 pr-2">
+                      <Input
+                        className="h-9 rounded-lg border-2 text-center text-sm"
                         value={it.unit}
                         onChange={(e) => updateItem(i, { unit: e.target.value })}
                         placeholder="шт"
                       />
-                    </div>
-                    <div>
-                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Кол-во</p>
+                    </td>
+                    <td className="py-1.5 pr-2">
                       <Input
-                        className="h-10 rounded-lg border-2 text-center text-sm"
+                        className="h-9 rounded-lg border-2 text-center text-sm"
                         type="number"
                         min={0}
                         value={it.qty}
                         onChange={(e) => updateItem(i, { qty: Number(e.target.value) })}
                       />
-                    </div>
-                    <div>
-                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Цена ₽</p>
+                    </td>
+                    <td className="py-1.5 pr-2">
                       <Input
-                        className="h-10 rounded-lg border-2 text-center text-sm"
+                        className="h-9 rounded-lg border-2 text-center text-sm"
                         type="number"
                         min={0}
                         value={it.price}
                         onChange={(e) => updateItem(i, { price: Number(e.target.value) })}
                       />
-                    </div>
-                    <div>
-                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Сумма</p>
-                      <div className="flex h-10 items-center justify-center rounded-lg bg-primary/10 text-sm font-black text-primary">
-                        {(Number(it.qty) * Number(it.price)).toLocaleString("ru-RU")} ₽
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+                    </td>
+                    <td className="py-1.5 pr-2 text-right text-sm font-black">
+                      {(Number(it.qty) * Number(it.price)).toLocaleString("ru-RU")}
+                    </td>
+                    <td className="py-1.5 text-center">
+                      <button
+                        className="flex h-8 w-8 items-center justify-center rounded-lg text-red-500 hover:bg-red-50"
+                        onClick={() => removeItem(i)}
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {items.length > 0 && (
             <div className="mt-4 flex items-center justify-between rounded-2xl bg-primary/5 p-4">
               <span className="text-sm font-black uppercase tracking-widest text-muted-foreground">Итого:</span>
               <span className="text-2xl font-black text-primary">{totalSum.toLocaleString("ru-RU")} ₽</span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
         {/* Note */}
         <div className="rounded-3xl border-2 bg-card p-5">
