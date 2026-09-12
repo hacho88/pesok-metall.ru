@@ -190,8 +190,12 @@ async function downloadReceiptPdf(html: string, filename: string) {
       html2canvas: { scale: 2, useCORS: true },
       jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
     }).from(doc.body).save();
-  } finally {
     document.body.removeChild(iframe);
+  } catch (e) {
+    // Fallback: открываем печать — там можно выбрать «Сохранить как PDF»
+    console.error("PDF generation failed, falling back to print:", e);
+    document.body.removeChild(iframe);
+    printHtml(html);
   }
 }
 
