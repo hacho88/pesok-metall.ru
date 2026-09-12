@@ -542,8 +542,9 @@ export function ReceiptManager() {
                         className="h-9 rounded-lg border-2 text-center text-sm"
                         type="number"
                         min={0}
-                        value={it.qty}
+                        value={it.qty || ""}
                         onChange={(e) => updateItem(i, { qty: Number(e.target.value) })}
+                        placeholder="0"
                       />
                     </td>
                     <td className="py-1 pr-1">
@@ -551,8 +552,9 @@ export function ReceiptManager() {
                         className="h-9 rounded-lg border-2 text-center text-sm"
                         type="number"
                         min={0}
-                        value={it.price}
+                        value={it.price || ""}
                         onChange={(e) => updateItem(i, { price: Number(e.target.value) })}
+                        placeholder="0"
                       />
                     </td>
                     <td className="py-1 pr-1 text-right text-sm font-black whitespace-nowrap">
