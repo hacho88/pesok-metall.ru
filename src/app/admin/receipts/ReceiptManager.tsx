@@ -360,39 +360,43 @@ export function ReceiptManager() {
           </Button>
         </div>
 
-        {/* Customer info */}
-        <div className="rounded-3xl border-2 bg-card p-5">
-          <h2 className="mb-4 text-sm font-black uppercase tracking-widest">Покупатель</h2>
-          <div className="grid gap-4 sm:grid-cols-3">
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ФИО / Компания</Label>
-              <Input
-                className="h-11 rounded-xl border-2 font-bold"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                placeholder="Иванов И.И. или ООО Строй"
-              />
+        <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+          <div className="space-y-4">
+            {/* Customer info */}
+            <div className="rounded-3xl border-2 bg-card p-5">
+              <h2 className="mb-4 text-sm font-black uppercase tracking-widest">Покупатель</h2>
+              <div className="space-y-3">
+                <div className="space-y-1.5">
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ФИО / Компания *</Label>
+                  <Input
+                    className="h-11 rounded-xl border-2 font-bold"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="Иванов И.И. или ООО Строй"
+                  />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Телефон</Label>
+                    <Input
+                      className="h-11 rounded-xl border-2 font-bold"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="+7 (999) 999-99-99"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ИНН</Label>
+                    <Input
+                      className="h-11 rounded-xl border-2 font-bold"
+                      value={customerInn}
+                      onChange={(e) => setCustomerInn(e.target.value)}
+                      placeholder="7701234567"
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Телефон</Label>
-              <Input
-                className="h-11 rounded-xl border-2 font-bold"
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                placeholder="+7 (999) 999-99-99"
-              />
-            </div>
-            <div className="space-y-1.5">
-              <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ИНН</Label>
-              <Input
-                className="h-11 rounded-xl border-2 font-bold"
-                value={customerInn}
-                onChange={(e) => setCustomerInn(e.target.value)}
-                placeholder="7701234567"
-              />
-            </div>
-          </div>
-        </div>
 
         {/* Product search */}
         <div className="rounded-3xl border-2 bg-card p-5">
@@ -502,6 +506,99 @@ export function ReceiptManager() {
             onChange={(e) => setNote(e.target.value)}
             placeholder="Дополнительная информация для чека…"
           />
+        </div>
+          </div>
+
+          {/* === ПРАВАЯ КОЛОНКА: ЖИВОЙ ПРЕДПРОСМОТР === */}
+          <div className="sticky top-6 self-start">
+            <div className="rounded-3xl border-2 bg-card p-5">
+              <h2 className="mb-4 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-muted-foreground">
+                <ReceiptIcon className="h-4 w-4" />
+                Предпросмотр чека
+              </h2>
+              <div
+                className="overflow-hidden rounded-2xl border bg-white shadow-inner"
+                style={{ fontFamily: "'Times New Roman', serif", fontSize: "11px", lineHeight: "1.5" }}
+              >
+                <div className="p-5">
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "2px" }}>
+                    <span>ТОВАРНЫЙ ЧЕК № <b>{editId ? "…" : "ЧК-____-____"}</b></span>
+                    <span>от «{new Date().getDate()}» {new Date().toLocaleDateString("ru-RU", { month: "long", year: "numeric" })}</span>
+                  </div>
+                  <div style={{ borderBottom: "1.5px solid #000", marginBottom: "10px" }} />
+                  <table style={{ width: "100%", fontSize: "11px", marginBottom: "10px" }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ fontWeight: 700, width: "70px", verticalAlign: "top" }}>Продавец:</td>
+                        <td style={{ borderBottom: "1px solid #ccc" }}>ООО «Песок-Металл», г. Москва</td>
+                      </tr>
+                      <tr>
+                        <td style={{ fontWeight: 700, verticalAlign: "top" }}>Покупатель:</td>
+                        <td style={{ borderBottom: "1px solid #ccc" }}>
+                          {customerName || <span style={{ color: "#999" }}>________________________</span>}
+                          {customerInn ? `, ИНН ${customerInn}` : ""}
+                          {customerPhone ? `, тел. ${customerPhone}` : ""}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "10px", marginBottom: "6px" }}>
+                    <thead>
+                      <tr>
+                        <th style={{ border: "1px solid #000", padding: "3px 4px", width: "24px" }}>№</th>
+                        <th style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "left" }}>Наименование</th>
+                        <th style={{ border: "1px solid #000", padding: "3px 4px", width: "40px" }}>Ед.</th>
+                        <th style={{ border: "1px solid #000", padding: "3px 4px", width: "45px" }}>Кол-во</th>
+                        <th style={{ border: "1px solid #000", padding: "3px 4px", width: "60px" }}>Цена</th>
+                        <th style={{ border: "1px solid #000", padding: "3px 4px", width: "65px" }}>Сумма</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {items.length === 0 ? (
+                        <tr>
+                          <td colSpan={6} style={{ border: "1px solid #000", padding: "12px", textAlign: "center", color: "#999" }}>
+                            Добавьте товары
+                          </td>
+                        </tr>
+                      ) : (
+                        items.map((it, i) => (
+                          <tr key={i}>
+                            <td style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "center" }}>{i + 1}</td>
+                            <td style={{ border: "1px solid #000", padding: "3px 4px" }}>{it.name || "—"}</td>
+                            <td style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "center" }}>{it.unit}</td>
+                            <td style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "right" }}>{it.qty}</td>
+                            <td style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "right" }}>{Number(it.price).toLocaleString("ru-RU", { minimumFractionDigits: 2 })}</td>
+                            <td style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "right" }}>{(Number(it.qty) * Number(it.price)).toLocaleString("ru-RU", { minimumFractionDigits: 2 })}</td>
+                          </tr>
+                        ))
+                      )}
+                      <tr>
+                        <td colSpan={5} style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "right", fontWeight: 700 }}>Итого:</td>
+                        <td style={{ border: "1px solid #000", padding: "3px 4px", textAlign: "right", fontWeight: 700 }}>
+                          {totalSum.toLocaleString("ru-RU", { minimumFractionDigits: 2 })}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div style={{ fontSize: "10px", marginBottom: "4px" }}>
+                    Всего наименований {items.length}, на сумму {totalSum.toLocaleString("ru-RU", { minimumFractionDigits: 2 })} руб.
+                  </div>
+                  <div style={{ fontSize: "10px", fontWeight: 700, borderBottom: "1px solid #ccc", paddingBottom: "2px", marginBottom: "14px" }}>
+                    {totalSum > 0 ? sumToWords(totalSum) : "Ноль рублей 00 коп."}
+                  </div>
+                  <table style={{ width: "100%", fontSize: "10px" }}>
+                    <tbody>
+                      <tr>
+                        <td style={{ width: "50%" }}>Отпустил _____________ / _____________ /</td>
+                        <td style={{ width: "50%", paddingLeft: "20px" }}>Получил _____________ / _____________ /</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  <div style={{ fontSize: "10px", marginTop: "10px" }}>М.П.</div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
