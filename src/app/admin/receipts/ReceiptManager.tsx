@@ -170,7 +170,9 @@ async function downloadReceiptPdf(html: string, filename: string) {
 
   const el = document.createElement("div");
   el.innerHTML = html;
-  el.style.cssText = "position:absolute;left:-9999px;top:0;width:700px;background:#fff";
+  // Нельзя уводить за экран (left:-9999px) — html2canvas захватит пустую область.
+  // Ставим поверх страницы на время генерации (стили всё равно сняты).
+  el.style.cssText = "position:fixed;left:0;top:0;width:700px;background:#fff;z-index:2147483647";
   document.body.appendChild(el);
 
   try {
