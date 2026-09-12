@@ -208,6 +208,11 @@ export function ReceiptManager() {
   const [searching, setSearching] = useState(false);
   const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Автокомплит в строке позиции
+  const [itemSearchIdx, setItemSearchIdx] = useState<number | null>(null);
+  const [itemResults, setItemResults] = useState<ProductSearchResult[]>([]);
+  const itemSearchTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   useEffect(() => {
     loadReceipts();
   }, []);
@@ -259,6 +264,35 @@ export function ReceiptManager() {
 
   const addManualItem = () => {
     setItems((prev) => [...prev, { name: "", unit: "шт", qty: 0, price: 0, total: 0 }]);
+  };
+
+  const searchItemProducts = (index: number, query: string) => {
+    if (itemSearchTimer.current) clearTimeout(itemSearchTimer.current);
+    if (query.length < 2) {
+      setItemResults([]);
+      setItemSearchIdx(null);
+      return;
+    }
+    itemSearchTimer.current = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/admin/products?search=${encodeURIComponent(query)}&limit=8`);
+        const data = await res.json();
+        setItemResults(data.products || []);
+        setItemSearchIdx(index);
+      } catch {
+        setItemResults([]);
+      }
+    }, 250);
+  };
+
+  const pickItemProduct = (index: number, p: ProductSearchResult) => {
+    updateItem(index, {
+      name: p.name,
+      unit: p.unit || "шт",
+      price: p.priceRetailBase ? Number(p.priceRetailBase) : 0,
+    });
+    setItemResults([]);
+    setItemSearchIdx(null);
   };
 
   const updateItem = (index: number, patch: Partial<ReceiptItem>) => {
@@ -602,12 +636,35 @@ export function ReceiptManager() {
                   <tr key={i} className="border-b last:border-0">
                     <td className="py-1 pr-1 text-center text-xs font-black text-muted-foreground/40">{i + 1}</td>
                     <td className="py-1 pr-2">
-                      <Input
-                        className="h-9 rounded-lg border-2 text-sm font-bold"
-                        value={it.name}
-                        onChange={(e) => updateItem(i, { name: e.target.value })}
-                        placeholder="Наименование товара"
-                      />
+                      <div className="relative">
+                        <Input
+                          className="h-9 rounded-lg border-2 text-sm font-bold"
+                          value={it.name}
+                          onChange={(e) => {
+                            updateItem(i, { name: e.target.value });
+                            searchItemProducts(i, e.target.value);
+                          }}
+                          onBlur={() => setTimeout(() => { setItemResults([]); setItemSearchIdx(null); }, 150)}
+                          placeholder="Начните вводить товар…"
+                        />
+                        {itemSearchIdx === i && itemResults.length > 0 && (
+                          <div className="absolute left-0 right-0 top-full z-30 mt-1 max-h-56 overflow-y-auto rounded-xl border-2 bg-card shadow-xl">
+                            {itemResults.map((p) => (
+                              <button
+                                key={p.id}
+                                type="button"
+                                className="flex w-full items-center justify-between gap-2 px-3 py-2 text-left transition-colors hover:bg-primary/5"
+                                onMouseDown={(e) => { e.preventDefault(); pickItemProduct(i, p); }}
+                              >
+                                <span className="truncate text-xs font-bold">{p.name}</span>
+                                <span className="shrink-0 text-xs font-black text-primary">
+                                  {p.priceRetailBase ? `${Number(p.priceRetailBase).toLocaleString("ru-RU")} ₽` : "—"}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </td>
                     <td className="py-1 pr-1">
                       <Input
