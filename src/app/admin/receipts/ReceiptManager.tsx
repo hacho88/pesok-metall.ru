@@ -350,14 +350,58 @@ export function ReceiptManager() {
               {editId ? "Редактировать чек" : "Новый чек"}
             </h1>
           </div>
-          <Button
-            className="h-12 rounded-xl bg-primary px-6 font-black shadow-lg shadow-primary/20"
-            onClick={handleSave}
-            disabled={saving || !customerName || items.length === 0}
-          >
-            {saved ? <CheckCircle2 className="mr-2 h-5 w-5" /> : saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-            {saved ? "СОХРАНЕНО" : saving ? "СОХРАНЕНИЕ…" : "СОХРАНИТЬ"}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              className="h-12 rounded-xl font-bold"
+              onClick={() => {
+                const el = document.getElementById("receipt-preview");
+                if (!el) return;
+                const printArea = document.createElement("div");
+                printArea.id = "receipt-print-area";
+                printArea.innerHTML = el.innerHTML;
+                document.body.appendChild(printArea);
+                const style = document.createElement("style");
+                style.id = "receipt-print-style";
+                style.textContent = `@media print { body > *:not(#receipt-print-area) { display: none !important; } #receipt-print-area { display: block !important; font-family: 'Times New Roman', serif; color: #000; padding: 20px; max-width: 800px; margin: 0 auto; font-size: 13px; } #receipt-print-area table { border-collapse: collapse; } } #receipt-print-area { display: none; }`;
+                document.head.appendChild(style);
+                window.print();
+                setTimeout(() => { document.body.removeChild(printArea); document.head.removeChild(style); }, 500);
+              }}
+              disabled={items.length === 0}
+            >
+              <Printer className="mr-2 h-5 w-5" />
+              Печать
+            </Button>
+            <Button
+              variant="outline"
+              className="h-12 rounded-xl font-bold"
+              onClick={async () => {
+                const el = document.getElementById("receipt-preview");
+                if (!el) return;
+                const html2pdf = (await import("html2pdf.js")).default;
+                await html2pdf().set({
+                  margin: 10,
+                  filename: `чек-${editId || "новый"}.pdf`,
+                  image: { type: "jpeg" as const, quality: 0.98 },
+                  html2canvas: { scale: 2, useCORS: true },
+                  jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
+                }).from(el).save();
+              }}
+              disabled={items.length === 0}
+            >
+              <Download className="mr-2 h-5 w-5" />
+              PDF
+            </Button>
+            <Button
+              className="h-12 rounded-xl bg-primary px-6 font-black shadow-lg shadow-primary/20"
+              onClick={handleSave}
+              disabled={saving || !customerName || items.length === 0}
+            >
+              {saved ? <CheckCircle2 className="mr-2 h-5 w-5" /> : saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+              {saved ? "СОХРАНЕНО" : saving ? "СОХРАНЕНИЕ…" : "СОХРАНИТЬ"}
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
@@ -517,6 +561,7 @@ export function ReceiptManager() {
                 Предпросмотр чека
               </h2>
               <div
+                id="receipt-preview"
                 className="overflow-hidden rounded-2xl border bg-white shadow-inner"
                 style={{ fontFamily: "'Times New Roman', serif", fontSize: "11px", lineHeight: "1.5" }}
               >
