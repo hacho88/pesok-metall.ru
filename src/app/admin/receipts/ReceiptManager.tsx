@@ -493,44 +493,61 @@ export function ReceiptManager() {
         {items.length > 0 && (
           <div className="rounded-3xl border-2 bg-card p-5">
             <h2 className="mb-4 text-sm font-black uppercase tracking-widest">Позиции чека</h2>
-            <div className="space-y-2">
+            <div className="space-y-3">
               {items.map((it, i) => (
-                <div key={i} className="grid grid-cols-[1fr_80px_80px_100px_100px_40px] items-center gap-2 rounded-xl border bg-muted/20 p-2">
-                  <Input
-                    className="h-10 rounded-lg border-2 text-sm font-bold"
-                    value={it.name}
-                    onChange={(e) => updateItem(i, { name: e.target.value })}
-                    placeholder="Наименование"
-                  />
-                  <Input
-                    className="h-10 rounded-lg border-2 text-center text-sm"
-                    value={it.unit}
-                    onChange={(e) => updateItem(i, { unit: e.target.value })}
-                    placeholder="ед."
-                  />
-                  <Input
-                    className="h-10 rounded-lg border-2 text-center text-sm"
-                    type="number"
-                    value={it.qty}
-                    onChange={(e) => updateItem(i, { qty: Number(e.target.value) })}
-                    placeholder="кол-во"
-                  />
-                  <Input
-                    className="h-10 rounded-lg border-2 text-center text-sm"
-                    type="number"
-                    value={it.price}
-                    onChange={(e) => updateItem(i, { price: Number(e.target.value) })}
-                    placeholder="цена"
-                  />
-                  <span className="text-right text-sm font-black">
-                    {(Number(it.qty) * Number(it.price)).toLocaleString("ru-RU")} ₽
-                  </span>
-                  <button
-                    className="flex h-9 w-9 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
-                    onClick={() => removeItem(i)}
-                  >
-                    <X className="h-4 w-4" />
-                  </button>
+                <div key={i} className="rounded-2xl border-2 bg-muted/20 p-3">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-xs font-black text-primary">{i + 1}</span>
+                    <Input
+                      className="h-10 flex-1 rounded-lg border-2 text-sm font-bold"
+                      value={it.name}
+                      onChange={(e) => updateItem(i, { name: e.target.value })}
+                      placeholder="Наименование товара"
+                    />
+                    <button
+                      className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-red-600 hover:bg-red-50"
+                      onClick={() => removeItem(i)}
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                  <div className="mt-2 grid grid-cols-4 gap-2">
+                    <div>
+                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Ед.</p>
+                      <Input
+                        className="h-10 rounded-lg border-2 text-center text-sm"
+                        value={it.unit}
+                        onChange={(e) => updateItem(i, { unit: e.target.value })}
+                        placeholder="шт"
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Кол-во</p>
+                      <Input
+                        className="h-10 rounded-lg border-2 text-center text-sm"
+                        type="number"
+                        min={0}
+                        value={it.qty}
+                        onChange={(e) => updateItem(i, { qty: Number(e.target.value) })}
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Цена ₽</p>
+                      <Input
+                        className="h-10 rounded-lg border-2 text-center text-sm"
+                        type="number"
+                        min={0}
+                        value={it.price}
+                        onChange={(e) => updateItem(i, { price: Number(e.target.value) })}
+                      />
+                    </div>
+                    <div>
+                      <p className="mb-1 text-[9px] font-black uppercase tracking-widest text-muted-foreground/50">Сумма</p>
+                      <div className="flex h-10 items-center justify-center rounded-lg bg-primary/10 text-sm font-black text-primary">
+                        {(Number(it.qty) * Number(it.price)).toLocaleString("ru-RU")} ₽
+                      </div>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
