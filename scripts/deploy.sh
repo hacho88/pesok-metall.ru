@@ -22,6 +22,7 @@ fi
 
 echo "$LOG_TAG $(date '+%F %T') обновление: $LOCAL -> $REMOTE"
 git pull origin master
+npm install
 npx prisma db push
 npm run build
 systemctl restart pesok
