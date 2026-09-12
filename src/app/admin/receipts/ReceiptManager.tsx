@@ -618,28 +618,33 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
   const [generating, setGenerating] = useState(false);
 
   const handlePrint = () => {
-    const content = settingsRef.current?.innerHTML;
-    const w = window.open("", "_blank", "width=800,height=600");
-    if (!w) return;
-    w.document.write(`
-      <!DOCTYPE html>
-      <html lang="ru">
-      <head>
-        <meta charset="utf-8">
-        <title>Товарный чек ${receipt.number}</title>
-        <style>
-          * { margin: 0; padding: 0; box-sizing: border-box; }
-          body { font-family: 'Times New Roman', serif; color: #000; padding: 30px; max-width: 800px; margin: 0 auto; font-size: 13px; }
-          table { border-collapse: collapse; }
-          @media print { body { padding: 15px; } }
-        </style>
-      </head>
-      <body>${content}</body>
-      </html>
-    `);
-    w.document.close();
-    w.focus();
-    setTimeout(() => w.print(), 300);
+    const content = settingsRef.current;
+    if (!content) return;
+    // Создаём скрытый контейнер для печати
+    const printArea = document.createElement("div");
+    printArea.id = "receipt-print-area";
+    printArea.innerHTML = content.innerHTML;
+    document.body.appendChild(printArea);
+
+    const style = document.createElement("style");
+    style.id = "receipt-print-style";
+    style.textContent = `
+      @media print {
+        body > *:not(#receipt-print-area) { display: none !important; }
+        #receipt-print-area { display: block !important; font-family: 'Times New Roman', serif; color: #000; padding: 20px; max-width: 800px; margin: 0 auto; font-size: 13px; }
+        #receipt-print-area table { border-collapse: collapse; }
+      }
+      #receipt-print-area { display: none; }
+    `;
+    document.head.appendChild(style);
+
+    window.print();
+
+    // Убираем после печати
+    setTimeout(() => {
+      document.body.removeChild(printArea);
+      document.head.removeChild(style);
+    }, 500);
   };
 
   const handleDownloadPdf = async () => {
