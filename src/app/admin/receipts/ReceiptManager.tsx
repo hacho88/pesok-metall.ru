@@ -482,9 +482,10 @@ export function ReceiptManager() {
             )}
           </div>
         </div>
+          </div>
 
-        {/* Items table */}
-        <div className="rounded-3xl border-2 bg-card p-5">
+        {/* Items table — full width */}
+        <div className="rounded-3xl border-2 bg-card p-5 xl:col-span-2">
           <div className="mb-4 flex items-center justify-between">
             <h2 className="text-sm font-black uppercase tracking-widest">Позиции чека</h2>
             <button
@@ -579,8 +580,8 @@ export function ReceiptManager() {
           )}
         </div>
 
-        {/* Note */}
-        <div className="rounded-3xl border-2 bg-card p-5">
+        {/* Note — full width */}
+        <div className="rounded-3xl border-2 bg-card p-5 xl:col-span-2">
           <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Примечание</Label>
           <Textarea
             className="mt-2 min-h-16 rounded-xl border-2 text-sm"
@@ -589,7 +590,6 @@ export function ReceiptManager() {
             placeholder="Дополнительная информация для чека…"
           />
         </div>
-          </div>
 
           {/* === ПРАВАЯ КОЛОНКА: ЖИВОЙ ПРЕДПРОСМОТР === */}
           <div className="sticky top-6 self-start">
