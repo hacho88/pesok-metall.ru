@@ -497,16 +497,16 @@ export function ReceiptManager() {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[500px]">
+            <table className="w-full">
               <thead>
                 <tr className="border-b-2 text-left">
-                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-8">№</th>
-                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50">Наименование</th>
-                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-16 text-center">Ед.</th>
-                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-20 text-center">Кол-во</th>
-                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-24 text-center">Цена ₽</th>
-                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-24 text-right">Сумма ₽</th>
-                  <th className="pb-2 w-10" />
+                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-6">№</th>
+                  <th className="pb-2 pr-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 min-w-[200px]">Наименование</th>
+                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-14 text-center">Ед.</th>
+                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-16 text-center">Кол-во</th>
+                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-20 text-center">Цена ₽</th>
+                  <th className="pb-2 pr-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 w-20 text-right">Сумма</th>
+                  <th className="pb-2 w-8" />
                 </tr>
               </thead>
               <tbody>
@@ -519,24 +519,24 @@ export function ReceiptManager() {
                 )}
                 {items.map((it, i) => (
                   <tr key={i} className="border-b last:border-0">
-                    <td className="py-1.5 pr-1 text-center text-xs font-black text-muted-foreground/40">{i + 1}</td>
-                    <td className="py-1.5 pr-2">
+                    <td className="py-1 pr-1 text-center text-xs font-black text-muted-foreground/40">{i + 1}</td>
+                    <td className="py-1 pr-2">
                       <Input
                         className="h-9 rounded-lg border-2 text-sm font-bold"
                         value={it.name}
                         onChange={(e) => updateItem(i, { name: e.target.value })}
-                        placeholder="Наименование"
+                        placeholder="Наименование товара"
                       />
                     </td>
-                    <td className="py-1.5 pr-2">
+                    <td className="py-1 pr-1">
                       <Input
-                        className="h-9 rounded-lg border-2 text-center text-sm"
+                        className="h-9 rounded-lg border-2 text-center text-xs"
                         value={it.unit}
                         onChange={(e) => updateItem(i, { unit: e.target.value })}
                         placeholder="шт"
                       />
                     </td>
-                    <td className="py-1.5 pr-2">
+                    <td className="py-1 pr-1">
                       <Input
                         className="h-9 rounded-lg border-2 text-center text-sm"
                         type="number"
@@ -545,7 +545,7 @@ export function ReceiptManager() {
                         onChange={(e) => updateItem(i, { qty: Number(e.target.value) })}
                       />
                     </td>
-                    <td className="py-1.5 pr-2">
+                    <td className="py-1 pr-1">
                       <Input
                         className="h-9 rounded-lg border-2 text-center text-sm"
                         type="number"
@@ -554,15 +554,15 @@ export function ReceiptManager() {
                         onChange={(e) => updateItem(i, { price: Number(e.target.value) })}
                       />
                     </td>
-                    <td className="py-1.5 pr-2 text-right text-sm font-black">
+                    <td className="py-1 pr-1 text-right text-sm font-black whitespace-nowrap">
                       {(Number(it.qty) * Number(it.price)).toLocaleString("ru-RU")}
                     </td>
-                    <td className="py-1.5 text-center">
+                    <td className="py-1 text-center">
                       <button
-                        className="flex h-8 w-8 items-center justify-center rounded-lg text-red-500 hover:bg-red-50"
+                        className="flex h-7 w-7 items-center justify-center rounded-lg text-red-500 hover:bg-red-50"
                         onClick={() => removeItem(i)}
                       >
-                        <X className="h-4 w-4" />
+                        <X className="h-3.5 w-3.5" />
                       </button>
                     </td>
                   </tr>
