@@ -54,6 +54,7 @@ export async function PUT(
     if (body.stock !== undefined) data.stock = Number(body.stock ?? 0);
     if (body.unit !== undefined) data.unit = body.unit || null;
     if (body.imageUrl !== undefined) data.imageUrl = body.imageUrl || null;
+    if (body.imageLocal !== undefined) data.imageLocal = body.imageLocal || null;
 
     const product = await prisma.$transaction(async (tx) => {
       const updated = await tx.product.update({ where: { id }, data });

@@ -60,6 +60,7 @@ export async function POST(request: NextRequest) {
     const parentId: string | undefined = body.parentId;
     const sectionId: string | undefined = body.sectionId;
     const sortOrder: number | undefined = body.sortOrder;
+    const imageUrl: string | undefined = body.imageUrl;
 
     if (!name || !name.trim()) {
       return NextResponse.json({ error: "Поле name обязательно" }, { status: 400 });
@@ -79,6 +80,7 @@ export async function POST(request: NextRequest) {
         parentId: parentId || null,
         sectionId: sectionId || null,
         sortOrder: typeof sortOrder === "number" ? sortOrder : 0,
+        imageUrl: imageUrl || null,
       },
     });
     invalidateCatalogCache();

@@ -168,6 +168,7 @@ export function CategoryDialog({
             body: JSON.stringify({
               name: form.name,
               parentId: form.parentId || undefined,
+              imageUrl: form.imageUrl || undefined,
             }),
           });
       if (res.ok) {
