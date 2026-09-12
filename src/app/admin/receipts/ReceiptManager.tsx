@@ -161,6 +161,40 @@ function buildReceiptHtml(data: {
 </div>`;
 }
 
+// PDF через скрытый iframe — html2canvas не видит Tailwind oklch-стили основного документа
+async function downloadReceiptPdf(html: string, filename: string) {
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "800px";
+  iframe.style.height = "600px";
+  iframe.style.border = "none";
+  iframe.style.opacity = "0";
+  iframe.style.pointerEvents = "none";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument!;
+  doc.open();
+  doc.write(`<html><head></head><body>${html}</body></html>`);
+  doc.close();
+  await new Promise<void>((resolve) => {
+    if (doc.readyState === "complete") resolve();
+    else iframe.onload = () => resolve();
+  });
+  try {
+    const html2pdf = (await import("html2pdf.js")).default;
+    await html2pdf().set({
+      margin: 10,
+      filename,
+      image: { type: "jpeg" as const, quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
+    }).from(doc.body).save();
+  } finally {
+    document.body.removeChild(iframe);
+  }
+}
+
 // Печать через скрытый iframe — не блокируется браузером
 function printHtml(html: string) {
   const iframe = document.createElement("iframe");
@@ -454,29 +488,12 @@ export function ReceiptManager() {
               className="h-12 rounded-xl font-bold"
               onClick={async () => {
                 if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
-                const html = buildReceiptHtml({
+                await downloadReceiptPdf(buildReceiptHtml({
                   number: editId ? current?.number || "ЧК-____-____" : "ЧК-____-____",
                   date: new Date(),
                   customerName, customerInn, customerPhone,
                   items, total: totalSum, note,
-                });
-                const el = document.createElement("div");
-                el.innerHTML = html;
-                el.style.position = "absolute";
-                el.style.left = "-9999px";
-                document.body.appendChild(el);
-                try {
-                  const html2pdf = (await import("html2pdf.js")).default;
-                  await html2pdf().set({
-                    margin: 10,
-                    filename: `чек-${current?.number || "новый"}.pdf`,
-                    image: { type: "jpeg" as const, quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true },
-                    jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
-                  }).from(el).save();
-                } finally {
-                  document.body.removeChild(el);
-                }
+                }), `чек-${current?.number || "новый"}.pdf`);
               }}
             >
               <Download className="mr-2 h-5 w-5" />
@@ -809,31 +826,18 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
 
   const handleDownloadPdf = async () => {
     setGenerating(true);
-    const el = document.createElement("div");
-    el.innerHTML = buildReceiptHtml({
-      number: receipt.number,
-      date: new Date(receipt.createdAt),
-      customerName: receipt.customerName || "",
-      customerInn: receipt.customerInn || "",
-      customerPhone: receipt.customerPhone || "",
-      items: receipt.items,
-      total: receipt.total,
-      note: receipt.note || "",
-    });
-    el.style.position = "absolute";
-    el.style.left = "-9999px";
-    document.body.appendChild(el);
     try {
-      const html2pdf = (await import("html2pdf.js")).default;
-      await html2pdf().set({
-        margin: 10,
-        filename: `чек-${receipt.number}.pdf`,
-        image: { type: "jpeg" as const, quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
-      }).from(el).save();
+      await downloadReceiptPdf(buildReceiptHtml({
+        number: receipt.number,
+        date: new Date(receipt.createdAt),
+        customerName: receipt.customerName || "",
+        customerInn: receipt.customerInn || "",
+        customerPhone: receipt.customerPhone || "",
+        items: receipt.items,
+        total: receipt.total,
+        note: receipt.note || "",
+      }), `чек-${receipt.number}.pdf`);
     } finally {
-      document.body.removeChild(el);
       setGenerating(false);
     }
   };
