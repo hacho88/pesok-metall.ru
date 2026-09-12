@@ -59,9 +59,9 @@ export default async function HomePage() {
           <ParamPicker products={catalog.flatMap((c) => c.products)} />
           <PopularProducts products={popular} />
           <Features />
-          <Stats />
+          <Stats items={settings.statsItems} />
           <Geography cities={geoZones} />
-          <Faq />
+          <Faq phone={settings.phone} workHours={settings.workHours} />
           <Reviews />
         </div>
       </SiteShell>

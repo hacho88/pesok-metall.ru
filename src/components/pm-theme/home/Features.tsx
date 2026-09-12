@@ -23,7 +23,7 @@ const features = [
   },
 ]
 
-const stats = [
+const DEFAULT_STATS = [
   { value: '25 лет', label: 'на рынке стройматериалов' },
   { value: '12 000+', label: 'заказов доставлено' },
   { value: '15 машин', label: 'в собственном автопарке' },
@@ -55,7 +55,8 @@ export function Features() {
   )
 }
 
-export function Stats() {
+export function Stats({ items }: { items?: { value: string; label: string }[] }) {
+  const stats = items && items.length > 0 ? items : DEFAULT_STATS
   return (
     <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-primary/80 p-6 shadow-xl shadow-slate-900/15 sm:px-8">
       {/* Декоративные круги */}

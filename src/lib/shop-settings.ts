@@ -1,6 +1,8 @@
 import { prisma } from "@/lib/prisma";
 import { normalizeHeroConfig, type HeroConfig } from "@/components/hero-builder/types";
 
+export type StatItem = { value: string; label: string };
+
 export type PublicSettings = {
   siteName: string;
   logoUrl: string | null;
@@ -15,7 +17,25 @@ export type PublicSettings = {
   heroTitle: string;
   heroSubtitle: string;
   regionLabel: string;
+  statsItems: StatItem[];
 };
+
+const DEFAULT_STATS: StatItem[] = [
+  { value: "25 лет", label: "на рынке стройматериалов" },
+  { value: "12 000+", label: "заказов доставлено" },
+  { value: "15 машин", label: "в собственном автопарке" },
+  { value: "24/7", label: "приём заказов онлайн" },
+];
+
+function parseStats(raw: unknown): StatItem[] {
+  if (!Array.isArray(raw)) return DEFAULT_STATS;
+  const items = raw
+    .filter((i): i is { value: unknown; label: unknown } => typeof i === "object" && i !== null)
+    .map((i) => ({ value: String(i.value ?? ""), label: String(i.label ?? "") }))
+    .filter((i) => i.value && i.label)
+    .slice(0, 4);
+  return items.length > 0 ? items : DEFAULT_STATS;
+}
 
 export async function getPublicSettings(): Promise<PublicSettings> {
   let s = await prisma.shopSettings.findFirst();
@@ -36,6 +56,7 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     heroTitle: s.heroTitle,
     heroSubtitle: s.heroSubtitle,
     regionLabel: s.regionLabel,
+    statsItems: parseStats(s.statsItems),
   };
 }
 

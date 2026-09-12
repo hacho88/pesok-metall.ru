@@ -47,6 +47,7 @@ export interface InterfaceSettings {
   smtpUser: string | null;
   smtpPass: string | null;
   smtpFrom: string | null;
+  statsItems: { value: string; label: string }[] | null;
 }
 
 export interface AdminBanner {
@@ -500,6 +501,62 @@ export function InterfaceManager({
             <Label className={labelCls}>Регион в шапке</Label>
             <Input className={inputCls} value={settings.regionLabel} onChange={(e) => set({ regionLabel: e.target.value })} />
           </div>
+          <SaveButton onSave={saveSettings} saved={saved} saving={saving} />
+        </div>
+      </SectionCard>
+
+      {/* Статистика на главной */}
+      <SectionCard
+        icon={<Type className="h-4 w-4" />}
+        title="Статистика на главной"
+        hint="Полоса цифр: «25 лет», «12 000+» и т.д. — до 4 штук"
+      >
+        <div className="space-y-3">
+          {(settings.statsItems ?? [
+            { value: "25 лет", label: "на рынке стройматериалов" },
+            { value: "12 000+", label: "заказов доставлено" },
+            { value: "15 машин", label: "в собственном автопарке" },
+            { value: "24/7", label: "приём заказов онлайн" },
+          ]).map((item, i) => (
+            <div key={i} className="grid grid-cols-[120px_1fr] gap-3">
+              <div className="space-y-1.5">
+                <Label className={labelCls}>Значение {i + 1}</Label>
+                <Input
+                  className={inputCls}
+                  value={item.value}
+                  placeholder="25 лет"
+                  onChange={(e) => {
+                    const next = [...(settings.statsItems ?? [
+                      { value: "25 лет", label: "на рынке стройматериалов" },
+                      { value: "12 000+", label: "заказов доставлено" },
+                      { value: "15 машин", label: "в собственном автопарке" },
+                      { value: "24/7", label: "приём заказов онлайн" },
+                    ])];
+                    next[i] = { ...next[i], value: e.target.value };
+                    set({ statsItems: next });
+                  }}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label className={labelCls}>Подпись {i + 1}</Label>
+                <Input
+                  className={inputCls}
+                  value={item.label}
+                  placeholder="на рынке стройматериалов"
+                  onChange={(e) => {
+                    const next = [...(settings.statsItems ?? [
+                      { value: "25 лет", label: "на рынке стройматериалов" },
+                      { value: "12 000+", label: "заказов доставлено" },
+                      { value: "15 машин", label: "в собственном автопарке" },
+                      { value: "24/7", label: "приём заказов онлайн" },
+                    ])];
+                    next[i] = { ...next[i], label: e.target.value };
+                    set({ statsItems: next });
+                  }}
+                />
+              </div>
+            </div>
+          ))}
           <SaveButton onSave={saveSettings} saved={saved} saving={saving} />
         </div>
       </SectionCard>

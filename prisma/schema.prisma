@@ -462,6 +462,8 @@ model ShopSettings {
   invoiceEmail    String?  // Куда отправлять счета (если не указан — на email клиента)
   // Hero-конструктор: JSON-конфиг главного экрана
   heroConfig      Json?
+  // Статистика на главной: [{ value, label }] — до 4 штук
+  statsItems      Json?
   updatedAt       DateTime @updatedAt
 }
 

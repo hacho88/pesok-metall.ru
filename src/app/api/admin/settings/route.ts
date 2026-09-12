@@ -57,6 +57,7 @@ export async function PUT(request: NextRequest) {
       smtpPass: body.smtpPass ?? settings.smtpPass,
       smtpFrom: body.smtpFrom ?? settings.smtpFrom,
       invoiceEmail: body.invoiceEmail ?? settings.invoiceEmail,
+      statsItems: body.statsItems !== undefined ? body.statsItems : settings.statsItems,
     },
   });
 

@@ -21,7 +21,9 @@ const faqs = [
   },
 ]
 
-export function Faq() {
+export function Faq({ phone, workHours }: { phone?: string; workHours?: string }) {
+  const phoneDisplay = phone || '+7 (495) 000-00-00'
+  const phoneHref = `tel:${phoneDisplay.replace(/[^+\d]/g, '')}`
   return (
     <section className="grid gap-5 lg:grid-cols-[1fr_320px]">
       <div className="flex flex-col gap-5">
@@ -49,16 +51,18 @@ export function Faq() {
           Поможем с расчётом количества, подберём машину и оформим доставку на сегодня.
         </p>
         <Link
-          href="tel:+74950000000"
+          href={phoneHref}
           className="relative mt-5 inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-white px-5 text-[15px] font-bold text-primary shadow-lg shadow-blue-900/20 transition-transform hover:scale-[1.02] active:scale-95"
         >
           <Phone className="size-4" />
-          +7 (495) 000-00-00
+          {phoneDisplay}
         </Link>
-        <span className="relative mt-3 inline-flex items-center justify-center gap-1.5 text-xs text-white/70">
-          <Clock className="size-3.5" />
-          Ежедневно 8:00–22:00
-        </span>
+        {workHours && (
+          <span className="relative mt-3 inline-flex items-center justify-center gap-1.5 text-xs text-white/70">
+            <Clock className="size-3.5" />
+            {workHours}
+          </span>
+        )}
       </aside>
     </section>
   )

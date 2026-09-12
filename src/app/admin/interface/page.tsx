@@ -58,6 +58,7 @@ export default async function InterfacePage() {
           smtpUser: settings.smtpUser,
           smtpPass: settings.smtpPass,
           smtpFrom: settings.smtpFrom,
+          statsItems: Array.isArray(settings.statsItems) ? (settings.statsItems as { value: string; label: string }[]) : null,
         }}
         initialBanners={banners.map((b) => ({
           id: b.id,
