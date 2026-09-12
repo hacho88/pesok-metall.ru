@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import html2pdf from "html2pdf.js";
 import {
   Plus,
   Trash2,
@@ -550,6 +549,7 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
     if (!settingsRef.current) return;
     setGenerating(true);
     try {
+      const html2pdf = (await import("html2pdf.js")).default;
       const element = settingsRef.current;
       const opt = {
         margin: 10,
