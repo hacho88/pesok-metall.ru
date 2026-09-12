@@ -111,6 +111,7 @@ export async function POST(request: NextRequest) {
         stock: Number(body.stock ?? 0),
         unit: body.unit || null,
         imageUrl: body.imageUrl || null,
+        imageLocal: body.imageLocal || null,
         attributes: {
           create: Array.isArray(body.attributes)
             ? body.attributes

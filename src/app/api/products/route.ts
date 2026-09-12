@@ -6,7 +6,7 @@ import { slugify } from "@/lib/utils";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, categoryId, unit, priceRetailBase, weightKg, stock, type } = body;
+    const { name, categoryId, unit, priceRetailBase, weightKg, stock, type, imageLocal, imageUrl } = body;
 
     if (!name || !categoryId) {
       return NextResponse.json(
@@ -40,6 +40,8 @@ export async function POST(request: NextRequest) {
         isOnOrder: !hasPrice,
         weightKg: weightKg != null && weightKg !== "" ? Number(weightKg) : 1,
         stock: stock != null && stock !== "" ? Number(stock) : 0,
+        imageLocal: imageLocal || null,
+        imageUrl: imageUrl || null,
       },
       include: { category: true, attributes: true },
     });

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, Loader2, Plus } from "lucide-react";
+import { CheckCircle2, Loader2, Plus, ImagePlus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -39,6 +39,7 @@ const EMPTY_FORM = {
   weightKg: "",
   stock: "",
   type: "METALL",
+  imageLocal: "",
 };
 
 export function NewProductDialog({
@@ -61,6 +62,7 @@ export function NewProductDialog({
   const [error, setError] = useState<string | null>(null);
   const [createdName, setCreatedName] = useState<string | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [uploading, setUploading] = useState(false);
 
   const setOpen = (v: boolean) => {
     if (!isControlled) setInternalOpen(v);
@@ -91,7 +93,10 @@ export function NewProductDialog({
       const res = await fetch("/api/products", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          ...form,
+          imageLocal: form.imageLocal || undefined,
+        }),
       });
       if (res.ok) {
         const product = await res.json();
@@ -209,6 +214,63 @@ export function NewProductDialog({
               <option key={t.value} value={t.value}>{t.label}</option>
             ))}
           </Select>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Фото товара</Label>
+          <label className="group relative block aspect-[4/3] cursor-pointer overflow-hidden rounded-2xl border-2 border-dashed border-muted-foreground/25 bg-muted/30 transition-all hover:border-primary/50 hover:bg-primary/5">
+            {form.imageLocal ? (
+              <img src={form.imageLocal} alt={form.name} className="h-full w-full object-cover" />
+            ) : uploading ? (
+              <div className="flex h-full flex-col items-center justify-center p-4 text-center">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground/40" />
+                <span className="mt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Загрузка…</span>
+              </div>
+            ) : (
+              <div className="flex h-full flex-col items-center justify-center p-4 text-center">
+                <ImagePlus className="h-8 w-8 text-muted-foreground/40" />
+                <span className="mt-2 text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">Загрузить фото</span>
+              </div>
+            )}
+            <input
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              className="absolute inset-0 cursor-pointer opacity-0"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                e.target.value = "";
+                if (!file) return;
+                setUploading(true);
+                setError(null);
+                try {
+                  const fd = new FormData();
+                  fd.append("file", file);
+                  const res = await fetch("/api/atlas/media", { method: "POST", body: fd });
+                  const data = await res.json();
+                  if (res.ok && data.url) {
+                    setForm((f) => ({ ...f, imageLocal: data.url }));
+                  } else {
+                    setError(data.error || "Ошибка загрузки фото");
+                  }
+                } catch {
+                  setError("Ошибка загрузки фото");
+                } finally {
+                  setUploading(false);
+                }
+              }}
+            />
+          </label>
+          {form.imageLocal && (
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-full rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 hover:text-red-700"
+              onClick={() => setForm((f) => ({ ...f, imageLocal: "" }))}
+            >
+              <Trash2 className="mr-1 h-3 w-3" />
+              Убрать фото
+            </Button>
+          )}
         </div>
 
         {error && (

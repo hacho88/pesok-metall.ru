@@ -44,6 +44,8 @@ export async function PATCH(
       shortDescription,
       seoTitle,
       seoDescription,
+      imageLocal,
+      imageUrl,
     } = body;
 
     const product = await prisma.product.update({
@@ -60,6 +62,8 @@ export async function PATCH(
         shortDescription,
         seoTitle,
         seoDescription,
+        ...(imageLocal !== undefined ? { imageLocal: imageLocal || null } : {}),
+        ...(imageUrl !== undefined ? { imageUrl: imageUrl || null } : {}),
         // Ручная правка описания перекрывает ИИ-статус
         ...(description !== undefined ? { descriptionStatus: "manual" } : {}),
       }
