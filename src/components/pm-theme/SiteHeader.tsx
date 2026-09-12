@@ -85,7 +85,7 @@ export function SiteHeader({ settings }: { settings?: HeaderSettings }) {
         />
 
         <div className="ml-2 hidden flex-1 items-center gap-3 lg:flex">
-          <div className="relative flex-1 max-w-2xl">
+          <div className="relative flex-1 max-w-3xl">
             <LiveSearch variant="header" placeholder="Поиск по каталогу: арматура, песок, труба 40×20…" />
           </div>
           <span className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-2xl bg-accent px-4 text-sm font-semibold text-accent-foreground">
@@ -95,6 +95,11 @@ export function SiteHeader({ settings }: { settings?: HeaderSettings }) {
         </div>
 
         <div className="ml-auto flex items-center gap-2 md:gap-3">
+          {/* Регион — только на мобильных, в верхней строке */}
+          <span className="inline-flex items-center gap-1.5 rounded-2xl bg-accent px-3 py-2 text-xs font-semibold text-accent-foreground lg:hidden">
+            <MapPin className="size-3.5" />
+            {regionLabel}
+          </span>
           <a
             href={phoneHref}
             className="group hidden items-center gap-2.5 rounded-2xl p-1 pr-2 text-[15px] font-semibold text-foreground transition-colors hover:text-primary xl:flex"
@@ -147,15 +152,9 @@ export function SiteHeader({ settings }: { settings?: HeaderSettings }) {
         </div>
       </div>
 
-      {/* Мобильная строка: поиск + регион */}
-      <div className="flex items-center gap-2 px-4 pb-4 lg:hidden">
-        <div className="relative flex-1">
-          <LiveSearch variant="header" placeholder="Поиск по каталогу…" />
-        </div>
-        <span className="inline-flex shrink-0 items-center gap-1.5 rounded-2xl bg-accent px-3 py-2.5 text-xs font-semibold text-accent-foreground">
-          <MapPin className="size-4" />
-          {regionLabel}
-        </span>
+      {/* Мобильная строка: поиск на всю ширину */}
+      <div className="px-4 pb-4 lg:hidden">
+        <LiveSearch variant="header" placeholder="Поиск по каталогу…" />
       </div>
     </header>
   )

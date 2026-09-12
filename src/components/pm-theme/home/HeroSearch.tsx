@@ -92,7 +92,7 @@ export function LiveSearch({
             'w-full rounded-2xl text-sm font-medium outline-none transition-all',
             isHero
               ? 'h-13 border border-border/70 bg-card py-3.5 pl-11 pr-12 shadow-sm shadow-slate-200/50 placeholder:text-muted-foreground/70 focus:border-primary/50 focus:ring-4 focus:ring-primary/10'
-              : 'h-12 border border-transparent bg-secondary pl-10 pr-10 shadow-sm shadow-slate-200/50 placeholder:text-muted-foreground focus:border-primary/40 focus:bg-card',
+              : 'h-13 border border-transparent bg-secondary pl-10 pr-10 text-[15px] shadow-sm shadow-slate-200/50 placeholder:text-muted-foreground focus:border-primary/40 focus:bg-card',
           )}
         />
         {loading && (
