@@ -17,7 +17,7 @@ export async function PUT(req: NextRequest) {
   const receipt = await prisma.receipt.update({
     where: { id },
     data: {
-      customerName: body.customerName,
+      customerName: body.customerName || null,
       customerPhone: body.customerPhone || null,
       customerInn: body.customerInn || null,
       items: body.items,

@@ -523,7 +523,7 @@ model WarehouseSale {
 model Receipt {
   id            String   @id @default(uuid())
   number        String   @unique // ЧК-2026-0001
-  customerName  String   // Покупатель (ФИО или компания)
+  customerName  String?  // Покупатель (ФИО или компания) — необязательно
   customerPhone String?  // Телефон покупателя
   customerInn   String?  // ИНН (для юрлиц)
   items         Json     // [{ name, unit, qty, price, total }]

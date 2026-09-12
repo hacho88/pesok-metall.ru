@@ -12,8 +12,8 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  if (!body.customerName || !body.items?.length) {
-    return NextResponse.json({ error: "Укажите покупателя и хотя бы одну позицию" }, { status: 400 });
+  if (!body.items?.length) {
+    return NextResponse.json({ error: "Добавьте хотя бы одну позицию" }, { status: 400 });
   }
 
   const count = await prisma.receipt.count();
@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
   const receipt = await prisma.receipt.create({
     data: {
       number,
-      customerName: body.customerName,
+      customerName: body.customerName || null,
       customerPhone: body.customerPhone || null,
       customerInn: body.customerInn || null,
       items: body.items,

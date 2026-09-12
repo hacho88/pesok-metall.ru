@@ -30,7 +30,7 @@ interface ReceiptItem {
 interface Receipt {
   id: string;
   number: string;
-  customerName: string;
+  customerName: string | null;
   customerPhone: string | null;
   customerInn: string | null;
   items: ReceiptItem[];
@@ -192,7 +192,7 @@ export function ReceiptManager() {
   const totalSum = items.reduce((sum, it) => sum + (Number(it.qty) * Number(it.price) || 0), 0);
 
   const handleSave = async () => {
-    if (!customerName || items.length === 0) return;
+    if (items.length === 0) return;
     setSaving(true);
     try {
       const payload = {
@@ -242,7 +242,7 @@ export function ReceiptManager() {
 
   const openEdit = (r: Receipt) => {
     setEditId(r.id);
-    setCustomerName(r.customerName);
+    setCustomerName(r.customerName || "");
     setCustomerPhone(r.customerPhone || "");
     setCustomerInn(r.customerInn || "");
     setItems(r.items);
@@ -301,7 +301,7 @@ export function ReceiptManager() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-3">
                     <span className="rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-black text-primary">{r.number}</span>
-                    <p className="truncate font-bold">{r.customerName}</p>
+                    <p className="truncate font-bold">{r.customerName || "—"}</p>
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {new Date(r.createdAt).toLocaleString("ru-RU", { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" })}
@@ -396,7 +396,6 @@ export function ReceiptManager() {
             <Button
               className="h-12 rounded-xl bg-primary px-6 font-black shadow-lg shadow-primary/20"
               onClick={() => {
-                if (!customerName) { alert("Укажите покупателя"); return; }
                 if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
                 handleSave();
               }}
@@ -415,7 +414,7 @@ export function ReceiptManager() {
               <h2 className="mb-4 text-sm font-black uppercase tracking-widest">Покупатель</h2>
               <div className="space-y-3">
                 <div className="space-y-1.5">
-                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ФИО / Компания *</Label>
+                  <Label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60">ФИО / Компания</Label>
                   <Input
                     className="h-11 rounded-xl border-2 font-bold"
                     value={customerName}
@@ -810,7 +809,7 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
             <tr>
               <td style={{ fontWeight: 700, verticalAlign: "top" }}>Покупатель:</td>
               <td style={{ borderBottom: "1px solid #999" }}>
-                {receipt.customerName}
+                {receipt.customerName || "________________________"}
                 {receipt.customerInn ? `, ИНН ${receipt.customerInn}` : ""}
                 {receipt.customerPhone ? `, тел. ${receipt.customerPhone}` : ""}
               </td>
