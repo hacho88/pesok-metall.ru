@@ -355,6 +355,7 @@ export function ReceiptManager() {
               variant="outline"
               className="h-12 rounded-xl font-bold"
               onClick={() => {
+                if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
                 const el = document.getElementById("receipt-preview");
                 if (!el) return;
                 const printArea = document.createElement("div");
@@ -368,7 +369,6 @@ export function ReceiptManager() {
                 window.print();
                 setTimeout(() => { document.body.removeChild(printArea); document.head.removeChild(style); }, 500);
               }}
-              disabled={items.length === 0}
             >
               <Printer className="mr-2 h-5 w-5" />
               Печать
@@ -377,6 +377,7 @@ export function ReceiptManager() {
               variant="outline"
               className="h-12 rounded-xl font-bold"
               onClick={async () => {
+                if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
                 const el = document.getElementById("receipt-preview");
                 if (!el) return;
                 const html2pdf = (await import("html2pdf.js")).default;
@@ -388,15 +389,18 @@ export function ReceiptManager() {
                   jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
                 }).from(el).save();
               }}
-              disabled={items.length === 0}
             >
               <Download className="mr-2 h-5 w-5" />
               PDF
             </Button>
             <Button
               className="h-12 rounded-xl bg-primary px-6 font-black shadow-lg shadow-primary/20"
-              onClick={handleSave}
-              disabled={saving || !customerName || items.length === 0}
+              onClick={() => {
+                if (!customerName) { alert("Укажите покупателя"); return; }
+                if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
+                handleSave();
+              }}
+              disabled={saving}
             >
               {saved ? <CheckCircle2 className="mr-2 h-5 w-5" /> : saving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
               {saved ? "СОХРАНЕНО" : saving ? "СОХРАНЕНИЕ…" : "СОХРАНИТЬ"}
