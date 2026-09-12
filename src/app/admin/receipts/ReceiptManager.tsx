@@ -99,6 +99,88 @@ function sumToWords(n: number): string {
   return `${cap} ${morph(rubles, rub)} ${String(kopecks).padStart(2, "0")} коп.`;
 }
 
+// Чистый HTML чека — только инлайн-стили, без Tailwind (html2canvas не понимает oklch)
+function buildReceiptHtml(data: {
+  number: string;
+  date: Date;
+  customerName: string;
+  customerInn: string;
+  customerPhone: string;
+  items: ReceiptItem[];
+  total: number;
+  note: string;
+}): string {
+  const fmt = (n: number) => n.toLocaleString("ru-RU", { minimumFractionDigits: 2 });
+  const dateStr = `«${data.date.getDate()}» ${data.date.toLocaleDateString("ru-RU", { month: "long", year: "numeric" })}`;
+  const esc = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+  const rows = data.items.map((it, i) => `
+    <tr>
+      <td style="border:1px solid #000;padding:6px 8px;text-align:center">${i + 1}</td>
+      <td style="border:1px solid #000;padding:6px 8px">${esc(it.name) || "—"}</td>
+      <td style="border:1px solid #000;padding:6px 8px;text-align:center">${esc(it.unit)}</td>
+      <td style="border:1px solid #000;padding:6px 8px;text-align:right">${it.qty}</td>
+      <td style="border:1px solid #000;padding:6px 8px;text-align:right">${fmt(Number(it.price))}</td>
+      <td style="border:1px solid #000;padding:6px 8px;text-align:right">${fmt(Number(it.qty) * Number(it.price))}</td>
+    </tr>`).join("");
+
+  return `<div style="font-family:'Times New Roman',serif;color:#000;max-width:700px;margin:0 auto;padding:20px;font-size:13px;line-height:1.5">
+  <table style="width:100%;margin-bottom:4px"><tbody><tr>
+    <td style="font-size:13px;vertical-align:bottom">ТОВАРНЫЙ ЧЕК № <b>${esc(data.number)}</b></td>
+    <td style="font-size:13px;text-align:right;vertical-align:bottom">от ${dateStr}</td>
+  </tr></tbody></table>
+  <div style="border-bottom:2px solid #000;margin-bottom:16px"></div>
+  <table style="width:100%;font-size:13px;margin-bottom:16px;line-height:1.6"><tbody>
+    <tr><td style="width:90px;font-weight:700;vertical-align:top">Продавец:</td>
+      <td style="border-bottom:1px solid #999">ООО «Песок-Металл», г. Москва</td></tr>
+    <tr><td style="font-weight:700;vertical-align:top">Покупатель:</td>
+      <td style="border-bottom:1px solid #999">${esc(data.customerName) || "________________________"}${data.customerInn ? `, ИНН ${esc(data.customerInn)}` : ""}${data.customerPhone ? `, тел. ${esc(data.customerPhone)}` : ""}</td></tr>
+  </tbody></table>
+  <table style="width:100%;border-collapse:collapse;margin-bottom:8px;font-size:13px">
+    <thead><tr>
+      <th style="border:1px solid #000;padding:6px 8px;font-size:12px;width:36px">№</th>
+      <th style="border:1px solid #000;padding:6px 8px;font-size:12px;text-align:left">Наименование товара</th>
+      <th style="border:1px solid #000;padding:6px 8px;font-size:12px;width:56px">Ед. изм.</th>
+      <th style="border:1px solid #000;padding:6px 8px;font-size:12px;width:70px">Кол-во</th>
+      <th style="border:1px solid #000;padding:6px 8px;font-size:12px;width:90px">Цена, руб.</th>
+      <th style="border:1px solid #000;padding:6px 8px;font-size:12px;width:100px">Сумма, руб.</th>
+    </tr></thead>
+    <tbody>${rows}
+      <tr><td colspan="5" style="border:1px solid #000;padding:6px 8px;text-align:right;font-weight:700">Итого:</td>
+        <td style="border:1px solid #000;padding:6px 8px;text-align:right;font-weight:700">${fmt(data.total)}</td></tr>
+    </tbody>
+  </table>
+  <div style="font-size:13px;margin-bottom:6px">Всего наименований ${data.items.length}, на сумму ${fmt(data.total)} руб.</div>
+  <div style="font-size:13px;font-weight:700;border-bottom:1px solid #999;padding-bottom:2px;margin-bottom:24px">${sumToWords(data.total)}</div>
+  ${data.note ? `<div style="font-size:12px;color:#444;margin-bottom:16px"><b>Примечание:</b> ${esc(data.note)}</div>` : ""}
+  <table style="width:100%;font-size:13px;margin-top:30px"><tbody><tr>
+    <td style="width:50%">Отпустил _________________ / _________________ /<div style="font-size:10px;color:#666;margin-top:2px;padding-left:80px">подпись&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;расшифровка</div></td>
+    <td style="width:50%;padding-left:40px">Получил _________________ / _________________ /<div style="font-size:10px;color:#666;margin-top:2px;padding-left:80px">подпись&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;расшифровка</div></td>
+  </tr></tbody></table>
+  <div style="font-size:13px;margin-top:20px">М.П.</div>
+</div>`;
+}
+
+// Печать через скрытый iframe — не блокируется браузером
+function printHtml(html: string) {
+  const iframe = document.createElement("iframe");
+  iframe.style.position = "fixed";
+  iframe.style.right = "0";
+  iframe.style.bottom = "0";
+  iframe.style.width = "0";
+  iframe.style.height = "0";
+  iframe.style.border = "none";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentDocument!;
+  doc.open();
+  doc.write(`<html><head><style>@page{margin:15mm}body{margin:0}</style></head><body>${html}</body></html>`);
+  doc.close();
+  iframe.onload = () => {
+    iframe.contentWindow!.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  };
+}
+
 export function ReceiptManager() {
   const [view, setView] = useState<"list" | "edit" | "print">("list");
   const [receipts, setReceipts] = useState<Receipt[]>([]);
@@ -356,18 +438,12 @@ export function ReceiptManager() {
               className="h-12 rounded-xl font-bold"
               onClick={() => {
                 if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
-                const el = document.getElementById("receipt-preview");
-                if (!el) return;
-                const printArea = document.createElement("div");
-                printArea.id = "receipt-print-area";
-                printArea.innerHTML = el.innerHTML;
-                document.body.appendChild(printArea);
-                const style = document.createElement("style");
-                style.id = "receipt-print-style";
-                style.textContent = `@media print { body > *:not(#receipt-print-area) { display: none !important; } #receipt-print-area { display: block !important; font-family: 'Times New Roman', serif; color: #000; padding: 20px; max-width: 800px; margin: 0 auto; font-size: 13px; } #receipt-print-area table { border-collapse: collapse; } } #receipt-print-area { display: none; }`;
-                document.head.appendChild(style);
-                window.print();
-                setTimeout(() => { document.body.removeChild(printArea); document.head.removeChild(style); }, 500);
+                printHtml(buildReceiptHtml({
+                  number: editId ? current?.number || "ЧК-____-____" : "ЧК-____-____",
+                  date: new Date(),
+                  customerName, customerInn, customerPhone,
+                  items, total: totalSum, note,
+                }));
               }}
             >
               <Printer className="mr-2 h-5 w-5" />
@@ -378,16 +454,29 @@ export function ReceiptManager() {
               className="h-12 rounded-xl font-bold"
               onClick={async () => {
                 if (items.length === 0) { alert("Добавьте хотя бы одну позицию"); return; }
-                const el = document.getElementById("receipt-preview");
-                if (!el) return;
-                const html2pdf = (await import("html2pdf.js")).default;
-                await html2pdf().set({
-                  margin: 10,
-                  filename: `чек-${editId || "новый"}.pdf`,
-                  image: { type: "jpeg" as const, quality: 0.98 },
-                  html2canvas: { scale: 2, useCORS: true },
-                  jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
-                }).from(el).save();
+                const html = buildReceiptHtml({
+                  number: editId ? current?.number || "ЧК-____-____" : "ЧК-____-____",
+                  date: new Date(),
+                  customerName, customerInn, customerPhone,
+                  items, total: totalSum, note,
+                });
+                const el = document.createElement("div");
+                el.innerHTML = html;
+                el.style.position = "absolute";
+                el.style.left = "-9999px";
+                document.body.appendChild(el);
+                try {
+                  const html2pdf = (await import("html2pdf.js")).default;
+                  await html2pdf().set({
+                    margin: 10,
+                    filename: `чек-${current?.number || "новый"}.pdf`,
+                    image: { type: "jpeg" as const, quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
+                  }).from(el).save();
+                } finally {
+                  document.body.removeChild(el);
+                }
               }}
             >
               <Download className="mr-2 h-5 w-5" />
@@ -706,50 +795,45 @@ function ReceiptPrint({ receipt, onBack, onEdit }: { receipt: Receipt; onBack: (
   const [generating, setGenerating] = useState(false);
 
   const handlePrint = () => {
-    const content = settingsRef.current;
-    if (!content) return;
-    // Создаём скрытый контейнер для печати
-    const printArea = document.createElement("div");
-    printArea.id = "receipt-print-area";
-    printArea.innerHTML = content.innerHTML;
-    document.body.appendChild(printArea);
-
-    const style = document.createElement("style");
-    style.id = "receipt-print-style";
-    style.textContent = `
-      @media print {
-        body > *:not(#receipt-print-area) { display: none !important; }
-        #receipt-print-area { display: block !important; font-family: 'Times New Roman', serif; color: #000; padding: 20px; max-width: 800px; margin: 0 auto; font-size: 13px; }
-        #receipt-print-area table { border-collapse: collapse; }
-      }
-      #receipt-print-area { display: none; }
-    `;
-    document.head.appendChild(style);
-
-    window.print();
-
-    // Убираем после печати
-    setTimeout(() => {
-      document.body.removeChild(printArea);
-      document.head.removeChild(style);
-    }, 500);
+    printHtml(buildReceiptHtml({
+      number: receipt.number,
+      date: new Date(receipt.createdAt),
+      customerName: receipt.customerName || "",
+      customerInn: receipt.customerInn || "",
+      customerPhone: receipt.customerPhone || "",
+      items: receipt.items,
+      total: receipt.total,
+      note: receipt.note || "",
+    }));
   };
 
   const handleDownloadPdf = async () => {
-    if (!settingsRef.current) return;
     setGenerating(true);
+    const el = document.createElement("div");
+    el.innerHTML = buildReceiptHtml({
+      number: receipt.number,
+      date: new Date(receipt.createdAt),
+      customerName: receipt.customerName || "",
+      customerInn: receipt.customerInn || "",
+      customerPhone: receipt.customerPhone || "",
+      items: receipt.items,
+      total: receipt.total,
+      note: receipt.note || "",
+    });
+    el.style.position = "absolute";
+    el.style.left = "-9999px";
+    document.body.appendChild(el);
     try {
       const html2pdf = (await import("html2pdf.js")).default;
-      const element = settingsRef.current;
-      const opt = {
+      await html2pdf().set({
         margin: 10,
         filename: `чек-${receipt.number}.pdf`,
         image: { type: "jpeg" as const, quality: 0.98 },
         html2canvas: { scale: 2, useCORS: true },
         jsPDF: { unit: "mm" as const, format: "a4" as const, orientation: "portrait" as const },
-      };
-      await html2pdf().set(opt).from(element).save();
+      }).from(el).save();
     } finally {
+      document.body.removeChild(el);
       setGenerating(false);
     }
   };
