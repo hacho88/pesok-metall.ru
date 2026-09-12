@@ -161,7 +161,7 @@ export function ReceiptManager() {
       {
         name: p.name,
         unit: p.unit || "шт",
-        qty: 1,
+        qty: 0,
         price,
         total: price,
       },
@@ -171,7 +171,7 @@ export function ReceiptManager() {
   };
 
   const addManualItem = () => {
-    setItems((prev) => [...prev, { name: "", unit: "шт", qty: 1, price: 0, total: 0 }]);
+    setItems((prev) => [...prev, { name: "", unit: "шт", qty: 0, price: 0, total: 0 }]);
   };
 
   const updateItem = (index: number, patch: Partial<ReceiptItem>) => {
