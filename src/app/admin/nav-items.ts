@@ -11,10 +11,12 @@ import {
   Receipt,
   Wand2,
   Warehouse,
+  ShoppingCart,
 } from "lucide-react";
 
 export const adminNavItems = [
   { name: "Дашборд", href: "/admin", icon: LayoutDashboard },
+  { name: "Заказы", href: "/admin/orders", icon: ShoppingCart },
   { name: "Каталог", href: "/admin/catalog", icon: Package },
   { name: "Наш Склад", href: "/admin/warehouse", icon: Warehouse },
   { name: "Боксы на главной", href: "/admin/hero-boxes", icon: LayoutGrid },
