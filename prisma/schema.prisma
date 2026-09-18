@@ -425,8 +425,8 @@ model ShopSettings {
   id              String   @id @default(uuid())
   // Склад — точка отсчёта для расчёта доставки
   warehouseAddress String  @default("Москва, ул. Промышленная 1")
-  warehouseLat    Float    @default(55.7558)
-  warehouseLng    Float    @default(37.6173)
+  warehouseLat    Float    @default(55.621645)
+  warehouseLng    Float    @default(37.451669)
   // Контакты (шапка и подвал)
   phone           String   @default("+7 (495) 000-00-00")
   email           String   @default("info@pesok-metall.ru")

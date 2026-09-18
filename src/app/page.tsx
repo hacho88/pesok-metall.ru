@@ -60,7 +60,14 @@ export default async function HomePage() {
           <PopularProducts products={popular} />
           <Features />
           <Stats items={settings.statsItems} />
-          <Geography cities={geoZones} />
+          <Geography
+            cities={geoZones}
+            warehouse={{
+              address: settings.warehouseAddress,
+              lat: settings.warehouseLat,
+              lng: settings.warehouseLng,
+            }}
+          />
           <Faq phone={settings.phone} workHours={settings.workHours} />
           <Reviews />
         </div>

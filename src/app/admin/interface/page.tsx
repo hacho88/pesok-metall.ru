@@ -42,6 +42,8 @@ export default async function InterfacePage() {
           email: settings.email,
           workHours: settings.workHours,
           warehouseAddress: settings.warehouseAddress,
+          warehouseLat: settings.warehouseLat,
+          warehouseLng: settings.warehouseLng,
           footerText: settings.footerText,
           heroBadge: settings.heroBadge,
           heroTitle: settings.heroTitle,

@@ -18,6 +18,9 @@ export type PublicSettings = {
   heroSubtitle: string;
   regionLabel: string;
   statsItems: StatItem[];
+  warehouseAddress: string;
+  warehouseLat: number;
+  warehouseLng: number;
 };
 
 const DEFAULT_STATS: StatItem[] = [
@@ -57,6 +60,9 @@ export async function getPublicSettings(): Promise<PublicSettings> {
     heroSubtitle: s.heroSubtitle,
     regionLabel: s.regionLabel,
     statsItems: parseStats(s.statsItems),
+    warehouseAddress: s.warehouseAddress,
+    warehouseLat: s.warehouseLat,
+    warehouseLng: s.warehouseLng,
   };
 }
 

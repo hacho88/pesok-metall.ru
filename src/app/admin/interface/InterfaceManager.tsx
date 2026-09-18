@@ -31,6 +31,8 @@ export interface InterfaceSettings {
   email: string;
   workHours: string;
   warehouseAddress: string;
+  warehouseLat: number;
+  warehouseLng: number;
   footerText: string;
   heroBadge: string;
   heroTitle: string;
@@ -579,6 +581,26 @@ export function InterfaceManager({
           <div className="space-y-1.5">
             <Label className={labelCls}>Адрес (склад)</Label>
             <Input className={inputCls} value={settings.warehouseAddress} onChange={(e) => set({ warehouseAddress: e.target.value })} />
+          </div>
+          <div className="space-y-1.5">
+            <Label className={labelCls}>Широта склада</Label>
+            <Input
+              className={inputCls}
+              type="number"
+              step="0.000001"
+              value={settings.warehouseLat}
+              onChange={(e) => set({ warehouseLat: parseFloat(e.target.value) || 0 })}
+            />
+          </div>
+          <div className="space-y-1.5">
+            <Label className={labelCls}>Долгота склада</Label>
+            <Input
+              className={inputCls}
+              type="number"
+              step="0.000001"
+              value={settings.warehouseLng}
+              onChange={(e) => set({ warehouseLng: parseFloat(e.target.value) || 0 })}
+            />
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label className={labelCls}>Текст в подвале</Label>
