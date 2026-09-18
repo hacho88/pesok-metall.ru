@@ -12,6 +12,7 @@ import {
   Wand2,
   Warehouse,
   ShoppingCart,
+  BarChart3,
 } from "lucide-react";
 
 export const adminNavItems = [
@@ -23,6 +24,7 @@ export const adminNavItems = [
   { name: "Hero-конструктор", href: "/admin/hero-builder", icon: Wand2 },
   { name: "Интерфейс", href: "/admin/interface", icon: PanelTop },
   { name: "Маркетинг", href: "/admin/marketing", icon: Megaphone },
+  { name: "Директ", href: "/admin/direct", icon: BarChart3 },
   { name: "Чеки", href: "/admin/receipts", icon: Receipt },
   { name: "Блог", href: "/admin/blog", icon: PenTool },
   { name: "Страницы", href: "/admin/pages", icon: FileText },
